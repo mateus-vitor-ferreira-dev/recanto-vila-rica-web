@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 
+import Logo from "../../assets/logo-recanto-vila-rica.png";
 import api from "../../services/api";
 import * as S from "./styles";
 
@@ -66,7 +67,10 @@ export default function Home() {
     return (
         <S.Container>
             <S.HeroSection>
-                <S.Badge>Bem-vindo ao sistema</S.Badge>
+                <S.HeroTop>
+                    <S.HeroLogo src={Logo} alt="Logo Recanto Vila Rica" />
+                    <S.Badge>Bem-vindo ao sistema</S.Badge>
+                </S.HeroTop>
 
                 <S.Title>
                     Olá, <span>{userName}</span>

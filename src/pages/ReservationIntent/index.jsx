@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-
+import Input from "../../components/Input";
 import api from "../../services/api";
+import { getErrorMessage } from "../../utils/getErrorMessage";
 import * as S from "./styles";
 
 export default function ReservationIntent() {
@@ -10,157 +11,137 @@ export default function ReservationIntent() {
     const navigate = useNavigate();
 
     const [venue, setVenue] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-
-    const [partyDuration, setPartyDuration] = useState(4);
-    const [hasKidsAreaSelected, setHasKidsAreaSelected] = useState(false);
-    const [hasPoolSelected, setHasPoolSelected] = useState(false);
-    const [kidsAreaDuration, setKidsAreaDuration] = useState(1);
-    const [poolDuration, setPoolDuration] = useState(1);
+    const [loading, setLoading] = useState(true);
+    const [submitting, setSubmitting] = useState(false);
 
     const [eventDate, setEventDate] = useState("");
     const [startTime, setStartTime] = useState("");
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isContractOpen, setIsContractOpen] = useState(false);
+    const [durationHours, setDurationHours] = useState(4);
+
+    const [hasKidsArea, setHasKidsArea] = useState(false);
+    const [kidsAreaDurationHours, setKidsAreaDurationHours] = useState(1);
+
+    const [hasPool, setHasPool] = useState(false);
+
+    const [acceptedContract, setAcceptedContract] = useState(false);
 
     useEffect(() => {
         async function loadVenue() {
             try {
-                setIsLoading(true);
+                setLoading(true);
 
-                const { data } = await api.get(`/venues/${venueId}`);
-                setVenue(data.data);
+                const response = await api.get(`/venues/${venueId}`);
+                setVenue(response.data.data);
             } catch (error) {
-                const message =
-                    error.response?.data?.message ||
-                    error.response?.data?.error?.message ||
-                    "Erro ao carregar os dados do salão.";
-
-                toast.error(message);
+                toast.error(getErrorMessage(error, "Erro ao carregar os dados do salão."));
             } finally {
-                setIsLoading(false);
+                setLoading(false);
             }
         }
 
-        loadVenue();
+        if (venueId) {
+            loadVenue();
+        }
     }, [venueId]);
 
     useEffect(() => {
-        if (!hasKidsAreaSelected) {
-            setKidsAreaDuration(1);
+        if (kidsAreaDurationHours > durationHours) {
+            setKidsAreaDurationHours(durationHours);
         }
-    }, [hasKidsAreaSelected]);
+    }, [durationHours, kidsAreaDurationHours]);
 
-    useEffect(() => {
-        if (!hasPoolSelected) {
-            setPoolDuration(1);
-        }
-    }, [hasPoolSelected]);
+    const values = useMemo(() => {
+        const basePricePerHour = Number(venue?.basePricePerHour || 0);
 
-    useEffect(() => {
-        if (kidsAreaDuration > partyDuration) {
-            setKidsAreaDuration(partyDuration);
-        }
+        const kidsAreaPricePerHour = 25;
+        const poolPricePerDay = 100;
 
-        if (poolDuration > partyDuration) {
-            setPoolDuration(partyDuration);
-        }
-    }, [partyDuration, kidsAreaDuration, poolDuration]);
+        const partyValue = basePricePerHour * durationHours;
+        const kidsAreaValue = hasKidsArea ? kidsAreaPricePerHour * kidsAreaDurationHours : 0;
+        const poolValue = hasPool ? poolPricePerDay : 0;
 
-    const totalPrice = useMemo(() => {
-        if (!venue) return 0;
-
-        const basePricePerHour = Number(venue.basePricePerHour || 0);
-        const kidsAreaPricePerHour = Number(venue.kidsAreaPricePerHour || 0);
-        const poolPricePerHour = Number(venue.poolPricePerHour || 0);
-
-        let total = partyDuration * basePricePerHour;
-
-        if (venue.hasKidsArea && hasKidsAreaSelected) {
-            total += kidsAreaDuration * kidsAreaPricePerHour;
-        }
-
-        if (venue.hasPool && hasPoolSelected) {
-            total += poolDuration * poolPricePerHour;
-        }
-
-        return total;
-    }, [
-        venue,
-        partyDuration,
-        hasKidsAreaSelected,
-        hasPoolSelected,
-        kidsAreaDuration,
-        poolDuration,
-    ]);
-
-    function buildReservationPayload() {
-        const startDate = new Date(`${eventDate}T${startTime}`);
-        const endDate = new Date(startDate);
-        endDate.setHours(endDate.getHours() + partyDuration);
+        const total = partyValue + kidsAreaValue + poolValue;
 
         return {
-            venueId: venue.id,
-            startDate: startDate.toISOString(),
-            endDate: endDate.toISOString(),
-            totalPrice,
-            notes: JSON.stringify({
-                partyDuration,
-                hasKidsAreaSelected,
-                kidsAreaDuration: hasKidsAreaSelected ? kidsAreaDuration : 0,
-                hasPoolSelected,
-                poolDuration: hasPoolSelected ? poolDuration : 0,
-            }),
+            basePricePerHour,
+            kidsAreaPricePerHour,
+            poolPricePerDay,
+            partyValue,
+            kidsAreaValue,
+            poolValue,
+            total,
         };
+    }, [venue, durationHours, hasKidsArea, kidsAreaDurationHours, hasPool]);
+
+    const today = new Date().toISOString().split("T")[0];
+
+    function formatCurrency(value) {
+        return new Intl.NumberFormat("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+        }).format(Number(value || 0));
+    }
+
+    function handleOpenRoutes() {
+        if (!venue?.location) {
+            toast.info("Endereço do salão não disponível.");
+            return;
+        }
+
+        const encodedAddress = encodeURIComponent(venue.location);
+        window.open(`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`, "_blank");
     }
 
     async function handleConfirmReservation() {
-        if (!eventDate) {
-            return toast.error("Selecione a data do evento.");
-        }
-
-        if (!startTime) {
-            return toast.error("Selecione o horário de início.");
-        }
-
-        if (!venue) {
-            return toast.error("Salão não encontrado.");
-        }
-
         try {
-            setIsSubmitting(true);
-
-            const payload = buildReservationPayload();
-            const reservationResponse = await api.post("/reservations", payload);
-
-            const reservationId = reservationResponse.data?.data?.id;
-
-            if (!reservationId) {
-                throw new Error("Reservation id not returned");
+            if (!eventDate) {
+                toast.warning("Selecione a data do evento.");
+                return;
             }
 
-            toast.success("Reserva criada com sucesso.");
-            navigate(`/payment/${reservationId}`);
-        } catch (error) {
-            const message =
-                error.response?.data?.message ||
-                error.response?.data?.error?.message ||
-                error.message ||
-                "Erro ao confirmar a reserva.";
+            if (!startTime) {
+                toast.warning("Selecione o horário de início.");
+                return;
+            }
 
-            toast.error(message);
+            setSubmitting(true);
+
+            const payload = {
+                venueId,
+                date: eventDate,
+                startTime,
+                durationHours,
+                kidsAreaIncluded: hasKidsArea,
+                kidsAreaDurationHours: hasKidsArea ? kidsAreaDurationHours : 0,
+                poolIncluded: hasPool,
+            };
+
+            const response = await api.post("/reservations/intent", payload);
+
+            const reservationData = response.data?.data || response.data;
+            const reservationId = reservationData?.reservationId || reservationData?.reservation?.id;
+
+            if (!reservationId) {
+                toast.error("Não foi possível obter o identificador da reserva.");
+                return;
+            }
+
+            toast.success("Reserva criada com sucesso! Redirecionando para o pagamento...");
+            navigate(`/checkout/${reservationId}`);
+        } catch (error) {
+            toast.error(getErrorMessage(error, "Erro ao confirmar a reserva."));
         } finally {
-            setIsSubmitting(false);
+            setSubmitting(false);
         }
     }
 
-    if (isLoading) {
+    if (loading) {
         return (
             <S.Container>
-                <S.LoadingCard>
-                    <h2>Carregando intenção de reserva...</h2>
-                    <p>Buscando informações do salão selecionado.</p>
-                </S.LoadingCard>
+                <S.Content>
+                    <S.PageTitle>Intenção de reserva</S.PageTitle>
+                    <S.PageDescription>Carregando dados do salão...</S.PageDescription>
+                </S.Content>
             </S.Container>
         );
     }
@@ -168,363 +149,282 @@ export default function ReservationIntent() {
     if (!venue) {
         return (
             <S.Container>
-                <S.EmptyState>
-                    <h2>Salão não encontrado</h2>
-                    <p>Não foi possível carregar os dados da reserva.</p>
-                </S.EmptyState>
+                <S.Content>
+                    <S.PageTitle>Intenção de reserva</S.PageTitle>
+                    <S.PageDescription>Salão não encontrado.</S.PageDescription>
+                </S.Content>
             </S.Container>
         );
     }
 
     return (
         <S.Container>
-            <S.Header>
-                <div>
-                    <S.Title>Intenção de reserva</S.Title>
-                    <S.Description>
-                        Confira os dados do salão, selecione os adicionais disponíveis,
-                        escolha data e horário e veja o valor estimado da sua reserva.
-                    </S.Description>
-                </div>
+            <S.Content>
+                <S.TopSection>
+                    <div>
+                        <S.PageTitle>Intenção de reserva</S.PageTitle>
+                        <S.PageDescription>
+                            Confira os dados do salão, selecione os adicionais disponíveis,
+                            escolha data e horário e veja o valor estimado da sua reserva.
+                        </S.PageDescription>
+                    </div>
 
-                <S.PriceCard>
-                    <span>Valor estimado</span>
-                    <strong>
-                        {totalPrice.toLocaleString("pt-BR", {
-                            style: "currency",
-                            currency: "BRL",
-                        })}
-                    </strong>
-                    <small>{partyDuration} hora(s) de festa</small>
-                </S.PriceCard>
-            </S.Header>
+                    <S.EstimatedCard>
+                        <span>Valor estimado</span>
+                        <strong>{formatCurrency(values.total)}</strong>
+                        <small>{durationHours} hora(s) de festa</small>
+                    </S.EstimatedCard>
+                </S.TopSection>
 
-            <S.ContentGrid>
-                <S.LeftColumn>
-                    <S.SectionCard>
-                        <S.SectionTitle>{venue.name}</S.SectionTitle>
-                        <S.SectionText>
-                            {venue.description || "Sem descrição cadastrada para este salão."}
-                        </S.SectionText>
+                <S.Grid>
+                    <S.LeftColumn>
+                        <S.Card>
+                            <S.CardTitle>{venue.name}</S.CardTitle>
+                            <S.CardDescription>
+                                {venue.description || "Salão principal para eventos e reservas"}
+                            </S.CardDescription>
 
-                        <S.InfoGrid>
-                            <S.InfoItem>
-                                <span>Capacidade</span>
-                                <strong>
-                                    {venue.capacity ? `${venue.capacity} pessoas` : "Não informada"}
-                                </strong>
-                            </S.InfoItem>
+                            <S.InfoGrid>
+                                <S.InfoBox>
+                                    <span>Capacidade</span>
+                                    <strong>{venue.capacity || 0} pessoas</strong>
+                                </S.InfoBox>
 
-                            <S.InfoItem>
-                                <span>Localização</span>
-                                <strong>{venue.location || "Não informada"}</strong>
-                            </S.InfoItem>
-                        </S.InfoGrid>
+                                <S.InfoBox>
+                                    <span>Localização</span>
+                                    <strong>{venue.location || "Endereço não informado"}</strong>
+                                </S.InfoBox>
+                            </S.InfoGrid>
 
-                        {venue.mapsUrl && (
-                            <S.RouteButton
-                                href={venue.mapsUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                            >
+                            <S.RouteButton type="button" onClick={handleOpenRoutes}>
                                 Rotas
                             </S.RouteButton>
-                        )}
-                    </S.SectionCard>
+                        </S.Card>
 
-                    <S.SectionCard>
-                        <S.SectionTitle>Data e horário</S.SectionTitle>
-                        <S.SectionText>
-                            Escolha a data do evento e o horário de início da festa.
-                        </S.SectionText>
+                        <S.Card>
+                            <S.CardTitle>Data e horário</S.CardTitle>
+                            <S.CardDescription>
+                                Escolha a data do evento e o horário de início da festa.
+                            </S.CardDescription>
 
-                        <S.FormGrid>
-                            <S.FieldGroup>
-                                <S.FieldLabel htmlFor="eventDate">Data do evento</S.FieldLabel>
-                                <S.DateInput
-                                    id="eventDate"
+                            <S.FormRow>
+                                <Input
+                                    label="Data do evento"
                                     type="date"
+                                    min={today}
                                     value={eventDate}
                                     onChange={(event) => setEventDate(event.target.value)}
                                 />
-                            </S.FieldGroup>
 
-                            <S.FieldGroup>
-                                <S.FieldLabel htmlFor="startTime">Horário de início</S.FieldLabel>
-                                <S.TimeInput
-                                    id="startTime"
+                                <Input
+                                    label="Horário de início"
                                     type="time"
-                                    value={startTime}
+                                    value={startTime || ""}
+                                    min="08:00"
+                                    max="22:00"
                                     onChange={(event) => setStartTime(event.target.value)}
                                 />
-                            </S.FieldGroup>
-                        </S.FormGrid>
-                    </S.SectionCard>
+                            </S.FormRow>
+                        </S.Card>
 
-                    <S.SectionCard>
-                        <S.SectionTitle>Duração da festa</S.SectionTitle>
-                        <S.SectionText>
-                            Ajuste a quantidade de horas desejada para o evento.
-                        </S.SectionText>
+                        <S.Card>
+                            <S.CardTitle>Duração da festa</S.CardTitle>
+                            <S.CardDescription>
+                                Ajuste a quantidade de horas desejada para o evento.
+                            </S.CardDescription>
 
-                        <S.RangeWrapper>
-                            <S.RangeLabel>{partyDuration} hora(s)</S.RangeLabel>
-                            <S.RangeInput
+                            <S.RangeValue>{durationHours} hora(s)</S.RangeValue>
+
+                            <S.StyledRange
                                 type="range"
                                 min="1"
                                 max="12"
                                 step="1"
-                                value={partyDuration}
-                                onChange={(event) => setPartyDuration(Number(event.target.value))}
+                                value={durationHours}
+                                onChange={(event) => setDurationHours(Number(event.target.value))}
                             />
-                            <S.RangeScale>
+
+                            <S.RangeLabels>
                                 <span>1h</span>
                                 <span>12h</span>
-                            </S.RangeScale>
-                        </S.RangeWrapper>
-                    </S.SectionCard>
+                            </S.RangeLabels>
+                        </S.Card>
 
-                    {(venue.hasKidsArea || venue.hasPool) && (
-                        <S.SectionCard>
-                            <S.SectionTitle>Adicionais disponíveis</S.SectionTitle>
-                            <S.SectionText>
-                                Marque os opcionais que deseja incluir na sua reserva.
-                            </S.SectionText>
+                        <S.Card>
+                            <S.CardTitle>Adicionais</S.CardTitle>
+                            <S.CardDescription>
+                                Escolha os adicionais disponíveis para compor sua reserva.
+                            </S.CardDescription>
 
                             <S.OptionsList>
-                                {venue.hasKidsArea && (
-                                    <S.OptionBlock>
-                                        <S.OptionItem>
-                                            <S.OptionInfo>
-                                                <strong>Área Kids</strong>
-                                                <span>
-                                                    {Number(venue.kidsAreaPricePerHour || 0).toLocaleString(
-                                                        "pt-BR",
-                                                        {
-                                                            style: "currency",
-                                                            currency: "BRL",
-                                                        }
-                                                    )}{" "}
-                                                    por hora
-                                                </span>
-                                            </S.OptionInfo>
+                                <S.OptionItem>
+                                    <div>
+                                        <strong>Área Kids</strong>
+                                        <span>
+                                            {venue.hasKidsArea
+                                                ? `+ ${formatCurrency(25)} / hora com monitor`
+                                                : "Não disponível"}
+                                        </span>
+                                    </div>
 
-                                            <S.OptionAction>
-                                                <input
-                                                    type="checkbox"
-                                                    checked={hasKidsAreaSelected}
-                                                    onChange={() => setHasKidsAreaSelected((prev) => !prev)}
-                                                />
-                                            </S.OptionAction>
-                                        </S.OptionItem>
+                                    <input
+                                        type="checkbox"
+                                        checked={hasKidsArea}
+                                        disabled={!venue.hasKidsArea}
+                                        onChange={(event) => {
+                                            const checked = event.target.checked;
+                                            setHasKidsArea(checked);
 
-                                        {hasKidsAreaSelected && (
-                                            <S.RangeWrapper>
-                                                <S.RangeLabel>
-                                                    Área Kids: {kidsAreaDuration} hora(s)
-                                                </S.RangeLabel>
-                                                <S.RangeInput
-                                                    type="range"
-                                                    min="1"
-                                                    max={partyDuration}
-                                                    step="1"
-                                                    value={kidsAreaDuration}
-                                                    onChange={(event) =>
-                                                        setKidsAreaDuration(Number(event.target.value))
-                                                    }
-                                                />
-                                                <S.RangeScale>
-                                                    <span>1h</span>
-                                                    <span>{partyDuration}h</span>
-                                                </S.RangeScale>
-                                            </S.RangeWrapper>
-                                        )}
-                                    </S.OptionBlock>
+                                            if (checked && kidsAreaDurationHours > durationHours) {
+                                                setKidsAreaDurationHours(durationHours);
+                                            }
+                                        }}
+                                    />
+                                </S.OptionItem>
+
+                                {hasKidsArea && venue.hasKidsArea && (
+                                    <S.Card>
+                                        <S.CardTitle>Tempo da Área Kids</S.CardTitle>
+                                        <S.CardDescription>
+                                            Defina por quantas horas a área kids com monitor será utilizada.
+                                        </S.CardDescription>
+
+                                        <S.RangeValue>{kidsAreaDurationHours} hora(s)</S.RangeValue>
+
+                                        <S.StyledRange
+                                            type="range"
+                                            min="1"
+                                            max={durationHours}
+                                            step="1"
+                                            value={kidsAreaDurationHours}
+                                            onChange={(event) =>
+                                                setKidsAreaDurationHours(Number(event.target.value))
+                                            }
+                                        />
+
+                                        <S.RangeLabels>
+                                            <span>1h</span>
+                                            <span>{durationHours}h</span>
+                                        </S.RangeLabels>
+                                    </S.Card>
                                 )}
 
-                                {venue.hasPool && (
-                                    <S.OptionBlock>
-                                        <S.OptionItem>
-                                            <S.OptionInfo>
-                                                <strong>Piscina</strong>
-                                                <span>
-                                                    {Number(venue.poolPricePerHour || 0).toLocaleString(
-                                                        "pt-BR",
-                                                        {
-                                                            style: "currency",
-                                                            currency: "BRL",
-                                                        }
-                                                    )}{" "}
-                                                    por hora
-                                                </span>
-                                            </S.OptionInfo>
+                                <S.OptionItem>
+                                    <div>
+                                        <strong>Piscina</strong>
+                                        <span>
+                                            {venue.hasPool
+                                                ? `+ ${formatCurrency(100)}`
+                                                : "Não disponível"}
+                                        </span>
+                                    </div>
 
-                                            <S.OptionAction>
-                                                <input
-                                                    type="checkbox"
-                                                    checked={hasPoolSelected}
-                                                    onChange={() => setHasPoolSelected((prev) => !prev)}
-                                                />
-                                            </S.OptionAction>
-                                        </S.OptionItem>
-
-                                        {hasPoolSelected && (
-                                            <S.RangeWrapper>
-                                                <S.RangeLabel>
-                                                    Piscina: {poolDuration} hora(s)
-                                                </S.RangeLabel>
-                                                <S.RangeInput
-                                                    type="range"
-                                                    min="1"
-                                                    max={partyDuration}
-                                                    step="1"
-                                                    value={poolDuration}
-                                                    onChange={(event) =>
-                                                        setPoolDuration(Number(event.target.value))
-                                                    }
-                                                />
-                                                <S.RangeScale>
-                                                    <span>1h</span>
-                                                    <span>{partyDuration}h</span>
-                                                </S.RangeScale>
-                                            </S.RangeWrapper>
-                                        )}
-                                    </S.OptionBlock>
-                                )}
+                                    <input
+                                        type="checkbox"
+                                        checked={hasPool}
+                                        disabled={!venue.hasPool}
+                                        onChange={(event) => setHasPool(event.target.checked)}
+                                    />
+                                </S.OptionItem>
                             </S.OptionsList>
-                        </S.SectionCard>
-                    )}
+                        </S.Card>
+                    </S.LeftColumn>
 
-                    <S.SectionCard>
-                        <S.ContractHeader>
-                            <div>
-                                <S.SectionTitle>Contrato</S.SectionTitle>
-                                <S.SectionText>
-                                    Leia as condições antes de prosseguir.
-                                </S.SectionText>
-                            </div>
+                    <S.RightColumn>
+                        <S.Card>
+                            <S.CardTitle>Resumo da reserva</S.CardTitle>
 
-                            <S.ToggleContractButton
-                                type="button"
-                                onClick={() => setIsContractOpen((prev) => !prev)}
-                            >
-                                {isContractOpen ? "Ocultar contrato" : "Ver contrato"}
-                            </S.ToggleContractButton>
-                        </S.ContractHeader>
+                            <S.SummaryList>
+                                <S.SummaryItem>
+                                    <span>Salão</span>
+                                    <strong>{venue.name}</strong>
+                                </S.SummaryItem>
 
-                        {isContractOpen && (
-                            <S.ContractBox>
-                                <p>
-                                    <strong>CONTRATO DE INTENÇÃO DE RESERVA</strong>
-                                </p>
+                                <S.SummaryItem>
+                                    <span>Data</span>
+                                    <strong>{eventDate || "Não selecionada"}</strong>
+                                </S.SummaryItem>
 
-                                <p>
-                                    O presente documento apresenta uma estimativa preliminar da
-                                    reserva do espaço <strong>{venue.name}</strong>, conforme
-                                    disponibilidade da data, horário e opcionais selecionados.
-                                </p>
+                                <S.SummaryItem>
+                                    <span>Início</span>
+                                    <strong>{startTime || "Não selecionado"}</strong>
+                                </S.SummaryItem>
 
-                                <p>
-                                    A contratação definitiva dependerá da validação final do pedido,
-                                    aceite contratual completo e eventual pagamento do sinal.
-                                </p>
+                                <S.SummaryItem>
+                                    <span>Festa</span>
+                                    <strong>
+                                        {durationHours}h × {formatCurrency(values.basePricePerHour)}
+                                    </strong>
+                                </S.SummaryItem>
 
-                                <p>
-                                    Os valores apresentados nesta etapa possuem caráter informativo e
-                                    poderão ser ajustados futuramente conforme regras comerciais,
-                                    duração contratada e serviços adicionais incluídos.
-                                </p>
-                            </S.ContractBox>
-                        )}
-                    </S.SectionCard>
-                </S.LeftColumn>
-
-                <S.RightColumn>
-                    <S.SectionCard>
-                        <S.SectionTitle>Resumo da reserva</S.SectionTitle>
-
-                        <S.SummaryList>
-                            <li>
-                                <span>Salão</span>
-                                <strong>{venue.name}</strong>
-                            </li>
-
-                            <li>
-                                <span>Data</span>
-                                <strong>{eventDate || "Não selecionada"}</strong>
-                            </li>
-
-                            <li>
-                                <span>Início</span>
-                                <strong>{startTime || "Não selecionado"}</strong>
-                            </li>
-
-                            <li>
-                                <span>Festa</span>
-                                <strong>
-                                    {partyDuration}h ×{" "}
-                                    {Number(venue.basePricePerHour || 0).toLocaleString("pt-BR", {
-                                        style: "currency",
-                                        currency: "BRL",
-                                    })}
-                                </strong>
-                            </li>
-
-                            {venue.hasKidsArea && (
-                                <li>
+                                <S.SummaryItem>
                                     <span>Área Kids</span>
                                     <strong>
-                                        {hasKidsAreaSelected
-                                            ? `${kidsAreaDuration}h × ${Number(
-                                                venue.kidsAreaPricePerHour || 0
-                                            ).toLocaleString("pt-BR", {
-                                                style: "currency",
-                                                currency: "BRL",
-                                            })}`
+                                        {hasKidsArea
+                                            ? `${kidsAreaDurationHours}h × ${formatCurrency(
+                                                values.kidsAreaPricePerHour
+                                            )}`
                                             : "Não incluída"}
                                     </strong>
-                                </li>
-                            )}
+                                </S.SummaryItem>
 
-                            {venue.hasPool && (
-                                <li>
+                                <S.SummaryItem>
                                     <span>Piscina</span>
                                     <strong>
-                                        {hasPoolSelected
-                                            ? `${poolDuration}h × ${Number(
-                                                venue.poolPricePerHour || 0
-                                            ).toLocaleString("pt-BR", {
-                                                style: "currency",
-                                                currency: "BRL",
-                                            })}`
-                                            : "Não incluída"}
+                                        {hasPool ? formatCurrency(values.poolValue) : "Não incluída"}
                                     </strong>
-                                </li>
-                            )}
+                                </S.SummaryItem>
+                            </S.SummaryList>
 
-                            <li className="total">
+                            <S.Divider />
+
+                            <S.TotalRow>
                                 <span>Total estimado</span>
-                                <strong>
-                                    {totalPrice.toLocaleString("pt-BR", {
-                                        style: "currency",
-                                        currency: "BRL",
-                                    })}
-                                </strong>
-                            </li>
-                        </S.SummaryList>
-                    </S.SectionCard>
+                                <strong>{formatCurrency(values.total)}</strong>
+                            </S.TotalRow>
+                        </S.Card>
 
-                    <S.ActionsCard>
-                        <S.PrimaryActionButton
-                            type="button"
-                            onClick={handleConfirmReservation}
-                            disabled={isSubmitting}
-                        >
-                            {isSubmitting ? "Redirecionando..." : "Confirmar e ir para pagamento"}
-                        </S.PrimaryActionButton>
-                    </S.ActionsCard>
-                </S.RightColumn>
-            </S.ContentGrid>
+                        <S.ActionCard>
+                            <S.ConfirmButton
+                                type="button"
+                                onClick={handleConfirmReservation}
+                                disabled={submitting || !acceptedContract}
+                            >
+                                {submitting
+                                    ? "Confirmando reserva..."
+                                    : "Confirmar e ir para pagamento"}
+                            </S.ConfirmButton>
+
+                            <S.ContractCard>
+                                <S.ContractTitle>Contrato da reserva</S.ContractTitle>
+                                <S.ContractDescription>
+                                    Leia o contrato com atenção antes de prosseguir com a confirmação da reserva.
+                                </S.ContractDescription>
+
+                                <S.ContractLink
+                                    href="/documents/contrato-recanto-vila-rica.pdf"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
+                                    Visualizar contrato em PDF
+                                </S.ContractLink>
+
+                                <S.ContractCheckboxWrapper>
+                                    <input
+                                        type="checkbox"
+                                        id="acceptedContract"
+                                        checked={acceptedContract}
+                                        onChange={(event) => setAcceptedContract(event.target.checked)}
+                                    />
+                                    <label htmlFor="acceptedContract">
+                                        Li e estou de acordo com os termos do contrato.
+                                    </label>
+                                </S.ContractCheckboxWrapper>
+                            </S.ContractCard>
+                        </S.ActionCard>
+                    </S.RightColumn>
+                </S.Grid>
+            </S.Content>
         </S.Container>
     );
 }

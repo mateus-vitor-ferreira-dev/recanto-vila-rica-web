@@ -39,7 +39,6 @@ export const Badge = styled.span`
     border-radius: 999px;
     font-size: 14px;
     font-weight: 600;
-    margin-bottom: 18px;
 `;
 
 export const Title = styled.h1`
@@ -131,4 +130,21 @@ export const List = styled.ul`
 export const EmptyText = styled.p`
     color: #6b7280;
     line-height: 1.6;
+`;
+
+export const HeroTop = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+`;
+
+export const HeroLogo = styled.img`
+    width: 72px;
+    height: 72px;
+    object-fit: contain;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+    padding: 6px;
 `;

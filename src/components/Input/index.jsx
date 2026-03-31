@@ -1,10 +1,17 @@
 import * as S from "./styles";
 
-export default function Input({ label, ...props }) {
+export default function Input({
+    label,
+    error,
+    ...props
+}) {
     return (
-        <S.Wrapper>
-            <S.Label>{label}</S.Label>
-            <S.Field {...props} />
-        </S.Wrapper>
+        <S.Container>
+            {label && <S.Label>{label}</S.Label>}
+
+            <S.Input {...props} $error={!!error} />
+
+            {error && <S.Error>{error}</S.Error>}
+        </S.Container>
     );
 }
