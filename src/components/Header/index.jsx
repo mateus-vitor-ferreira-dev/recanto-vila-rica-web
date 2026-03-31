@@ -1,4 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import logo from "../../assets/logo-recanto-vila-rica.png";
 import * as S from "./styles";
 
 export default function Header() {
@@ -17,7 +18,10 @@ export default function Header() {
     return (
         <S.Container>
             <S.Content>
-                <S.Brand to="/home">Recanto Vila Rica</S.Brand>
+                <S.BrandWrapper to="/home">
+                    <S.Logo src={logo} alt="Logo Recanto Vila Rica" />
+                    <S.BrandText>Recanto Vila Rica</S.BrandText>
+                </S.BrandWrapper>
 
                 <S.Nav>
                     <S.NavLink $active={location.pathname === "/home"} as={Link} to="/home">
@@ -49,9 +53,7 @@ export default function Header() {
                         <strong>{userName}</strong>
                     </S.UserInfo>
 
-                    <S.LogoutButton onClick={handleLogout}>
-                        Sair
-                    </S.LogoutButton>
+                    <S.LogoutButton onClick={handleLogout}>Sair</S.LogoutButton>
                 </S.Actions>
             </S.Content>
         </S.Container>

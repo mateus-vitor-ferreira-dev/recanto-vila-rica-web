@@ -1,5 +1,5 @@
-import styled from "styled-components";
 import { Link } from "react-router-dom";
+import styled from "styled-components";
 
 export const Container = styled.header`
   width: 100%;
@@ -22,11 +22,25 @@ export const Content = styled.div`
   gap: 24px;
 `;
 
-export const Brand = styled(Link)`
+export const BrandWrapper = styled(Link)`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  white-space: nowrap;
+`;
+
+export const Logo = styled.img`
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: 50%;
+`;
+
+export const BrandText = styled.span`
   font-size: 22px;
   font-weight: 700;
   color: #1f4f41;
-  white-space: nowrap;
 `;
 
 export const Nav = styled.nav`
