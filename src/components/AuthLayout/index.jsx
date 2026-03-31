@@ -1,6 +1,6 @@
 import * as S from "./styles";
 
-export function AuthLayout({ title, subtitle, children }) {
+export default function AuthLayout({ title, subtitle, children }) {
     return (
         <S.Container>
             <S.LeftSide>
