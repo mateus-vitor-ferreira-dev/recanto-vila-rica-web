@@ -4,7 +4,7 @@ import GoogleIcon from "../../assets/google-icon.png";
 import api from "../../services/api";
 import * as S from "./styles";
 
-export function GoogleButton({ text, navigate }) {
+export default function GoogleButton({ text, navigate }) {
     const login = useGoogleLogin({
         onSuccess: async (tokenResponse) => {
             try {

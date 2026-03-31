@@ -1,6 +1,6 @@
 import * as S from "./styles";
 
-export function Input({ label, ...props }) {
+export default function Input({ label, ...props }) {
     return (
         <S.Wrapper>
             <S.Label>{label}</S.Label>

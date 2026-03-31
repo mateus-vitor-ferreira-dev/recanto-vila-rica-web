@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { AuthLayout } from "../../components/AuthLayout";
-import { Button } from "../../components/Button";
-import { GoogleButton } from "../../components/GoogleButton";
-import { Input } from "../../components/Input";
+
+import { AuthLayout, Button, GoogleButton, Input } from "../../components";
+
 import api from "../../services/api";
 import * as S from "./styles";
 

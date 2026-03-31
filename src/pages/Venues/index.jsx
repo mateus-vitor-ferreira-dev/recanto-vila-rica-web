@@ -1,3 +1,159 @@
-export default function Admin() {
-    return <h1>Venues</h1>;
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+
+import api from "../../services/api";
+import * as S from "./styles";
+
+export default function Venues() {
+    const navigate = useNavigate();
+
+    const [venues, setVenues] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        async function loadVenues() {
+            try {
+                setIsLoading(true);
+
+                const { data } = await api.get("/venues");
+
+                setVenues(data.data || []);
+            } catch (error) {
+                const message =
+                    error.response?.data?.message ||
+                    error.response?.data?.error?.message ||
+                    "Erro ao carregar os espaços.";
+
+                toast.error(message);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+
+        loadVenues();
+    }, []);
+
+    if (isLoading) {
+        return (
+            <S.Container>
+                <S.Header>
+                    <S.HeaderContent>
+                        <S.Title>Espaços disponíveis</S.Title>
+                        <S.Description>
+                            Carregando os ambientes disponíveis para reserva.
+                        </S.Description>
+                    </S.HeaderContent>
+                </S.Header>
+
+                <S.LoadingCard>
+                    <h2>Carregando espaços...</h2>
+                    <p>Aguarde enquanto buscamos os dados da API.</p>
+                </S.LoadingCard>
+            </S.Container>
+        );
+    }
+
+    if (!venues.length) {
+        return (
+            <S.Container>
+                <S.Header>
+                    <S.HeaderContent>
+                        <S.Title>Espaços disponíveis</S.Title>
+                        <S.Description>
+                            Consulte os ambientes cadastrados para eventos e reservas.
+                        </S.Description>
+                    </S.HeaderContent>
+                </S.Header>
+
+                <S.EmptyState>
+                    <h2>Nenhum espaço encontrado</h2>
+                    <p>A API não retornou espaços cadastrados no momento.</p>
+                </S.EmptyState>
+            </S.Container>
+        );
+    }
+
+    return (
+        <S.Container>
+            <S.Header>
+                <S.HeaderContent>
+                    <S.Title>Espaços disponíveis</S.Title>
+                    <S.Description>
+                        Consulte os ambientes cadastrados para eventos e reservas.
+                    </S.Description>
+                </S.HeaderContent>
+
+                <S.Counter>{venues.length} espaço(s)</S.Counter>
+            </S.Header>
+
+            <S.Grid>
+                {venues.map((venue) => (
+                    <S.Card key={venue.id}>
+                        <S.CardContent>
+                            <S.CardHeader>
+                                <S.CardTitle>{venue.name}</S.CardTitle>
+
+                                <S.Price>
+                                    {Number(venue.basePricePerHour || 0).toLocaleString("pt-BR", {
+                                        style: "currency",
+                                        currency: "BRL",
+                                    })}
+                                    <span>/hora</span>
+                                </S.Price>
+                            </S.CardHeader>
+
+                            <S.CardDescription>
+                                {venue.description || "Sem descrição cadastrada para este espaço."}
+                            </S.CardDescription>
+
+                            <S.InfoList>
+                                <li>
+                                    <strong>Capacidade:</strong>{" "}
+                                    {venue.capacity ? `${venue.capacity} pessoas` : "Não informada"}
+                                </li>
+
+                                <li>
+                                    <strong>Localização:</strong> {venue.location || "Não informada"}
+                                </li>
+
+                                <li>
+                                    <strong>Área Kids:</strong>{" "}
+                                    {venue.hasKidsArea ? "Disponível" : "Não disponível"}
+                                </li>
+
+                                <li>
+                                    <strong>Piscina:</strong>{" "}
+                                    {venue.hasPool ? "Disponível" : "Não disponível"}
+                                </li>
+                            </S.InfoList>
+                        </S.CardContent>
+
+                        <S.Actions>
+                            {venue.mapsUrl ? (
+                                <S.ActionLink
+                                    href={venue.mapsUrl}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
+                                    Rotas
+                                </S.ActionLink>
+                            ) : (
+                                <S.ActionButton type="button" disabled>
+                                    Rotas
+                                </S.ActionButton>
+                            )}
+
+                            <S.PrimaryButton
+                                type="button"
+                                onClick={() => navigate(`/reservation-intent/${venue.id}`)}
+                            >
+                                Reservar
+                            </S.PrimaryButton>
+                        </S.Actions>
+                    </S.Card>
+                ))}
+            </S.Grid>
+        </S.Container>
+    );
 }
