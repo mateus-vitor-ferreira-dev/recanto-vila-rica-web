@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import api from "../../services/api";
+import { listVenues } from "../../services/venue";
+import { getErrorMessage } from "../../utils/getErrorMessage";
 import * as S from "./styles";
 
 export default function Venues() {
@@ -15,17 +16,10 @@ export default function Venues() {
         async function loadVenues() {
             try {
                 setIsLoading(true);
-
-                const { data } = await api.get("/venues");
-
-                setVenues(data.data || []);
+                const data = await listVenues();
+                setVenues(data);
             } catch (error) {
-                const message =
-                    error.response?.data?.message ||
-                    error.response?.data?.error?.message ||
-                    "Erro ao carregar os espaços.";
-
-                toast.error(message);
+                toast.error(getErrorMessage(error, "Erro ao carregar os espaços."));
             } finally {
                 setIsLoading(false);
             }
@@ -94,13 +88,9 @@ export default function Venues() {
                             <S.CardHeader>
                                 <S.CardTitle>{venue.name}</S.CardTitle>
 
-                                <S.Price>
-                                    {Number(venue.basePricePerHour || 0).toLocaleString("pt-BR", {
-                                        style: "currency",
-                                        currency: "BRL",
-                                    })}
-                                    <span>/hora</span>
-                                </S.Price>
+                                <S.PlansTag>
+                                    A partir de R$ 650
+                                </S.PlansTag>
                             </S.CardHeader>
 
                             <S.CardDescription>
@@ -109,21 +99,22 @@ export default function Venues() {
 
                             <S.InfoList>
                                 <li>
-                                    <strong>Capacidade:</strong>{" "}
+                                    <strong>Capacidade</strong>
                                     {venue.capacity ? `${venue.capacity} pessoas` : "Não informada"}
                                 </li>
 
                                 <li>
-                                    <strong>Localização:</strong> {venue.location || "Não informada"}
+                                    <strong>Localização</strong>
+                                    {venue.location || "Não informada"}
                                 </li>
 
                                 <li>
-                                    <strong>Área Kids:</strong>{" "}
+                                    <strong>Área Kids</strong>
                                     {venue.hasKidsArea ? "Disponível" : "Não disponível"}
                                 </li>
 
                                 <li>
-                                    <strong>Piscina:</strong>{" "}
+                                    <strong>Piscina</strong>
                                     {venue.hasPool ? "Disponível" : "Não disponível"}
                                 </li>
                             </S.InfoList>

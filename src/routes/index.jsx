@@ -2,8 +2,12 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { MainLayout } from "../components";
 import {
     Admin,
+    Checkout,
     Home,
     Login,
+    PaymentCancel,
+    PaymentSuccess,
+    Profile,
     ReservationIntent,
     Reservations,
     SignUp,
@@ -24,6 +28,10 @@ export function AppRoutes() {
                     <Route path="/venues" element={<Venues />} />
                     <Route path="/reservations" element={<Reservations />} />
                     <Route path="/reservation-intent/:venueId" element={<ReservationIntent />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/checkout/:reservationId" element={<Checkout />} />
+                    <Route path="/payment/success" element={<PaymentSuccess />} />
+                    <Route path="/payment/cancel" element={<PaymentCancel />} />
                     <Route path="/admin" element={<Admin />} />
                 </Route>
             </Route>

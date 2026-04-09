@@ -1,69 +1,194 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
+
+const fadeIn = keyframes`
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+`;
+
+/* ─── Shell ─── */
 
 export const Container = styled.div`
   min-height: 100vh;
   display: grid;
   grid-template-columns: 1fr 1fr;
 
-  @media (max-width: 900px) {
+  @media (max-width: 860px) {
     grid-template-columns: 1fr;
   }
 `;
 
+/* ─── Left — brand panel ─── */
+
 export const LeftSide = styled.div`
-  background: linear-gradient(180deg, #1f4f41 0%, #173d32 100%);
-  color: white;
-  padding: 64px;
+  position: relative;
+  overflow: hidden;
+  background: #1a3d32;
+  background-image:
+    radial-gradient(ellipse at 20% 10%, #2a5c49 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 80%, #0f2820 0%, transparent 50%);
+  padding: 56px 52px;
   display: flex;
   flex-direction: column;
   justify-content: center;
 
-  @media (max-width: 900px) {
+  @media (max-width: 860px) {
     display: none;
   }
 `;
 
-export const Brand = styled.h2`
-  font-size: 28px;
-  margin-bottom: 24px;
+export const LeftInner = styled.div`
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+`;
+
+export const Brand = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;
+
+export const BrandLogo = styled.img`
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: contain;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px;
+`;
+
+export const BrandName = styled.span`
+  font-size: 18px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: -0.01em;
+`;
+
+export const LeftBody = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 `;
 
 export const Headline = styled.h1`
-  font-size: 42px;
-  line-height: 1.1;
-  max-width: 420px;
-  margin-bottom: 16px;
+  font-size: 38px;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  max-width: 380px;
 `;
 
-export const Description = styled.p`
-  font-size: 16px;
-  line-height: 1.6;
-  max-width: 420px;
-  color: rgba(255, 255, 255, 0.85);
+export const Tagline = styled.p`
+  font-size: 15px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.6);
+  max-width: 360px;
 `;
+
+export const FeatureList = styled.ul`
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+`;
+
+export const FeatureItem = styled.li`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.75);
+`;
+
+export const FeatureDot = styled.span`
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #4ade80;
+  flex-shrink: 0;
+`;
+
+/* decorative circles */
+
+export const Deco1 = styled.div`
+  position: absolute;
+  width: 380px;
+  height: 380px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  bottom: -140px;
+  right: -120px;
+  pointer-events: none;
+`;
+
+export const Deco2 = styled.div`
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  top: 24px;
+  right: 32px;
+  pointer-events: none;
+`;
+
+export const Deco3 = styled.div`
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.03);
+  top: 80px;
+  left: 40px;
+  pointer-events: none;
+`;
+
+/* ─── Right — form panel ─── */
 
 export const RightSide = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  background: #f8fafc;
+  padding: 48px 32px;
+
+  @media (max-width: 480px) {
+    padding: 32px 20px;
+    align-items: flex-start;
+    padding-top: 48px;
+  }
 `;
 
-export const Card = styled.div`
+export const FormArea = styled.div`
   width: 100%;
-  max-width: 440px;
-  background: white;
-  border-radius: 20px;
-  padding: 32px;
-  box-shadow: 0 10px 30px rgba(16, 24, 40, 0.08);
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  animation: ${fadeIn} 0.35s ease;
+`;
+
+export const FormHeader = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 `;
 
 export const Title = styled.h2`
-  font-size: 28px;
-  margin-bottom: 8px;
+  font-size: 26px;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.02em;
 `;
 
 export const Subtitle = styled.p`
+  font-size: 14px;
   color: #6b7280;
-  margin-bottom: 24px;
+  line-height: 1.5;
 `;

@@ -1,15 +1,11 @@
 import styled from "styled-components";
 
-export const Container = styled.div`
-  width: 100%;
-  min-height: 100vh;
-  background: #0f0f0f;
-  padding: 40px 20px;
-`;
+export const Container = styled.div``;
 
 export const Content = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
 `;
 
 export const TopSection = styled.div`
@@ -17,7 +13,6 @@ export const TopSection = styled.div`
   justify-content: space-between;
   align-items: flex-start;
   gap: 20px;
-  margin-bottom: 30px;
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -25,37 +20,46 @@ export const TopSection = styled.div`
 `;
 
 export const PageTitle = styled.h1`
-  font-size: 28px;
-  color: #fff;
+  font-size: 32px;
+  font-weight: 700;
+  color: #111827;
   margin-bottom: 8px;
 `;
 
 export const PageDescription = styled.p`
-  color: #aaa;
+  color: #6b7280;
   max-width: 600px;
-  line-height: 1.5;
+  line-height: 1.6;
+  font-size: 15px;
 `;
 
 export const EstimatedCard = styled.div`
-  background: #1a1a1a;
-  border-radius: 12px;
-  padding: 20px;
+  background: #ffffff;
+  border: 1px solid #d1fae5;
+  border-radius: 16px;
+  padding: 20px 24px;
   min-width: 220px;
+  box-shadow: 0 4px 16px rgba(31, 79, 65, 0.1);
+  flex-shrink: 0;
 
   span {
-    color: #aaa;
-    font-size: 14px;
+    display: block;
+    color: #6b7280;
+    font-size: 13px;
+    font-weight: 500;
   }
 
   strong {
     display: block;
-    font-size: 22px;
-    color: #fff;
-    margin: 8px 0;
+    font-size: 26px;
+    font-weight: 800;
+    color: #1f4f41;
+    margin: 6px 0 4px;
   }
 
   small {
-    color: #888;
+    color: #9ca3af;
+    font-size: 13px;
   }
 `;
 
@@ -82,59 +86,71 @@ export const RightColumn = styled.div`
 `;
 
 export const Card = styled.div`
-  background: #1a1a1a;
-  border-radius: 12px;
-  padding: 20px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
 `;
 
 export const CardTitle = styled.h2`
-  color: #fff;
   font-size: 18px;
+  font-weight: 700;
+  color: #111827;
   margin-bottom: 6px;
 `;
 
 export const CardDescription = styled.p`
-  color: #aaa;
+  color: #6b7280;
   font-size: 14px;
-  margin-bottom: 16px;
+  line-height: 1.5;
+  margin-bottom: 20px;
 `;
 
 export const InfoGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 `;
 
 export const InfoBox = styled.div`
-  background: #121212;
-  padding: 12px;
-  border-radius: 8px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  padding: 14px;
+  border-radius: 12px;
 
   span {
     display: block;
-    color: #888;
+    color: #6b7280;
     font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
   }
 
   strong {
-    color: #fff;
+    color: #111827;
     font-size: 14px;
+    font-weight: 600;
   }
 `;
 
 export const RouteButton = styled.button`
   width: 100%;
-  background: #6c5ce7;
-  color: #fff;
-  border: none;
+  background: #ffffff;
+  color: #374151;
+  border: 1px solid #d1d5db;
   padding: 12px;
-  border-radius: 8px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
   cursor: pointer;
-  transition: 0.2s;
+  transition: background 0.15s ease;
 
   &:hover {
-    background: #5a4bd6;
+    background: #f9fafb;
   }
 `;
 
@@ -148,9 +164,10 @@ export const FormRow = styled.div`
 `;
 
 export const RangeValue = styled.div`
-  color: #fff;
-  font-size: 18px;
-  margin-bottom: 8px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1f4f41;
+  margin-bottom: 12px;
 `;
 
 export const StyledRange = styled.input`
@@ -158,24 +175,31 @@ export const StyledRange = styled.input`
   appearance: none;
   height: 6px;
   border-radius: 4px;
-  background: #333;
+  background: #e5e7eb;
   outline: none;
   margin-bottom: 8px;
+  cursor: pointer;
 
   &::-webkit-slider-thumb {
     appearance: none;
-    width: 16px;
-    height: 16px;
-    background: #6c5ce7;
+    width: 20px;
+    height: 20px;
+    background: #1f4f41;
     border-radius: 50%;
     cursor: pointer;
+    box-shadow: 0 0 0 4px rgba(31, 79, 65, 0.15);
+    transition: box-shadow 0.15s ease;
+  }
+
+  &::-webkit-slider-thumb:hover {
+    box-shadow: 0 0 0 6px rgba(31, 79, 65, 0.2);
   }
 `;
 
 export const RangeLabels = styled.div`
   display: flex;
   justify-content: space-between;
-  color: #888;
+  color: #9ca3af;
   font-size: 12px;
 `;
 
@@ -189,97 +213,125 @@ export const OptionItem = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #121212;
-  padding: 12px;
-  border-radius: 8px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  padding: 14px 16px;
+  border-radius: 12px;
+  transition: border-color 0.15s ease, background 0.15s ease;
+
+  &:has(input:checked:not(:disabled)) {
+    border-color: #6ee7b7;
+    background: #f0fdf9;
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
 
   strong {
-    color: #fff;
-    display: block;
+    color: #111827;
+    font-size: 14px;
+    font-weight: 600;
   }
 
   span {
-    color: #aaa;
+    color: #6b7280;
     font-size: 13px;
   }
 
-  input {
+  input[type="checkbox"] {
     width: 18px;
     height: 18px;
     cursor: pointer;
+    accent-color: #1f4f41;
+    flex-shrink: 0;
   }
 `;
 
 export const SummaryList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 `;
 
 export const SummaryItem = styled.div`
   display: flex;
   justify-content: space-between;
-  color: #ddd;
+  align-items: center;
+  gap: 8px;
 
   span {
-    color: #aaa;
+    font-size: 14px;
+    color: #6b7280;
   }
 
   strong {
-    color: #fff;
+    font-size: 14px;
+    color: #111827;
+    font-weight: 600;
+    text-align: right;
   }
 `;
 
 export const Divider = styled.div`
   height: 1px;
-  background: #333;
+  background: #e5e7eb;
   margin: 16px 0;
 `;
 
 export const TotalRow = styled.div`
   display: flex;
   justify-content: space-between;
+  align-items: center;
 
   span {
-    color: #aaa;
+    font-size: 15px;
+    font-weight: 600;
+    color: #374151;
   }
 
   strong {
-    color: #fff;
-    font-size: 18px;
+    color: #1f4f41;
+    font-size: 22px;
+    font-weight: 800;
   }
 `;
 
 export const ActionCard = styled.div`
-  background: #1a1a1a;
-  border-radius: 12px;
-  padding: 20px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
 `;
 
 export const ConfirmButton = styled.button`
   width: 100%;
   padding: 14px;
-  border-radius: 8px;
+  border-radius: 12px;
   border: none;
-  background: #00b894;
-  color: #fff;
-  font-size: 16px;
+  background: #1f4f41;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
   cursor: pointer;
-  transition: 0.2s;
+  transition: opacity 0.15s ease;
 
-  &:hover {
-    background: #019875;
+  &:hover:not(:disabled) {
+    opacity: 0.92;
   }
 
   &:disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: not-allowed;
   }
 `;
 
 export const ContractCard = styled.div`
-  margin-top: 16px;
-  padding-top: 16px;
+  margin-top: 20px;
+  padding-top: 20px;
   border-top: 1px solid #e5e7eb;
   display: flex;
   flex-direction: column;
@@ -287,13 +339,13 @@ export const ContractCard = styled.div`
 `;
 
 export const ContractTitle = styled.h3`
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   color: #111827;
 `;
 
 export const ContractDescription = styled.p`
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.5;
   color: #6b7280;
 `;
@@ -304,13 +356,14 @@ export const ContractLink = styled.a`
   justify-content: center;
   width: fit-content;
   padding: 10px 14px;
-  border-radius: 8px;
+  border-radius: 10px;
   background: #f3f4f6;
-  color: #111827;
-  font-size: 14px;
+  border: 1px solid #e5e7eb;
+  color: #374151;
+  font-size: 13px;
   font-weight: 600;
   text-decoration: none;
-  transition: 0.2s;
+  transition: background 0.15s ease;
 
   &:hover {
     background: #e5e7eb;
@@ -323,16 +376,128 @@ export const ContractCheckboxWrapper = styled.div`
   gap: 10px;
 
   input {
-    margin-top: 3px;
+    margin-top: 2px;
     width: 16px;
     height: 16px;
     cursor: pointer;
+    accent-color: #1f4f41;
+    flex-shrink: 0;
   }
 
   label {
-    font-size: 14px;
+    font-size: 13px;
     line-height: 1.5;
     color: #374151;
     cursor: pointer;
+  }
+`;
+
+export const PlanGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+export const PlanCard = styled.div`
+  border: 2px solid ${({ $selected }) => ($selected ? "#1f4f41" : "#e5e7eb")};
+  border-radius: 16px;
+  padding: 16px;
+  cursor: pointer;
+  background: ${({ $selected }) => ($selected ? "#f0fdf9" : "#ffffff")};
+  transition: border-color 0.15s ease, background 0.15s ease;
+
+  &:hover {
+    border-color: #6ee7b7;
+    background: #f9fefb;
+  }
+`;
+
+export const PlanLabel = styled.div`
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 4px;
+`;
+
+export const PlanDays = styled.div`
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 10px;
+  line-height: 1.4;
+`;
+
+export const PlanPrice = styled.div`
+  font-size: 18px;
+  font-weight: 800;
+  color: #1f4f41;
+`;
+
+export const QuoteLoading = styled.p`
+  font-size: 13px;
+  color: #9ca3af;
+  text-align: center;
+  padding: 8px 0;
+`;
+
+export const DiscountItem = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+
+  span {
+    font-size: 14px;
+    color: #16a34a;
+  }
+
+  strong {
+    font-size: 14px;
+    color: #16a34a;
+    font-weight: 600;
+    text-align: right;
+  }
+`;
+
+export const KidsInput = styled.input`
+  width: 72px;
+  padding: 8px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+  text-align: center;
+  outline: none;
+
+  &:focus {
+    border-color: #1f4f41;
+    box-shadow: 0 0 0 3px rgba(31, 79, 65, 0.1);
+  }
+`;
+
+export const NotesField = styled.textarea`
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 14px;
+  color: #374151;
+  resize: vertical;
+  outline: none;
+  font-family: inherit;
+  line-height: 1.5;
+  box-sizing: border-box;
+
+  &:focus {
+    border-color: #1f4f41;
+    box-shadow: 0 0 0 3px rgba(31, 79, 65, 0.1);
+  }
+
+  &::placeholder {
+    color: #9ca3af;
   }
 `;

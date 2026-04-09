@@ -2,6 +2,14 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../../assets/logo-recanto-vila-rica.png";
 import * as S from "./styles";
 
+function getInitials(name) {
+    if (!name) return "?";
+    const parts = name.trim().split(" ");
+    const first = parts[0]?.[0] ?? "";
+    const last = parts.length > 1 ? (parts[parts.length - 1]?.[0] ?? "") : "";
+    return (first + last).toUpperCase();
+}
+
 export default function Header() {
     const navigate = useNavigate();
     const location = useLocation();
@@ -48,10 +56,13 @@ export default function Header() {
                 </S.Nav>
 
                 <S.Actions>
-                    <S.UserInfo>
-                        <span>Olá,</span>
-                        <strong>{userName}</strong>
-                    </S.UserInfo>
+                    <S.ProfileLink to="/profile" title={`Editar perfil de ${userName}`}>
+                        <S.Avatar>{getInitials(userName)}</S.Avatar>
+                        <S.UserInfo>
+                            <span>Olá,</span>
+                            <strong>{userName.split(" ")[0]}</strong>
+                        </S.UserInfo>
+                    </S.ProfileLink>
 
                     <S.LogoutButton onClick={handleLogout}>Sair</S.LogoutButton>
                 </S.Actions>

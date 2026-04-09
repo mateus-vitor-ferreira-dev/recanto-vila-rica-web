@@ -1,8 +1,11 @@
 export { default as Admin } from "./Admin";
+export { default as Checkout } from "./Checkout";
 export { default as Home } from "./Home";
 export { default as Login } from "./Login";
+export { default as PaymentCancel } from "./PaymentCancel";
+export { default as PaymentSuccess } from "./PaymentSuccess";
+export { default as Profile } from "./Profile";
 export { default as ReservationIntent } from "./ReservationIntent";
 export { default as Reservations } from "./Reservations";
 export { default as SignUp } from "./SignUp";
 export { default as Venues } from "./Venues";
-

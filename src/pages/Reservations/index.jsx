@@ -1,27 +1,60 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import api from "../../services/api";
+import { cancelReservation, listReservations } from "../../services/reservation";
+import { getErrorMessage } from "../../utils/getErrorMessage";
 import * as S from "./styles";
 
+const STATUS_MAP = {
+    PENDING: { label: "Pendente", color: "amber" },
+    PAID: { label: "Pago", color: "green" },
+    CANCELLED: { label: "Cancelado", color: "red" },
+    EXPIRED: { label: "Expirado", color: "gray" },
+};
+
+const PLAN_LABELS = {
+    PROMOCIONAL: "Promocional",
+    ESSENCIAL: "Essencial",
+    COMPLETA: "Completa",
+};
+
+function formatDate(date) {
+    return new Date(date).toLocaleDateString("pt-BR");
+}
+
+function formatTime(date) {
+    return new Date(date).toLocaleTimeString("pt-BR", {
+        hour: "2-digit",
+        minute: "2-digit",
+    });
+}
+
+function formatCurrency(value) {
+    return Number(value).toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+    });
+}
+
+function calcDuration(startDate, endDate) {
+    const diffMs = new Date(endDate) - new Date(startDate);
+    return Math.round(diffMs / (1000 * 60 * 60));
+}
+
 export default function Reservations() {
+    const navigate = useNavigate();
     const [reservations, setReservations] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [cancellingId, setCancellingId] = useState(null);
 
     async function loadReservations() {
         try {
             setIsLoading(true);
-
-            const { data } = await api.get("/reservations");
-
-            setReservations(data.data);
+            const data = await listReservations();
+            setReservations(data);
         } catch (error) {
-            const message =
-                error.response?.data?.message ||
-                error.response?.data?.error?.message ||
-                "Erro ao carregar reservas.";
-
-            toast.error(message);
+            toast.error(getErrorMessage(error, "Erro ao carregar reservas."));
         } finally {
             setIsLoading(false);
         }
@@ -33,46 +66,15 @@ export default function Reservations() {
 
     async function handleCancelReservation(id) {
         try {
-            await api.patch(`/reservations/${id}/cancel`);
-
+            setCancellingId(id);
+            await cancelReservation(id);
             toast.success("Reserva cancelada com sucesso.");
             loadReservations();
         } catch (error) {
-            const message =
-                error.response?.data?.message ||
-                error.response?.data?.error?.message ||
-                "Erro ao cancelar reserva.";
-
-            toast.error(message);
+            toast.error(getErrorMessage(error, "Erro ao cancelar reserva."));
+        } finally {
+            setCancellingId(null);
         }
-    }
-
-    function formatDate(date) {
-        return new Date(date).toLocaleDateString("pt-BR");
-    }
-
-    function formatTime(date) {
-        return new Date(date).toLocaleTimeString("pt-BR", {
-            hour: "2-digit",
-            minute: "2-digit",
-        });
-    }
-
-    function formatCurrency(value) {
-        return Number(value).toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-        });
-    }
-
-    function getStatusLabel(status) {
-        const map = {
-            PENDING: "Pendente",
-            PAID: "Pago",
-            CANCELLED: "Cancelado",
-        };
-
-        return map[status] || status;
     }
 
     if (isLoading) {
@@ -107,51 +109,66 @@ export default function Reservations() {
             </S.Header>
 
             <S.List>
-                {reservations.map((reservation) => (
-                    <S.Card key={reservation.id}>
-                        <S.CardHeader>
-                            <div>
-                                <strong>{reservation.venue?.name || "Salão"}</strong>
-                                <span>
-                                    {formatDate(reservation.startDate)} •{" "}
-                                    {formatTime(reservation.startDate)}
-                                </span>
-                            </div>
+                {reservations.map((reservation) => {
+                    const status = STATUS_MAP[reservation.status] ?? { label: reservation.status, color: "gray" };
+                    const duration = calcDuration(reservation.startDate, reservation.endDate);
 
-                            <S.Status status={reservation.status}>
-                                {getStatusLabel(reservation.status)}
-                            </S.Status>
-                        </S.CardHeader>
+                    return (
+                        <S.Card key={reservation.id}>
+                            <S.CardHeader>
+                                <div>
+                                    <strong>{reservation.venue?.name || "Salão"}</strong>
+                                    <span>
+                                        {formatDate(reservation.startDate)} •{" "}
+                                        {formatTime(reservation.startDate)}
+                                    </span>
+                                </div>
 
-                        <S.CardBody>
-                            <div>
-                                <span>Duração</span>
-                                <strong>
-                                    {Math.abs(
-                                        new Date(reservation.endDate).getHours() -
-                                        new Date(reservation.startDate).getHours()
-                                    )}{" "}
-                                    horas
-                                </strong>
-                            </div>
+                                <S.Status status={reservation.status}>
+                                    {status.label}
+                                </S.Status>
+                            </S.CardHeader>
 
-                            <div>
-                                <span>Valor</span>
-                                <strong>{formatCurrency(reservation.totalPrice)}</strong>
-                            </div>
-                        </S.CardBody>
+                            <S.CardBody>
+                                <div>
+                                    <span>Plano</span>
+                                    <strong>
+                                        {PLAN_LABELS[reservation.planCode] || reservation.planCode || "—"}
+                                    </strong>
+                                </div>
 
-                        <S.CardFooter>
-                            {reservation.status === "PENDING" && (
-                                <S.CancelButton
-                                    onClick={() => handleCancelReservation(reservation.id)}
-                                >
-                                    Cancelar reserva
-                                </S.CancelButton>
-                            )}
-                        </S.CardFooter>
-                    </S.Card>
-                ))}
+                                <div>
+                                    <span>Duração</span>
+                                    <strong>{duration} hora{duration !== 1 ? "s" : ""}</strong>
+                                </div>
+
+                                <div>
+                                    <span>Valor</span>
+                                    <strong>{formatCurrency(reservation.totalPrice)}</strong>
+                                </div>
+                            </S.CardBody>
+
+                            <S.CardFooter>
+                                {reservation.status === "PENDING" && (
+                                    <>
+                                        <S.PayButton
+                                            onClick={() => navigate(`/checkout/${reservation.id}`)}
+                                        >
+                                            Ir para pagamento
+                                        </S.PayButton>
+
+                                        <S.CancelButton
+                                            onClick={() => handleCancelReservation(reservation.id)}
+                                            disabled={cancellingId === reservation.id}
+                                        >
+                                            {cancellingId === reservation.id ? "Cancelando..." : "Cancelar reserva"}
+                                        </S.CancelButton>
+                                    </>
+                                )}
+                            </S.CardFooter>
+                        </S.Card>
+                    );
+                })}
             </S.List>
         </S.Container>
     );
