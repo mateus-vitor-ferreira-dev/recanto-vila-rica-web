@@ -1,4 +1,8 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
+
+const spin = keyframes`
+  to { transform: rotate(360deg); }
+`;
 
 export const Container = styled.div`
   display: flex;
@@ -61,6 +65,86 @@ export const CardHeader = styled.div`
   }
 `;
 
+export const CardBody = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+
+  @media (max-width: 700px) {
+    grid-template-columns: 1fr;
+  }
+
+  div {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  span {
+    font-size: 12px;
+    font-weight: 500;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  strong {
+    font-size: 16px;
+    font-weight: 700;
+    color: #111827;
+  }
+`;
+
+export const CardFooter = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+`;
+
+export const PayButton = styled.button`
+  background: #1f4f41;
+  color: #ffffff;
+  border: none;
+  height: 44px;
+  padding: 0 20px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+
+  &:hover {
+    opacity: 0.9;
+  }
+`;
+
+export const CancelButton = styled.button`
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  height: 44px;
+  padding: 0 20px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background: #fee2e2;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+`;
+
 export const Status = styled.span`
   display: inline-flex;
   align-items: center;
@@ -81,10 +165,11 @@ export const Status = styled.span`
           border-color: #bbf7d0;
         `;
       case "CANCELLED":
+      case "EXPIRED":
         return `
-          background: #fef2f2;
-          color: #b91c1c;
-          border-color: #fecaca;
+          background: #f3f4f6;
+          color: #6b7280;
+          border-color: #e5e7eb;
         `;
       case "PENDING":
       default:
@@ -97,88 +182,71 @@ export const Status = styled.span`
   }}
 `;
 
-export const CardBody = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-
-  @media (max-width: 700px) {
-    grid-template-columns: 1fr;
-  }
-
-  div {
-    background: #fafafa;
-    border: 1px solid #e5e7eb;
-    border-radius: 14px;
-    padding: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  span {
-    font-size: 13px;
-    color: #6b7280;
-  }
-
-  strong {
-    font-size: 15px;
-    color: #111827;
-  }
-`;
-
-export const CardFooter = styled.div`
-  display: flex;
-  justify-content: flex-end;
-`;
-
-export const CancelButton = styled.button`
-  border: none;
-  background: #b91c1c;
-  color: #ffffff;
-  height: 44px;
-  padding: 0 16px;
-  border-radius: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: opacity 0.2s ease;
-
-  &:hover {
-    opacity: 0.92;
-  }
-`;
-
 export const LoadingCard = styled.div`
   background: #ffffff;
   border-radius: 20px;
-  padding: 32px;
+  padding: 56px 32px;
   border: 1px solid #e5e7eb;
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+
+  &::before {
+    content: '';
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 3px solid #e5e7eb;
+    border-top-color: #1f4f41;
+    animation: ${spin} 0.8s linear infinite;
+  }
 
   h2 {
-    margin-bottom: 8px;
+    font-size: 18px;
     color: #111827;
   }
 
   p {
     color: #6b7280;
+    font-size: 14px;
+    max-width: 300px;
+    line-height: 1.6;
   }
 `;
 
 export const EmptyState = styled.div`
   background: #ffffff;
   border-radius: 20px;
-  padding: 32px;
+  padding: 56px 32px;
   border: 1px solid #e5e7eb;
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+
+  &::before {
+    content: '';
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #f3f4f6;
+    border: 2px dashed #d1d5db;
+  }
 
   h2 {
-    margin-bottom: 8px;
+    font-size: 18px;
     color: #111827;
   }
 
   p {
     color: #6b7280;
+    font-size: 14px;
+    max-width: 300px;
     line-height: 1.6;
   }
 `;

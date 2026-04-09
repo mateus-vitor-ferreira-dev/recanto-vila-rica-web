@@ -2,23 +2,19 @@ import styled from "styled-components";
 
 export const GoogleBtn = styled.button`
   width: 100%;
-  height: 45px;
-
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
   font-size: 14px;
-  font-weight: 500;
-  color: #333;
-
+  font-weight: 600;
+  color: #374151;
   cursor: pointer;
-  transition: 0.2s;
+  transition: background 0.15s ease, border-color 0.15s ease;
 
   img {
     width: 18px;
@@ -26,6 +22,7 @@ export const GoogleBtn = styled.button`
   }
 
   &:hover {
-    background: #f5f5f5;
+    background: #f9fafb;
+    border-color: #d1d5db;
   }
 `;

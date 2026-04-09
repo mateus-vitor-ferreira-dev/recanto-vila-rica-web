@@ -1,9 +1,38 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import Logo from "../../assets/logo-recanto-vila-rica.png";
 import api from "../../services/api";
 import * as S from "./styles";
+
+function getGreeting() {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Bom dia";
+    if (hour < 18) return "Boa tarde";
+    return "Boa noite";
+}
+
+function formatDate(dateStr) {
+    return new Date(dateStr).toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+    });
+}
+
+function formatCurrency(value) {
+    return Number(value).toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+    });
+}
+
+const STATUS_MAP = {
+    PENDING: { label: "Pendente", color: "amber" },
+    PAID: { label: "Pago", color: "green" },
+    CANCELLED: { label: "Cancelado", color: "red" },
+    EXPIRED: { label: "Expirado", color: "gray" },
+};
 
 export default function Home() {
     const [dashboard, setDashboard] = useState({
@@ -30,13 +59,8 @@ export default function Home() {
                     venues: venuesResponse.data.data || [],
                     reservations: reservationsResponse.data.data || [],
                 });
-            } catch (error) {
-                const message =
-                    error.response?.data?.message ||
-                    error.response?.data?.error?.message ||
-                    "Erro ao carregar os dados da Home.";
-
-                toast.error(message);
+            } catch {
+                toast.error("Erro ao carregar os dados da Home.");
             } finally {
                 setIsLoading(false);
             }
@@ -46,100 +70,158 @@ export default function Home() {
     }, []);
 
     const upcomingReservations = useMemo(() => {
-        return dashboard.reservations.filter((reservation) => {
-            return new Date(reservation.startDate) > new Date();
-        });
+        return dashboard.reservations
+            .filter((r) => new Date(r.startDate) > new Date())
+            .sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
     }, [dashboard.reservations]);
 
-    const userName = dashboard.user?.name || "Usuário";
+    const userName = dashboard.user?.name?.split(" ")[0] || "Usuário";
 
     if (isLoading) {
         return (
             <S.Container>
-                <S.LoadingCard>
-                    <h2>Carregando dashboard...</h2>
-                    <p>Buscando informações da sua conta, reservas e espaços.</p>
-                </S.LoadingCard>
+                <S.LoadingState>
+                    <S.Spinner />
+                    <p>Carregando seu painel...</p>
+                </S.LoadingState>
             </S.Container>
         );
     }
 
     return (
         <S.Container>
-            <S.HeroSection>
-                <S.HeroTop>
-                    <S.HeroLogo src={Logo} alt="Logo Recanto Vila Rica" />
-                    <S.Badge>Bem-vindo ao sistema</S.Badge>
-                </S.HeroTop>
+            <S.PageHeader>
+                <S.HeaderLeft>
+                    <S.Greeting>
+                        {getGreeting()}, <span>{userName}</span>.
+                    </S.Greeting>
+                    <S.Subgreeting>
+                        Aqui está um resumo da sua conta no Recanto Vila Rica.
+                    </S.Subgreeting>
+                </S.HeaderLeft>
 
-                <S.Title>
-                    Olá, <span>{userName}</span>
-                </S.Title>
+                <S.NewReservationButton as={Link} to="/venues">
+                    Nova reserva
+                </S.NewReservationButton>
+            </S.PageHeader>
 
-                <S.Description>
-                    Gerencie reservas, visualize espaços disponíveis e acompanhe as principais
-                    informações do Recanto Vila Rica em um só lugar.
-                </S.Description>
-            </S.HeroSection>
+            <S.StatsGrid>
+                <S.StatCard $accent="#2563eb">
+                    <S.StatLabel>Total de reservas</S.StatLabel>
+                    <S.StatNumber $accent="#2563eb">
+                        {dashboard.reservations.length}
+                    </S.StatNumber>
+                    <S.StatDescription>
+                        Reservas vinculadas à sua conta
+                    </S.StatDescription>
+                </S.StatCard>
 
-            <S.CardsGrid>
-                <S.Card>
-                    <S.CardTitle>Reservas</S.CardTitle>
-                    <S.CardValue>{dashboard.reservations.length}</S.CardValue>
-                    <S.CardText>
-                        Total de reservas vinculadas à sua conta.
-                    </S.CardText>
-                </S.Card>
+                <S.StatCard $accent="#7c3aed">
+                    <S.StatLabel>Espaços disponíveis</S.StatLabel>
+                    <S.StatNumber $accent="#7c3aed">
+                        {dashboard.venues.length}
+                    </S.StatNumber>
+                    <S.StatDescription>
+                        Ambientes para locação e eventos
+                    </S.StatDescription>
+                </S.StatCard>
 
-                <S.Card>
-                    <S.CardTitle>Espaços disponíveis</S.CardTitle>
-                    <S.CardValue>{dashboard.venues.length}</S.CardValue>
-                    <S.CardText>
-                        Ambientes cadastrados para locação e eventos.
-                    </S.CardText>
-                </S.Card>
+                <S.StatCard $accent="#ea580c">
+                    <S.StatLabel>Próximas reservas</S.StatLabel>
+                    <S.StatNumber $accent="#ea580c">
+                        {upcomingReservations.length}
+                    </S.StatNumber>
+                    <S.StatDescription>
+                        Eventos agendados para os próximos dias
+                    </S.StatDescription>
+                </S.StatCard>
+            </S.StatsGrid>
 
-                <S.Card>
-                    <S.CardTitle>Próximas reservas</S.CardTitle>
-                    <S.CardValue>{upcomingReservations.length}</S.CardValue>
-                    <S.CardText>
-                        Reservas futuras encontradas para os próximos períodos.
-                    </S.CardText>
-                </S.Card>
-            </S.CardsGrid>
+            <S.ActionRow>
+                <S.ActionCard as={Link} to="/venues" $primary>
+                    <S.ActionContent>
+                        <S.ActionTitle>Reservar um espaço</S.ActionTitle>
+                        <S.ActionDesc>
+                            Escolha o local ideal e configure seu evento
+                        </S.ActionDesc>
+                    </S.ActionContent>
+                    <S.ActionArrow $primary>›</S.ActionArrow>
+                </S.ActionCard>
+
+                <S.ActionCard as={Link} to="/reservations">
+                    <S.ActionContent>
+                        <S.ActionTitle>Minhas reservas</S.ActionTitle>
+                        <S.ActionDesc>
+                            Acompanhe e gerencie suas reservas ativas
+                        </S.ActionDesc>
+                    </S.ActionContent>
+                    <S.ActionArrow>›</S.ActionArrow>
+                </S.ActionCard>
+            </S.ActionRow>
 
             <S.ContentGrid>
                 <S.Panel>
-                    <S.PanelTitle>Minhas próximas reservas</S.PanelTitle>
+                    <S.PanelHeader>
+                        <S.PanelTitle>Próximas reservas</S.PanelTitle>
+                        <S.PanelLink as={Link} to="/reservations">
+                            Ver todas
+                        </S.PanelLink>
+                    </S.PanelHeader>
 
                     {upcomingReservations.length === 0 ? (
-                        <S.EmptyText>Você ainda não possui reservas futuras.</S.EmptyText>
+                        <S.EmptyState>
+                            <S.EmptyDot />
+                            <span>Nenhuma reserva futura encontrada.</span>
+                        </S.EmptyState>
                     ) : (
                         <S.List>
-                            {upcomingReservations.slice(0, 5).map((reservation) => (
-                                <li key={reservation.id}>
-                                    <strong>
-                                        {new Date(reservation.startDate).toLocaleDateString("pt-BR")}
-                                    </strong>{" "}
-                                    — status: {reservation.status}
-                                </li>
-                            ))}
+                            {upcomingReservations.slice(0, 5).map((r) => {
+                                const status = STATUS_MAP[r.status] ?? { label: r.status, color: "gray" };
+                                return (
+                                    <S.ListItem key={r.id}>
+                                        <S.ListItemMain>
+                                            <S.ListItemTitle>
+                                                {r.venue?.name || "Reserva"}
+                                            </S.ListItemTitle>
+                                            <S.ListItemSub>
+                                                {formatDate(r.startDate)}
+                                            </S.ListItemSub>
+                                        </S.ListItemMain>
+                                        <S.StatusChip $color={status.color}>
+                                            {status.label}
+                                        </S.StatusChip>
+                                    </S.ListItem>
+                                );
+                            })}
                         </S.List>
                     )}
                 </S.Panel>
 
                 <S.Panel>
-                    <S.PanelTitle>Espaços cadastrados</S.PanelTitle>
+                    <S.PanelHeader>
+                        <S.PanelTitle>Espaços disponíveis</S.PanelTitle>
+                        <S.PanelLink as={Link} to="/venues">
+                            Ver todos
+                        </S.PanelLink>
+                    </S.PanelHeader>
 
                     {dashboard.venues.length === 0 ? (
-                        <S.EmptyText>Nenhum espaço encontrado.</S.EmptyText>
+                        <S.EmptyState>
+                            <S.EmptyDot />
+                            <span>Nenhum espaço encontrado.</span>
+                        </S.EmptyState>
                     ) : (
                         <S.List>
-                            {dashboard.venues.slice(0, 5).map((venue) => (
-                                <li key={venue.id}>
-                                    <strong>{venue.name}</strong>
-                                    {venue.location ? ` — ${venue.location}` : ""}
-                                </li>
+                            {dashboard.venues.slice(0, 5).map((v) => (
+                                <S.ListItem key={v.id}>
+                                    <S.ListItemMain>
+                                        <S.ListItemTitle>{v.name}</S.ListItemTitle>
+                                        <S.ListItemSub>
+                                            {v.location || "Localização não informada"}
+                                        </S.ListItemSub>
+                                    </S.ListItemMain>
+                                    <S.PriceChip>A partir de R$ 650</S.PriceChip>
+                                </S.ListItem>
                             ))}
                         </S.List>
                     )}

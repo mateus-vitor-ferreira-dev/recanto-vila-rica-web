@@ -136,10 +136,12 @@ export default function SignUp() {
                     onChange={handleChange}
                 />
 
-                <Button type="submit">Cadastrar</Button>
+                <Button type="submit">Criar conta</Button>
+
+                <S.Divider><span>ou continue com</span></S.Divider>
 
                 <GoogleButton
-                    text="Se cadastrar com Google"
+                    text="Cadastrar com Google"
                     navigate={navigate}
                 />
 

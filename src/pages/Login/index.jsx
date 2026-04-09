@@ -68,6 +68,8 @@ export default function Login() {
 
                 <Button type="submit">Entrar</Button>
 
+                <S.Divider><span>ou continue com</span></S.Divider>
+
                 <GoogleButton
                     text="Entrar com Google"
                     navigate={navigate}

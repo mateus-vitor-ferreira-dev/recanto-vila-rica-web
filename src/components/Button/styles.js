@@ -5,13 +5,26 @@ export const Container = styled.button`
   height: 48px;
   border: none;
   border-radius: 12px;
-  background: #2f6f57;
+  background: #1f4f41;
   color: white;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
   cursor: pointer;
-  transition: 0.2s;
+  letter-spacing: -0.01em;
+  transition: opacity 0.15s ease, transform 0.1s ease;
 
   &:hover {
     opacity: 0.92;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
   }
 `;
