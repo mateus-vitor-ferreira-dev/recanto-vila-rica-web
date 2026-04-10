@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import { Footer, Header } from "..";
+import { ChatWidget, Footer, Header } from "..";
 import * as S from "./styles";
 
 export default function MainLayout() {
@@ -10,6 +10,7 @@ export default function MainLayout() {
                 <Outlet />
             </S.Main>
             <Footer />
+            <ChatWidget />
         </S.Container>
     );
 }
