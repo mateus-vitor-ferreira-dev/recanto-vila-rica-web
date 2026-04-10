@@ -48,6 +48,14 @@ export default function Header() {
                         Reservas
                     </S.NavLink>
 
+                    <S.NavLink
+                        $active={location.pathname === "/referrals"}
+                        as={Link}
+                        to="/referrals"
+                    >
+                        Indicações
+                    </S.NavLink>
+
                     {userRole === "ADMIN" && (
                         <S.NavLink $active={location.pathname === "/admin"} as={Link} to="/admin">
                             Admin

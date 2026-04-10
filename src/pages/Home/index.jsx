@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import api from "../../services/api";
+import { listMyGrants } from "../../services/promotion";
 import * as S from "./styles";
 
 function getGreeting() {
@@ -39,6 +40,7 @@ export default function Home() {
         user: null,
         venues: [],
         reservations: [],
+        grants: [],
     });
 
     const [isLoading, setIsLoading] = useState(true);
@@ -48,16 +50,18 @@ export default function Home() {
             try {
                 setIsLoading(true);
 
-                const [userResponse, venuesResponse, reservationsResponse] = await Promise.all([
+                const [userResponse, venuesResponse, reservationsResponse, grantsData] = await Promise.all([
                     api.get("/users/me"),
                     api.get("/venues"),
                     api.get("/reservations"),
+                    listMyGrants().catch(() => []),
                 ]);
 
                 setDashboard({
                     user: userResponse.data.data,
                     venues: venuesResponse.data.data || [],
                     reservations: reservationsResponse.data.data || [],
+                    grants: grantsData || [],
                 });
             } catch {
                 toast.error("Erro ao carregar os dados da Home.");
@@ -220,13 +224,44 @@ export default function Home() {
                                             {v.location || "Localização não informada"}
                                         </S.ListItemSub>
                                     </S.ListItemMain>
-                                    <S.PriceChip>A partir de R$ 650</S.PriceChip>
+                                    {v.basePrice != null && (
+                                        <S.PriceChip>
+                                            A partir de {formatCurrency(v.basePrice)}
+                                        </S.PriceChip>
+                                    )}
                                 </S.ListItem>
                             ))}
                         </S.List>
                     )}
                 </S.Panel>
             </S.ContentGrid>
+
+            {dashboard.grants.length > 0 && (
+                <S.Panel>
+                    <S.PanelHeader>
+                        <S.PanelTitle>Seus descontos disponíveis</S.PanelTitle>
+                        <S.PanelLink as={Link} to="/referrals">
+                            Ver indicações
+                        </S.PanelLink>
+                    </S.PanelHeader>
+
+                    <S.List>
+                        {dashboard.grants.map((grant) => (
+                            <S.ListItem key={grant.id}>
+                                <S.ListItemMain>
+                                    <S.ListItemTitle>{grant.campaign?.name}</S.ListItemTitle>
+                                    <S.ListItemSub>
+                                        {grant.validUntil
+                                            ? `Válido até ${formatDate(grant.validUntil)}`
+                                            : "Sem data de expiração"}
+                                    </S.ListItemSub>
+                                </S.ListItemMain>
+                                <S.DiscountChip>{grant.percentOff}% OFF</S.DiscountChip>
+                            </S.ListItem>
+                        ))}
+                    </S.List>
+                </S.Panel>
+            )}
         </S.Container>
     );
 }

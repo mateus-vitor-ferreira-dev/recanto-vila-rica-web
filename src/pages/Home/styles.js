@@ -352,6 +352,20 @@ export const PriceChip = styled.span`
     flex-shrink: 0;
 `;
 
+export const DiscountChip = styled.span`
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+    background: #ecfdf3;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+    flex-shrink: 0;
+`;
+
 /* ─── Empty state ─── */
 
 export const EmptyState = styled.div`
