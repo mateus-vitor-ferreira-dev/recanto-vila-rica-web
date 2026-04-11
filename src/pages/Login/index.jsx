@@ -60,10 +60,10 @@ export default function Login() {
                 <Input
                     label="Senha"
                     name="password"
-                    type="password"
                     placeholder="Digite sua senha"
                     value={form.password}
                     onChange={handleChange}
+                    showPasswordToggle
                 />
 
                 <Button type="submit">Entrar</Button>
