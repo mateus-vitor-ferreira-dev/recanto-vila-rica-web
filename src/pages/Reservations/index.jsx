@@ -31,7 +31,7 @@ function formatTime(date) {
 }
 
 function formatCurrency(value) {
-    return Number(value).toLocaleString("pt-BR", {
+    return (Number(value) / 100).toLocaleString("pt-BR", {
         style: "currency",
         currency: "BRL",
     });

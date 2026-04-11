@@ -432,7 +432,7 @@ export default function ReservationIntent() {
                             <S.ConfirmButton
                                 type="button"
                                 onClick={handleConfirmReservation}
-                                disabled={submitting || !acceptedContract}
+                                disabled={submitting}
                             >
                                 {submitting ? "Confirmando reserva..." : "Confirmar e ir para pagamento"}
                             </S.ConfirmButton>
