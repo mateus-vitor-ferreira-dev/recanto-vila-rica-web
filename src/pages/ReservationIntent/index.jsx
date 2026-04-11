@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import Input from "../../components/Input";
@@ -7,11 +7,13 @@ import { getVenue } from "../../services/venue";
 import { getErrorMessage } from "../../utils/getErrorMessage";
 import * as S from "./styles";
 
+const ContratoDownloadLink = lazy(() => import("../../components/ContratoRVR/DownloadLink"));
+
 const PLANS = [
     {
         code: "PROMOCIONAL",
         label: "Promocional",
-        days: "Segunda a Quinta",
+        days: "Segunda a Quinta (não feriados)",
         priceCents: 65000,
     },
     {
@@ -27,6 +29,56 @@ const PLANS = [
         priceCents: 100000,
     },
 ];
+
+// Feriados nacionais fixos (MM-DD)
+const FIXED_HOLIDAYS = [
+    "01-01", // Confraternização Universal
+    "04-21", // Tiradentes
+    "05-01", // Dia do Trabalho
+    "09-07", // Independência do Brasil
+    "10-12", // Nossa Senhora Aparecida
+    "11-02", // Finados
+    "11-15", // Proclamação da República
+    "11-20", // Consciência Negra
+    "12-25", // Natal
+];
+
+// Feriados móveis (YYYY-MM-DD) — Carnaval (seg+ter), Sexta-Feira Santa, Corpus Christi
+const VARIABLE_HOLIDAYS = [
+    "2025-03-03", "2025-03-04", "2025-04-18", "2025-06-19",
+    "2026-02-16", "2026-02-17", "2026-04-03", "2026-06-04",
+    "2027-02-08", "2027-02-09", "2027-03-26", "2027-05-20",
+];
+
+function isHoliday(dateString) {
+    if (!dateString) return false;
+    if (VARIABLE_HOLIDAYS.includes(dateString)) return true;
+    return FIXED_HOLIDAYS.includes(dateString.slice(5));
+}
+
+function isPlanAvailableForDate(planCode, eventDate) {
+    if (!eventDate) return true;
+    const dayOfWeek = new Date(`${eventDate}T12:00:00`).getDay();
+    const holiday = isHoliday(eventDate);
+    // 0=Dom, 5=Sex, 6=Sáb são fim de semana
+    const isWeekendOrHoliday = dayOfWeek === 0 || dayOfWeek === 5 || dayOfWeek === 6 || holiday;
+
+    if (planCode === "PROMOCIONAL") return !isWeekendOrHoliday;
+    return isWeekendOrHoliday;
+}
+
+function getBlockedPlanMessage(planCode, eventDate) {
+    const holiday = isHoliday(eventDate);
+    const dayOfWeek = new Date(`${eventDate}T12:00:00`).getDay();
+    const isWeekendOrHoliday = dayOfWeek === 0 || dayOfWeek === 5 || dayOfWeek === 6 || holiday;
+
+    if (planCode === "PROMOCIONAL" && isWeekendOrHoliday) {
+        return holiday
+            ? "O plano Promocional não está disponível em feriados. Escolha o Essencial ou o Completa."
+            : "O plano Promocional é disponível apenas de Segunda a Quinta. Escolha o Essencial ou o Completa para fins de semana.";
+    }
+    return "Este plano é disponível apenas de Segunda a Quinta (sem feriados). Escolha o Promocional para dias úteis.";
+}
 
 function formatCurrency(cents) {
     return new Intl.NumberFormat("pt-BR", {
@@ -114,6 +166,22 @@ export default function ReservationIntent() {
 
     const today = new Date().toISOString().split("T")[0];
 
+    function handlePlanClick(code) {
+        if (eventDate && !isPlanAvailableForDate(code, eventDate)) {
+            toast.warning(getBlockedPlanMessage(code, eventDate));
+            return;
+        }
+        setPlanCode(code);
+    }
+
+    function handleDateChange(newDate) {
+        setEventDate(newDate);
+        if (planCode && !isPlanAvailableForDate(planCode, newDate)) {
+            setPlanCode("");
+            toast.info("A data alterada não é compatível com o plano anterior. Selecione uma modalidade.");
+        }
+    }
+
     function handleOpenRoutes() {
         if (!venue?.location) {
             toast.info("Endereço do salão não disponível.");
@@ -146,6 +214,11 @@ export default function ReservationIntent() {
 
         if (endDate <= startDate) {
             toast.warning("O horário de término deve ser posterior ao de início.");
+            return;
+        }
+
+        if (!isPlanAvailableForDate(planCode, eventDate)) {
+            toast.warning(getBlockedPlanMessage(planCode, eventDate));
             return;
         }
 
@@ -200,6 +273,32 @@ export default function ReservationIntent() {
     }
 
     const selectedPlan = PLANS.find((p) => p.code === planCode);
+    const planIsIncompatible = planCode && eventDate && !isPlanAvailableForDate(planCode, eventDate);
+
+    const locatario = (() => {
+        try {
+            const stored = JSON.parse(localStorage.getItem("recanto:userData") || "{}");
+            return stored?.user?.name || stored?.name || "";
+        } catch {
+            return "";
+        }
+    })();
+
+    const comKids = Boolean(venue?.hasKidsArea);
+    const comPiscina = planCode === "COMPLETA";
+
+    const contratoProps = {
+        locatario,
+        data: eventDate
+            ? new Date(`${eventDate}T00:00:00`).toLocaleDateString("pt-BR")
+            : "a definir",
+        horarioInicio: startTime || "—",
+        horarioFim: endTime || "—",
+        comKids,
+        comPiscina,
+        planCode: planCode || "ESSENCIAL",
+        totalCents: quote?.totalCents ?? selectedPlan?.priceCents ?? null,
+    };
 
     return (
         <S.Container>
@@ -208,7 +307,7 @@ export default function ReservationIntent() {
                     <div>
                         <S.PageTitle>Intenção de reserva</S.PageTitle>
                         <S.PageDescription>
-                            Selecione um plano, escolha a data e horário e veja o valor da sua reserva.
+                            Escolha a data do evento, selecione a modalidade disponível e veja o valor da sua reserva.
                         </S.PageDescription>
                     </div>
 
@@ -253,30 +352,9 @@ export default function ReservationIntent() {
                         </S.Card>
 
                         <S.Card>
-                            <S.CardTitle>Escolha o plano</S.CardTitle>
-                            <S.CardDescription>
-                                Cada plano determina os dias disponíveis e o valor da reserva.
-                            </S.CardDescription>
-
-                            <S.PlanGrid>
-                                {PLANS.map((plan) => (
-                                    <S.PlanCard
-                                        key={plan.code}
-                                        $selected={planCode === plan.code}
-                                        onClick={() => setPlanCode(plan.code)}
-                                    >
-                                        <S.PlanLabel>{plan.label}</S.PlanLabel>
-                                        <S.PlanDays>{plan.days}</S.PlanDays>
-                                        <S.PlanPrice>{formatCurrency(plan.priceCents)}</S.PlanPrice>
-                                    </S.PlanCard>
-                                ))}
-                            </S.PlanGrid>
-                        </S.Card>
-
-                        <S.Card>
                             <S.CardTitle>Data e horário</S.CardTitle>
                             <S.CardDescription>
-                                Escolha a data do evento e os horários de início e término.
+                                Escolha a data do evento e os horários de início e término. As modalidades disponíveis dependem do dia selecionado.
                             </S.CardDescription>
 
                             <S.FormRow>
@@ -285,7 +363,7 @@ export default function ReservationIntent() {
                                     type="date"
                                     min={today}
                                     value={eventDate}
-                                    onChange={(e) => setEventDate(e.target.value)}
+                                    onChange={(e) => handleDateChange(e.target.value)}
                                 />
 
                                 <Input
@@ -306,6 +384,33 @@ export default function ReservationIntent() {
                                     onChange={(e) => setEndTime(e.target.value)}
                                 />
                             </S.FormRow>
+                        </S.Card>
+
+                        <S.Card>
+                            <S.CardTitle>Escolha a modalidade</S.CardTitle>
+                            <S.CardDescription>
+                                {eventDate
+                                    ? "As modalidades disponíveis para a data selecionada estão habilitadas abaixo."
+                                    : "Selecione uma data primeiro para ver as modalidades disponíveis."}
+                            </S.CardDescription>
+
+                            <S.PlanGrid>
+                                {PLANS.map((plan) => {
+                                    const available = isPlanAvailableForDate(plan.code, eventDate);
+                                    return (
+                                        <S.PlanCard
+                                            key={plan.code}
+                                            $selected={planCode === plan.code}
+                                            $disabled={eventDate ? !available : false}
+                                            onClick={() => handlePlanClick(plan.code)}
+                                        >
+                                            <S.PlanLabel>{plan.label}</S.PlanLabel>
+                                            <S.PlanDays>{plan.days}</S.PlanDays>
+                                            <S.PlanPrice>{formatCurrency(plan.priceCents)}</S.PlanPrice>
+                                        </S.PlanCard>
+                                    );
+                                })}
+                            </S.PlanGrid>
                         </S.Card>
 
                         {venue.hasKidsArea && (
@@ -432,7 +537,7 @@ export default function ReservationIntent() {
                             <S.ConfirmButton
                                 type="button"
                                 onClick={handleConfirmReservation}
-                                disabled={submitting}
+                                disabled={submitting || Boolean(planIsIncompatible) || !acceptedContract}
                             >
                                 {submitting ? "Confirmando reserva..." : "Confirmar e ir para pagamento"}
                             </S.ConfirmButton>
@@ -440,16 +545,23 @@ export default function ReservationIntent() {
                             <S.ContractCard>
                                 <S.ContractTitle>Contrato da reserva</S.ContractTitle>
                                 <S.ContractDescription>
-                                    Leia o contrato com atenção antes de prosseguir com a confirmação da reserva.
+                                    O contrato é gerado automaticamente com base no plano e data escolhidos. Baixe e leia antes de confirmar.
                                 </S.ContractDescription>
 
-                                <S.ContractLink
-                                    href="/documents/contrato-recanto-vila-rica.pdf"
-                                    target="_blank"
-                                    rel="noreferrer"
-                                >
-                                    Visualizar contrato em PDF
-                                </S.ContractLink>
+                                {planCode ? (
+                                    <S.ContractDownloadWrapper>
+                                        <Suspense fallback={<span>Carregando...</span>}>
+                                            <ContratoDownloadLink
+                                                contratoProps={contratoProps}
+                                                fileName={`contrato-recanto-vila-rica-${eventDate || "reserva"}.pdf`}
+                                            />
+                                        </Suspense>
+                                    </S.ContractDownloadWrapper>
+                                ) : (
+                                    <S.ContractDescription style={{ fontStyle: "italic" }}>
+                                        Selecione um plano para gerar o contrato.
+                                    </S.ContractDescription>
+                                )}
 
                                 <S.ContractCheckboxWrapper>
                                     <input
