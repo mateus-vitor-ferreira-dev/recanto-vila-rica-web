@@ -217,6 +217,86 @@ export const LoadingCard = styled.div`
   }
 `;
 
+export const ModalOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+`;
+
+export const ModalBox = styled.div`
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 32px;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+`;
+
+export const ModalTitle = styled.h2`
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+`;
+
+export const ModalBody = styled.p`
+  font-size: 15px;
+  color: #6b7280;
+  line-height: 1.6;
+`;
+
+export const ModalActions = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+`;
+
+export const ModalCancelBtn = styled.button`
+  height: 42px;
+  padding: 0 20px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: #f9fafb;
+  }
+`;
+
+export const ModalConfirmBtn = styled.button`
+  height: 42px;
+  padding: 0 20px;
+  border-radius: 12px;
+  border: none;
+  background: #b91c1c;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+
+  &:hover:not(:disabled) {
+    opacity: 0.88;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+`;
+
 export const EmptyState = styled.div`
   background: #ffffff;
   border-radius: 20px;
