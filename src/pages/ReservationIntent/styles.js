@@ -370,6 +370,28 @@ export const ContractLink = styled.a`
   }
 `;
 
+export const ContractDownloadWrapper = styled.div`
+  & > a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    color: #374151;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.15s ease;
+
+    &:hover {
+      background: #e5e7eb;
+    }
+  }
+`;
+
 export const ContractCheckboxWrapper = styled.div`
   display: flex;
   align-items: flex-start;
@@ -403,16 +425,19 @@ export const PlanGrid = styled.div`
 `;
 
 export const PlanCard = styled.div`
-  border: 2px solid ${({ $selected }) => ($selected ? "#1f4f41" : "#e5e7eb")};
+  border: 2px solid ${({ $selected, $disabled }) =>
+    $disabled ? "#e5e7eb" : $selected ? "#1f4f41" : "#e5e7eb"};
   border-radius: 16px;
   padding: 16px;
-  cursor: pointer;
-  background: ${({ $selected }) => ($selected ? "#f0fdf9" : "#ffffff")};
-  transition: border-color 0.15s ease, background 0.15s ease;
+  cursor: ${({ $disabled }) => ($disabled ? "no-drop" : "pointer")};
+  background: ${({ $selected, $disabled }) =>
+    $disabled ? "#f3f4f6" : $selected ? "#f0fdf9" : "#ffffff"};
+  opacity: ${({ $disabled }) => ($disabled ? "0.5" : "1")};
+  transition: border-color 0.15s ease, background 0.15s ease, opacity 0.15s ease;
 
   &:hover {
-    border-color: #6ee7b7;
-    background: #f9fefb;
+    border-color: ${({ $disabled }) => ($disabled ? "#e5e7eb" : "#6ee7b7")};
+    background: ${({ $disabled }) => ($disabled ? "#f3f4f6" : "#f9fefb")};
   }
 `;
 
@@ -459,6 +484,27 @@ export const DiscountItem = styled.div`
     color: #16a34a;
     font-weight: 600;
     text-align: right;
+  }
+`;
+
+export const PlanWarning = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-top: 12px;
+  font-size: 13px;
+  color: #92400e;
+  line-height: 1.5;
+
+  &::before {
+    content: "⚠";
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 1px;
   }
 `;
 

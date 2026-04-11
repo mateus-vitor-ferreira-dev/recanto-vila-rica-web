@@ -98,6 +98,10 @@ describe("Reservations page", () => {
         );
         await user.click(screen.getByRole("button", { name: /cancelar reserva/i }));
         await waitFor(() =>
+            expect(screen.getByRole("button", { name: /sim, cancelar/i })).toBeInTheDocument()
+        );
+        await user.click(screen.getByRole("button", { name: /sim, cancelar/i }));
+        await waitFor(() =>
             expect(screen.getByText(/reserva cancelada com sucesso/i)).toBeInTheDocument()
         );
     });
@@ -129,6 +133,10 @@ describe("Reservations page", () => {
             expect(screen.getByRole("button", { name: /cancelar reserva/i })).toBeInTheDocument()
         );
         await user.click(screen.getByRole("button", { name: /cancelar reserva/i }));
+        await waitFor(() =>
+            expect(screen.getByRole("button", { name: /sim, cancelar/i })).toBeInTheDocument()
+        );
+        await user.click(screen.getByRole("button", { name: /sim, cancelar/i }));
         await waitFor(() =>
             expect(screen.getByText(/erro ao cancelar reserva/i)).toBeInTheDocument()
         );

@@ -58,7 +58,7 @@ describe("Checkout page", () => {
         );
         renderPage();
         await waitFor(() =>
-            expect(screen.getByText("ESSENCIAL")).toBeInTheDocument()
+            expect(screen.getByText("Essencial")).toBeInTheDocument()
         );
     });
 

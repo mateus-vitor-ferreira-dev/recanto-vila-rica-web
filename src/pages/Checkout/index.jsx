@@ -5,36 +5,8 @@ import { toast } from "react-toastify";
 import { getReservation } from "../../services/reservation";
 import { createCheckoutSession } from "../../services/payment";
 import { getErrorMessage } from "../../utils/getErrorMessage";
+import { PLAN_LABELS, formatDateFull, formatTime, formatCurrency, calcDuration } from "../../utils/reservationFormat";
 import * as S from "./styles";
-
-function formatDate(dateStr) {
-    return new Date(dateStr).toLocaleDateString("pt-BR", {
-        weekday: "long",
-        day: "2-digit",
-        month: "long",
-        year: "numeric",
-    });
-}
-
-function formatTime(dateStr) {
-    return new Date(dateStr).toLocaleTimeString("pt-BR", {
-        hour: "2-digit",
-        minute: "2-digit",
-    });
-}
-
-function formatCurrency(value) {
-    return (Number(value) / 100).toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-    });
-}
-
-function calcDuration(startDate, endDate) {
-    const diffMs = new Date(endDate) - new Date(startDate);
-    const hours = Math.round(diffMs / (1000 * 60 * 60));
-    return hours;
-}
 
 export default function Checkout() {
     const { reservationId } = useParams();
@@ -129,13 +101,13 @@ export default function Checkout() {
                         {reservation.planCode && (
                             <S.DetailItem>
                                 <S.DetailLabel>Plano</S.DetailLabel>
-                                <S.DetailValue>{reservation.planCode}</S.DetailValue>
+                                <S.DetailValue>{PLAN_LABELS[reservation.planCode] || reservation.planCode}</S.DetailValue>
                             </S.DetailItem>
                         )}
 
                         <S.DetailItem>
                             <S.DetailLabel>Data do evento</S.DetailLabel>
-                            <S.DetailValue>{formatDate(reservation.startDate)}</S.DetailValue>
+                            <S.DetailValue>{formatDateFull(reservation.startDate)}</S.DetailValue>
                         </S.DetailItem>
 
                         <S.DetailItem>

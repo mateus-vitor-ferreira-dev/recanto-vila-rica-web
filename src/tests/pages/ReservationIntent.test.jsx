@@ -32,7 +32,8 @@ function renderPage(venueId = "venue-1") {
 }
 
 /** Preenche data e horários via fireEvent (jsdom não associa label ao input sem htmlFor) */
-function fillDateTime(container, { date = "2027-06-15", start = "10:00", end = "18:00" } = {}) {
+// 2027-06-20 = domingo, válido para planos ESSENCIAL e COMPLETA (Sexta–Domingo)
+function fillDateTime(container, { date = "2027-06-20", start = "10:00", end = "18:00" } = {}) {
     const dateInput = container.querySelector('input[type="date"]');
     const timeInputs = container.querySelectorAll('input[type="time"]');
     if (date) fireEvent.change(dateInput, { target: { value: date } });
@@ -215,8 +216,9 @@ describe("ReservationIntent page", () => {
         const user = userEvent.setup();
         renderPage();
         await waitFor(() =>
-            expect(screen.getByRole("button", { name: /confirmar/i })).toBeInTheDocument()
+            expect(screen.getByLabelText(/li e estou de acordo/i)).toBeInTheDocument()
         );
+        await user.click(screen.getByLabelText(/li e estou de acordo/i));
         await user.click(screen.getByRole("button", { name: /confirmar/i }));
         await waitFor(() =>
             expect(screen.getByText("Selecione um plano.")).toBeInTheDocument()
@@ -230,6 +232,7 @@ describe("ReservationIntent page", () => {
             expect(screen.getByText("Essencial")).toBeInTheDocument()
         );
         await user.click(screen.getByText("Essencial"));
+        await user.click(screen.getByLabelText(/li e estou de acordo/i));
         await user.click(screen.getByRole("button", { name: /confirmar/i }));
         await waitFor(() =>
             expect(screen.getByText("Selecione a data do evento.")).toBeInTheDocument()
@@ -243,7 +246,8 @@ describe("ReservationIntent page", () => {
             expect(screen.getByText("Essencial")).toBeInTheDocument()
         );
         await user.click(screen.getByText("Essencial"));
-        fillDateTime(container, { date: "2027-06-15", start: "", end: "" });
+        fillDateTime(container, { date: "2027-06-20", start: "", end: "" });
+        await user.click(screen.getByLabelText(/li e estou de acordo/i));
         await user.click(screen.getByRole("button", { name: /confirmar/i }));
         await waitFor(() =>
             expect(screen.getByText("Selecione o horário de início.")).toBeInTheDocument()
@@ -257,7 +261,8 @@ describe("ReservationIntent page", () => {
             expect(screen.getByText("Essencial")).toBeInTheDocument()
         );
         await user.click(screen.getByText("Essencial"));
-        fillDateTime(container, { date: "2027-06-15", start: "10:00", end: "" });
+        fillDateTime(container, { date: "2027-06-20", start: "10:00", end: "" });
+        await user.click(screen.getByLabelText(/li e estou de acordo/i));
         await user.click(screen.getByRole("button", { name: /confirmar/i }));
         await waitFor(() =>
             expect(screen.getByText("Selecione o horário de término.")).toBeInTheDocument()
@@ -271,14 +276,15 @@ describe("ReservationIntent page", () => {
             expect(screen.getByText("Essencial")).toBeInTheDocument()
         );
         await user.click(screen.getByText("Essencial"));
-        fillDateTime(container, { date: "2027-06-15", start: "18:00", end: "10:00" });
+        fillDateTime(container, { date: "2027-06-20", start: "18:00", end: "10:00" });
+        await user.click(screen.getByLabelText(/li e estou de acordo/i));
         await user.click(screen.getByRole("button", { name: /confirmar/i }));
         await waitFor(() =>
             expect(screen.getByText(/horário de término deve ser posterior/i)).toBeInTheDocument()
         );
     });
 
-    it("shows warning when contract is not accepted", async () => {
+    it("confirm button is disabled when contract is not accepted", async () => {
         const { container } = renderPage();
         const user = userEvent.setup();
         await waitFor(() =>
@@ -286,10 +292,7 @@ describe("ReservationIntent page", () => {
         );
         await user.click(screen.getByText("Essencial"));
         fillDateTime(container);
-        await user.click(screen.getByRole("button", { name: /confirmar/i }));
-        await waitFor(() =>
-            expect(screen.getByText("Aceite o contrato para continuar.")).toBeInTheDocument()
-        );
+        expect(screen.getByRole("button", { name: /confirmar/i })).toBeDisabled();
     });
 
     it("creates reservation and navigates to checkout on success", async () => {
@@ -370,17 +373,61 @@ describe("ReservationIntent page", () => {
     });
 
     it("renders contract link", async () => {
+        const user = userEvent.setup();
         renderPage();
         await waitFor(() =>
-            expect(screen.getByRole("link", { name: /visualizar contrato/i })).toBeInTheDocument()
+            expect(screen.getByText("Essencial")).toBeInTheDocument()
+        );
+        await user.click(screen.getByText("Essencial"));
+        await waitFor(() =>
+            expect(screen.getByRole("link", { name: /baixar contrato em pdf/i })).toBeInTheDocument()
         );
     });
 
-    it("confirm button is enabled when page loads", async () => {
+    it("confirm button is disabled when page loads (contract not yet accepted)", async () => {
         renderPage();
         await waitFor(() =>
             expect(screen.getByRole("button", { name: /confirmar/i })).toBeInTheDocument()
         );
+        expect(screen.getByRole("button", { name: /confirmar/i })).toBeDisabled();
+    });
+
+    it("confirm button becomes enabled after accepting contract", async () => {
+        const user = userEvent.setup();
+        renderPage();
+        await waitFor(() =>
+            expect(screen.getByLabelText(/li e estou de acordo/i)).toBeInTheDocument()
+        );
+        await user.click(screen.getByLabelText(/li e estou de acordo/i));
         expect(screen.getByRole("button", { name: /confirmar/i })).not.toBeDisabled();
+    });
+
+    it("shows toast when clicking a blocked plan", async () => {
+        const { container } = renderPage();
+        const user = userEvent.setup();
+        await waitFor(() =>
+            expect(screen.getByText("Promocional")).toBeInTheDocument()
+        );
+        // 2027-06-20 = domingo → Promocional bloqueado
+        fillDateTime(container, { date: "2027-06-20", start: "", end: "" });
+        await user.click(screen.getByText("Promocional"));
+        await waitFor(() =>
+            expect(screen.getByText(/plano promocional é disponível apenas de segunda a quinta/i)).toBeInTheDocument()
+        );
+    });
+
+    it("resets plan when date changes to incompatible day", async () => {
+        const { container } = renderPage();
+        const user = userEvent.setup();
+        await waitFor(() =>
+            expect(screen.getByText("Promocional")).toBeInTheDocument()
+        );
+        // Seleciona Promocional sem data
+        await user.click(screen.getByText("Promocional"));
+        // Muda para domingo → Promocional deve ser resetado
+        fillDateTime(container, { date: "2027-06-20", start: "", end: "" });
+        await waitFor(() =>
+            expect(screen.getByText(/data alterada não é compatível/i)).toBeInTheDocument()
+        );
     });
 });

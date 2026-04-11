@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { AuthLayout, Button, GoogleButton, Input } from "../../components";
 
 import api from "../../services/api";
+import { formatPhone } from "../../utils/formatPhone";
 import * as S from "./styles";
 
 export default function SignUp() {
@@ -19,7 +20,10 @@ export default function SignUp() {
     });
 
     function handleChange(event) {
-        setForm({ ...form, [event.target.name]: event.target.value });
+        const value = event.target.name === "phone"
+            ? formatPhone(event.target.value)
+            : event.target.value;
+        setForm({ ...form, [event.target.name]: value });
     }
 
     async function handleSubmit(event) {
@@ -52,7 +56,10 @@ export default function SignUp() {
         }
 
         try {
-            await api.post("/users", form);
+            await api.post("/users", {
+                ...form,
+                phone: form.phone.replace(/\D/g, ""),
+            });
 
             toast.success("Cadastro realizado com sucesso.");
             navigate("/login");
@@ -112,9 +119,11 @@ export default function SignUp() {
                 <Input
                     label="Telefone"
                     name="phone"
-                    placeholder="Digite seu telefone"
+                    placeholder="(11) 99999-9999"
+                    inputMode="tel"
                     value={form.phone}
                     onChange={handleChange}
+                    prefix="🇧🇷"
                 />
 
                 <Input
@@ -124,6 +133,7 @@ export default function SignUp() {
                     placeholder="Digite sua senha"
                     value={form.password}
                     onChange={handleChange}
+                    showPasswordToggle
                 />
 
                 <Input

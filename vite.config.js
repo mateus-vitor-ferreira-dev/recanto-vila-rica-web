@@ -4,12 +4,19 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
+  server: {
+    headers: {
+      'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
+      'Cross-Origin-Embedder-Policy': 'unsafe-none',
+    },
+  },
   test: {
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/tests/setup.js'],
     alias: {
       '@react-oauth/google': path.resolve('./src/tests/mocks/react-oauth-google.js'),
+      '@react-pdf/renderer': path.resolve('./src/tests/mocks/react-pdf-renderer.jsx'),
     },
     coverage: {
       provider: 'v8',

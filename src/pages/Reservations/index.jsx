@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import { cancelReservation, listReservations } from "../../services/reservation";
 import { getErrorMessage } from "../../utils/getErrorMessage";
+import { PLAN_LABELS, formatDate, formatTime, formatCurrency, calcDuration } from "../../utils/reservationFormat";
 import * as S from "./styles";
 
 const STATUS_MAP = {
@@ -13,40 +14,12 @@ const STATUS_MAP = {
     EXPIRED: { label: "Expirado", color: "gray" },
 };
 
-const PLAN_LABELS = {
-    PROMOCIONAL: "Promocional",
-    ESSENCIAL: "Essencial",
-    COMPLETA: "Completa",
-};
-
-function formatDate(date) {
-    return new Date(date).toLocaleDateString("pt-BR");
-}
-
-function formatTime(date) {
-    return new Date(date).toLocaleTimeString("pt-BR", {
-        hour: "2-digit",
-        minute: "2-digit",
-    });
-}
-
-function formatCurrency(value) {
-    return (Number(value) / 100).toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-    });
-}
-
-function calcDuration(startDate, endDate) {
-    const diffMs = new Date(endDate) - new Date(startDate);
-    return Math.round(diffMs / (1000 * 60 * 60));
-}
-
 export default function Reservations() {
     const navigate = useNavigate();
     const [reservations, setReservations] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [cancellingId, setCancellingId] = useState(null);
+    const [confirmCancelId, setConfirmCancelId] = useState(null);
 
     async function loadReservations() {
         try {
@@ -64,7 +37,9 @@ export default function Reservations() {
         loadReservations();
     }, []);
 
-    async function handleCancelReservation(id) {
+    async function handleCancelReservation() {
+        const id = confirmCancelId;
+        setConfirmCancelId(null);
         try {
             setCancellingId(id);
             await cancelReservation(id);
@@ -94,6 +69,7 @@ export default function Reservations() {
                 <S.EmptyState>
                     <h2>Nenhuma reserva encontrada</h2>
                     <p>Você ainda não possui reservas cadastradas.</p>
+                    <S.PayButton as={Link} to="/venues">Fazer uma reserva</S.PayButton>
                 </S.EmptyState>
             </S.Container>
         );
@@ -101,6 +77,28 @@ export default function Reservations() {
 
     return (
         <S.Container>
+            {confirmCancelId && (
+                <S.ModalOverlay>
+                    <S.ModalBox>
+                        <S.ModalTitle>Cancelar reserva</S.ModalTitle>
+                        <S.ModalBody>
+                            Tem certeza que deseja cancelar esta reserva? Esta ação não pode ser desfeita.
+                        </S.ModalBody>
+                        <S.ModalActions>
+                            <S.ModalCancelBtn onClick={() => setConfirmCancelId(null)}>
+                                Voltar
+                            </S.ModalCancelBtn>
+                            <S.ModalConfirmBtn
+                                onClick={handleCancelReservation}
+                                disabled={cancellingId !== null}
+                            >
+                                {cancellingId ? "Cancelando..." : "Sim, cancelar"}
+                            </S.ModalConfirmBtn>
+                        </S.ModalActions>
+                    </S.ModalBox>
+                </S.ModalOverlay>
+            )}
+
             <S.Header>
                 <S.Title>Minhas reservas</S.Title>
                 <S.Description>
@@ -158,7 +156,7 @@ export default function Reservations() {
                                         </S.PayButton>
 
                                         <S.CancelButton
-                                            onClick={() => handleCancelReservation(reservation.id)}
+                                            onClick={() => setConfirmCancelId(reservation.id)}
                                             disabled={cancellingId === reservation.id}
                                         >
                                             {cancellingId === reservation.id ? "Cancelando..." : "Cancelar reserva"}
