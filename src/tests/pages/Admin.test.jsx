@@ -1,9 +1,9 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import Admin from "../../pages/Admin";
 import { server } from "../mocks/server";
 
@@ -540,7 +540,6 @@ describe("Admin - Campaigns tab", () => {
         await user.type(screen.getByPlaceholderText(/ex: indique um amigo/i), "Nova Campanha");
         await user.type(screen.getByPlaceholderText(/ex: referral_2026/i), "NOVA_2026");
 
-        const startInput = document.querySelector('input[name="startsAt"], input[placeholder*="início"], input[type="date"]');
         const allDateInputs = document.querySelectorAll('input[type="date"]');
         if (allDateInputs[0]) {
             const { fireEvent: fe } = await import("@testing-library/react");

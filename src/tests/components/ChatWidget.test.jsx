@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import ChatWidget from "../../components/ChatWidget";
 
 function renderWidget() {
@@ -68,7 +68,7 @@ describe("ChatWidget", () => {
     });
 
     it("sends message and displays streamed response", async () => {
-        vi.spyOn(global, "fetch").mockImplementation(makeFetchMock());
+        vi.spyOn(globalThis, "fetch").mockImplementation(makeFetchMock());
         const user = userEvent.setup();
         renderWidget();
         await user.click(screen.getByRole("button", { name: /abrir chat/i }));
@@ -82,7 +82,7 @@ describe("ChatWidget", () => {
     });
 
     it("sends message on Enter key without Shift", async () => {
-        vi.spyOn(global, "fetch").mockImplementation(makeFetchMock());
+        vi.spyOn(globalThis, "fetch").mockImplementation(makeFetchMock());
         const user = userEvent.setup();
         renderWidget();
         await user.click(screen.getByRole("button", { name: /abrir chat/i }));
@@ -94,7 +94,7 @@ describe("ChatWidget", () => {
     });
 
     it("does not send on Shift+Enter", async () => {
-        const fetchMock = vi.spyOn(global, "fetch").mockImplementation(makeFetchMock());
+        const fetchMock = vi.spyOn(globalThis, "fetch").mockImplementation(makeFetchMock());
         const user = userEvent.setup();
         renderWidget();
         await user.click(screen.getByRole("button", { name: /abrir chat/i }));
@@ -105,7 +105,7 @@ describe("ChatWidget", () => {
     });
 
     it("shows error message when fetch fails", async () => {
-        vi.spyOn(global, "fetch").mockRejectedValue(new Error("Network error"));
+        vi.spyOn(globalThis, "fetch").mockRejectedValue(new Error("Network error"));
         const user = userEvent.setup();
         renderWidget();
         await user.click(screen.getByRole("button", { name: /abrir chat/i }));
@@ -118,7 +118,7 @@ describe("ChatWidget", () => {
     });
 
     it("shows error message when server responds with !ok", async () => {
-        vi.spyOn(global, "fetch").mockResolvedValue({ ok: false });
+        vi.spyOn(globalThis, "fetch").mockResolvedValue({ ok: false });
         const user = userEvent.setup();
         renderWidget();
         await user.click(screen.getByRole("button", { name: /abrir chat/i }));
@@ -132,7 +132,7 @@ describe("ChatWidget", () => {
 
     it("includes Authorization header when token is in localStorage", async () => {
         localStorage.setItem("recanto:userData", JSON.stringify({ token: "my-token" }));
-        const fetchMock = vi.spyOn(global, "fetch").mockImplementation(makeFetchMock());
+        const fetchMock = vi.spyOn(globalThis, "fetch").mockImplementation(makeFetchMock());
         const user = userEvent.setup();
         renderWidget();
         await user.click(screen.getByRole("button", { name: /abrir chat/i }));
@@ -146,7 +146,7 @@ describe("ChatWidget", () => {
 
     it("handles parsed SSE error chunk gracefully", async () => {
         const chunks = ['data: {"error":"algo deu errado"}\n', "data: [DONE]\n"];
-        vi.spyOn(global, "fetch").mockImplementation(makeFetchMock(chunks));
+        vi.spyOn(globalThis, "fetch").mockImplementation(makeFetchMock(chunks));
         const user = userEvent.setup();
         renderWidget();
         await user.click(screen.getByRole("button", { name: /abrir chat/i }));
