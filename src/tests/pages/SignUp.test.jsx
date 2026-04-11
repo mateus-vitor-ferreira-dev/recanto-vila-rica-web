@@ -30,7 +30,7 @@ async function fillForm(user, overrides = {}) {
     };
     if (fields.name) await user.type(screen.getByPlaceholderText(/digite seu nome/i), fields.name);
     if (fields.email) await user.type(screen.getByPlaceholderText(/digite seu e-mail/i), fields.email);
-    if (fields.phone) await user.type(screen.getByPlaceholderText(/digite seu telefone/i), fields.phone);
+    if (fields.phone) await user.type(document.querySelector('input[name="phone"]'), fields.phone);
     if (fields.password) await user.type(screen.getByPlaceholderText(/digite sua senha/i), fields.password);
     if (fields.birthDate) {
         const dateInput = document.querySelector('input[name="birthDate"]');
@@ -80,7 +80,7 @@ describe("SignUp page", () => {
         renderPage();
         await user.type(screen.getByPlaceholderText(/digite seu nome/i), "Mateus");
         await user.type(screen.getByPlaceholderText(/digite seu e-mail/i), "m@email.com");
-        await user.type(screen.getByPlaceholderText(/digite seu telefone/i), "35999999999");
+        await user.type(document.querySelector('input[name="phone"]'), "35999999999");
         await user.click(screen.getByRole("button", { name: /criar conta/i }));
         await waitFor(() =>
             expect(screen.getByText(/informe sua senha/i)).toBeInTheDocument()
@@ -150,6 +150,19 @@ describe("SignUp page", () => {
         await waitFor(() =>
             expect(screen.getByText("Login Page")).toBeInTheDocument()
         );
+    });
+
+    it("toggles password visibility when eye button is clicked", async () => {
+        const user = userEvent.setup();
+        renderPage();
+        const passwordInput = screen.getByPlaceholderText(/digite sua senha/i);
+        expect(passwordInput).toHaveAttribute("type", "password");
+
+        await user.click(screen.getByRole("button", { name: /mostrar senha/i }));
+        expect(passwordInput).toHaveAttribute("type", "text");
+
+        await user.click(screen.getByRole("button", { name: /ocultar senha/i }));
+        expect(passwordInput).toHaveAttribute("type", "password");
     });
 
     it("shows error toast on API failure", async () => {
