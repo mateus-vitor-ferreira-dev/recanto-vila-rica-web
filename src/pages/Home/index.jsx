@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import api from "../../services/api";
@@ -44,6 +44,7 @@ export default function Home() {
     });
 
     const [isLoading, setIsLoading] = useState(true);
+    const { key: locationKey } = useLocation();
 
     useEffect(() => {
         async function loadDashboard() {
@@ -71,7 +72,7 @@ export default function Home() {
         }
 
         loadDashboard();
-    }, []);
+    }, [locationKey]);
 
     const upcomingReservations = useMemo(() => {
         return dashboard.reservations
