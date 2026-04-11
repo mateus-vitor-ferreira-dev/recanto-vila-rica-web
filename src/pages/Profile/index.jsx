@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { Input } from "../../components";
 import api from "../../services/api";
 import { getErrorMessage } from "../../utils/getErrorMessage";
+import { formatPhone } from "../../utils/formatPhone";
 import * as S from "./styles";
 
 function getInitials(name) {
@@ -39,12 +40,15 @@ export default function Profile() {
                 setForm({
                     name: u.name || "",
                     email: u.email || "",
-                    phone: u.phone || "",
+                    phone: formatPhone(u.phone || ""),
                     birthDate: u.birthDate ? u.birthDate.split("T")[0] : "",
                 });
             } catch (error) {
                 toast.error(getErrorMessage(error, "Erro ao carregar os dados do perfil."));
-                navigate("/home");
+                const status = error.response?.status;
+                if (status === 401 || status === 403) {
+                    navigate("/home");
+                }
             } finally {
                 setIsLoading(false);
             }
@@ -54,7 +58,10 @@ export default function Profile() {
     }, [navigate]);
 
     function handleChange(e) {
-        setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+        const value = e.target.name === "phone"
+            ? formatPhone(e.target.value)
+            : e.target.value;
+        setForm((prev) => ({ ...prev, [e.target.name]: value }));
     }
 
     async function handleSubmit(e) {
@@ -74,7 +81,7 @@ export default function Profile() {
             const payload = {
                 name: form.name.trim(),
                 email: form.email.trim(),
-                phone: form.phone.trim() || undefined,
+                phone: form.phone.replace(/\D/g, "") || undefined,
                 birthDate: form.birthDate || undefined,
             };
 
@@ -154,8 +161,10 @@ export default function Profile() {
                             label="Telefone"
                             name="phone"
                             placeholder="(11) 99999-9999"
+                            inputMode="tel"
                             value={form.phone}
                             onChange={handleChange}
+                            prefix="🇧🇷"
                         />
 
                         <Input
