@@ -33,6 +33,18 @@ const mockVenue = {
 };
 
 describe("Venues page", () => {
+    it("shows error toast when venues load fails", async () => {
+        server.use(
+            http.get(`${BASE}/venues`, () =>
+                HttpResponse.json({ success: false, message: "Erro ao carregar os espaços." }, { status: 500 })
+            )
+        );
+        renderPage();
+        await waitFor(() =>
+            expect(screen.getByText(/erro ao carregar os espaços/i)).toBeInTheDocument()
+        );
+    });
+
     it("shows loading state initially", () => {
         renderPage();
         expect(screen.getByText(/carregando espaços/i)).toBeInTheDocument();
@@ -116,6 +128,19 @@ describe("Venues page", () => {
             expect(screen.getByText("Sem descrição cadastrada para este espaço.")).toBeInTheDocument()
         );
         expect(screen.getAllByText("Não informada").length).toBeGreaterThan(0);
+    });
+
+    it("shows Disponível for hasPool when true", async () => {
+        server.use(
+            http.get(`${BASE}/venues`, () =>
+                HttpResponse.json({ success: true, data: [{ ...mockVenue, hasKidsArea: false, hasPool: true }] })
+            )
+        );
+        renderPage();
+        await waitFor(() =>
+            expect(screen.getByText("Disponível")).toBeInTheDocument()
+        );
+        expect(screen.getByText("Não disponível")).toBeInTheDocument();
     });
 
     it("navigates to reservation-intent on Reservar click", async () => {

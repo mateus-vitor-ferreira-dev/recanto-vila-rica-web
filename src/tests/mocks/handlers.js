@@ -46,6 +46,21 @@ export const venueHandlers = [
             ],
         })
     ),
+
+    http.get(`${BASE_URL}/venues/:id`, () =>
+        HttpResponse.json({
+            success: true,
+            data: {
+                id: "venue-1",
+                name: "Salão Principal",
+                location: "Lavras - MG",
+                description: "Salão para eventos e celebrações",
+                capacity: 150,
+                hasKidsArea: false,
+                hasPool: false,
+            },
+        })
+    ),
 ];
 
 // ─── Reservations ────────────────────────────────────────────────────────────
@@ -69,6 +84,28 @@ export const reservationHandlers = [
                 venue: { name: "Salão Principal" },
             },
         })
+    ),
+
+    http.post(`${BASE_URL}/reservations/quote`, () =>
+        HttpResponse.json({
+            success: true,
+            data: {
+                totalCents: 85000,
+                subtotalCents: 85000,
+                discountCents: 0,
+                discountApplied: false,
+                items: [{ description: "Aluguel do salão", amountCents: 85000 }],
+                planCode: "ESSENCIAL",
+                currency: "BRL",
+            },
+        })
+    ),
+
+    http.post(`${BASE_URL}/reservations`, () =>
+        HttpResponse.json(
+            { success: true, data: { id: "res-new", status: "PENDING" } },
+            { status: 201 }
+        )
     ),
 ];
 

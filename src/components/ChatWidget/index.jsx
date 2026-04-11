@@ -66,21 +66,24 @@ export default function ChatWidget() {
                     const raw = line.replace("data: ", "");
                     if (raw === "[DONE]") break;
 
+                    let parsed;
                     try {
-                        const parsed = JSON.parse(raw);
-                        if (parsed.error) throw new Error(parsed.error);
-
-                        setMessages((prev) => {
-                            const updated = [...prev];
-                            updated[updated.length - 1] = {
-                                role: "assistant",
-                                content: updated[updated.length - 1].content + parsed.text,
-                            };
-                            return updated;
-                        });
+                        parsed = JSON.parse(raw);
                     } catch {
-                        // chunk incompleto, ignorar
+                        // chunk incompleto (JSON inválido), ignorar
+                        continue;
                     }
+
+                    if (parsed.error) throw new Error(parsed.error);
+
+                    setMessages((prev) => {
+                        const updated = [...prev];
+                        updated[updated.length - 1] = {
+                            role: "assistant",
+                            content: updated[updated.length - 1].content + parsed.text,
+                        };
+                        return updated;
+                    });
                 }
             }
         } catch {

@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import Admin from "../../pages/Admin";
 import { server } from "../mocks/server";
 
@@ -108,6 +108,75 @@ describe("Admin - Reservations tab", () => {
 
         await waitFor(() =>
             expect(screen.getByRole("button", { name: /anterior/i })).toBeDisabled()
+        );
+    });
+
+    it("shows truncated userId and venueId when user and venue are null, and '—' for missing planCode", async () => {
+        server.use(
+            http.get(`${BASE}/admin/reservations`, () =>
+                HttpResponse.json({
+                    success: true,
+                    data: [
+                        {
+                            id: "res-null",
+                            userId: "user-abc123456",
+                            venueId: "venue-xyz",
+                            status: "UNKNOWN_STATUS",
+                            planCode: null,
+                            totalPrice: 0,
+                            startDate: "2026-06-01T10:00:00.000Z",
+                            endDate: "2026-06-01T18:00:00.000Z",
+                            user: null,
+                            venue: null,
+                        },
+                    ],
+                })
+            )
+        );
+        const user = userEvent.setup();
+        renderPage();
+        await waitFor(() => screen.getByText(/total de reservas/i));
+
+        await user.click(screen.getByRole("button", { name: /^reservas$/i }));
+
+        await waitFor(() =>
+            expect(screen.getByText("user-abc...")).toBeInTheDocument()
+        );
+        expect(screen.getByText("venue-xyz")).toBeInTheDocument();
+        expect(screen.getByText("—")).toBeInTheDocument();
+        expect(screen.getByText("UNKNOWN_STATUS")).toBeInTheDocument();
+    });
+
+    it("enables Próxima button and navigates to page 2 when there are 15 results", async () => {
+        const reservations = Array.from({ length: 15 }, (_, i) => ({
+            id: `res-${i}`,
+            userId: `user-${i}`,
+            venueId: `venue-${i}`,
+            status: "PAID",
+            planCode: "ESSENCIAL",
+            totalPrice: 1000,
+            startDate: "2026-06-01T10:00:00.000Z",
+            endDate: "2026-06-01T18:00:00.000Z",
+            user: { name: `User ${i}` },
+            venue: { name: `Salão ${i}` },
+        }));
+        server.use(
+            http.get(`${BASE}/admin/reservations`, () =>
+                HttpResponse.json({ success: true, data: reservations })
+            )
+        );
+        const user = userEvent.setup();
+        renderPage();
+        await waitFor(() => screen.getByText(/total de reservas/i));
+
+        await user.click(screen.getByRole("button", { name: /^reservas$/i }));
+        await waitFor(() =>
+            expect(screen.getByRole("button", { name: /próxima/i })).not.toBeDisabled()
+        );
+
+        await user.click(screen.getByRole("button", { name: /próxima/i }));
+        await waitFor(() =>
+            expect(screen.getByText(/página 2/i)).toBeInTheDocument()
         );
     });
 });
@@ -281,6 +350,176 @@ describe("Admin - Campaigns tab", () => {
         );
         expect(screen.getByText("maria@email.com")).toBeInTheDocument();
         expect(screen.getByRole("button", { name: /copiar mensagem/i })).toBeInTheDocument();
+    });
+
+    it("shows Ativar button for an inactive campaign", async () => {
+        server.use(
+            http.get(`${BASE}/admin/campaigns`, () =>
+                HttpResponse.json({
+                    success: true,
+                    data: [
+                        {
+                            id: "camp-inactive",
+                            name: "Campanha Inativa",
+                            code: "INACTIVE_2026",
+                            type: "REFERRAL_NEXT_BOOKING",
+                            isActive: false,
+                            startsAt: new Date(Date.now() - 86400000).toISOString(),
+                            endsAt: new Date(Date.now() + 86400000).toISOString(),
+                        },
+                    ],
+                })
+            )
+        );
+        const user = userEvent.setup();
+        renderPage();
+        await waitFor(() => screen.getByText(/total de reservas/i));
+
+        await user.click(screen.getByRole("button", { name: /campanhas/i }));
+        await waitFor(() =>
+            expect(screen.getByRole("button", { name: /^ativar$/i })).toBeInTheDocument()
+        );
+    });
+
+    it("shows LOYALTY_ALWAYS_HERE campaign with 'O ANO TODO' date display", async () => {
+        server.use(
+            http.get(`${BASE}/admin/campaigns`, () =>
+                HttpResponse.json({
+                    success: true,
+                    data: [
+                        {
+                            id: "camp-loyalty",
+                            name: "Programa Fidelidade",
+                            code: "LOYALTY_2026",
+                            type: "LOYALTY_ALWAYS_HERE",
+                            isActive: true,
+                            startsAt: new Date(Date.now() - 86400000).toISOString(),
+                            endsAt: new Date(Date.now() + 86400000 * 365).toISOString(),
+                        },
+                    ],
+                })
+            )
+        );
+        const user = userEvent.setup();
+        renderPage();
+        await waitFor(() => screen.getByText(/total de reservas/i));
+
+        await user.click(screen.getByRole("button", { name: /campanhas/i }));
+        await waitFor(() =>
+            expect(screen.getByText("O ANO TODO")).toBeInTheDocument()
+        );
+    });
+
+    it("draws raffle winner without phone and shows singular 'participante'", async () => {
+        server.use(
+            http.get(`${BASE}/admin/campaigns`, () =>
+                HttpResponse.json({
+                    success: true,
+                    data: [
+                        {
+                            id: "camp-raffle",
+                            name: "Sorteio VIP",
+                            code: "RAFFLE_2026",
+                            type: "RAFFLE_VIP",
+                            isActive: true,
+                            startsAt: new Date(Date.now() - 86400000).toISOString(),
+                            endsAt: new Date(Date.now() + 86400000 * 30).toISOString(),
+                        },
+                    ],
+                })
+            ),
+            http.post(`${BASE}/admin/campaigns/camp-raffle/draw-winner`, () =>
+                HttpResponse.json({
+                    success: true,
+                    data: {
+                        winner: { name: "João", email: "joao@email.com", phone: null },
+                        totalEntries: 1,
+                        campaignName: "Sorteio VIP",
+                    },
+                })
+            )
+        );
+        const user = userEvent.setup();
+        renderPage();
+        await waitFor(() => screen.getByText(/total de reservas/i));
+
+        await user.click(screen.getByRole("button", { name: /campanhas/i }));
+        await waitFor(() => screen.getByRole("button", { name: /realizar sorteio/i }));
+
+        await user.click(screen.getByRole("button", { name: /realizar sorteio/i }));
+        await waitFor(() =>
+            expect(screen.getByText("João")).toBeInTheDocument()
+        );
+        expect(screen.getByText(/1 participante$/i)).toBeInTheDocument();
+        expect(screen.queryByText("null")).not.toBeInTheDocument();
+    });
+
+    it("copies winner message and shows 'Copiado!' feedback", async () => {
+        server.use(
+            http.get(`${BASE}/admin/campaigns`, () =>
+                HttpResponse.json({
+                    success: true,
+                    data: [
+                        {
+                            id: "camp-copy",
+                            name: "Sorteio VIP",
+                            code: "RAFFLE_COPY",
+                            type: "RAFFLE_VIP",
+                            isActive: true,
+                            startsAt: new Date(Date.now() - 86400000).toISOString(),
+                            endsAt: new Date(Date.now() + 86400000 * 30).toISOString(),
+                        },
+                    ],
+                })
+            ),
+            http.post(`${BASE}/admin/campaigns/camp-copy/draw-winner`, () =>
+                HttpResponse.json({
+                    success: true,
+                    data: {
+                        winner: { name: "Ana", email: "ana@email.com", phone: "35999990000" },
+                        totalEntries: 3,
+                        campaignName: "Sorteio VIP",
+                    },
+                })
+            )
+        );
+        const user = userEvent.setup();
+        renderPage();
+        await waitFor(() => screen.getByText(/total de reservas/i));
+
+        await user.click(screen.getByRole("button", { name: /campanhas/i }));
+        await waitFor(() => screen.getByRole("button", { name: /realizar sorteio/i }));
+        await user.click(screen.getByRole("button", { name: /realizar sorteio/i }));
+        await waitFor(() => screen.getByRole("button", { name: /copiar mensagem/i }));
+
+        await user.click(screen.getByRole("button", { name: /copiar mensagem/i }));
+        await waitFor(() =>
+            expect(screen.getByRole("button", { name: /copiado/i })).toBeInTheDocument()
+        );
+    });
+
+    it("closes create campaign modal when clicking the overlay", async () => {
+        const user = userEvent.setup();
+        renderPage();
+        await waitFor(() => screen.getByText(/total de reservas/i));
+
+        await user.click(screen.getByRole("button", { name: /campanhas/i }));
+        await waitFor(() => screen.getByRole("button", { name: /nova campanha/i }));
+
+        await user.click(screen.getByRole("button", { name: /nova campanha/i }));
+        const cancelButton = await screen.findByRole("button", { name: /cancelar/i });
+        expect(cancelButton).toBeInTheDocument();
+
+        // Traverse: cancel → ModalActions → form → ModalBox → ModalOverlay
+        const overlay = cancelButton.closest("form")?.parentElement?.parentElement;
+        if (overlay) {
+            const { fireEvent: fe } = await import("@testing-library/react");
+            fe.click(overlay);
+        }
+
+        await waitFor(() =>
+            expect(screen.queryByRole("button", { name: /cancelar/i })).not.toBeInTheDocument()
+        );
     });
 
     it("creates a campaign via the modal form", async () => {

@@ -158,6 +158,29 @@ describe("Checkout page", () => {
         expect(screen.getByText("Reservations Page")).toBeInTheDocument();
     });
 
+    it("shows generic error toast when payment POST fails with non-409 status", async () => {
+        server.use(
+            http.get(`${BASE}/reservations/res-1`, () =>
+                HttpResponse.json({
+                    success: true,
+                    data: { ...mockReservation, checkoutUrl: null },
+                })
+            ),
+            http.post(`${BASE}/payments/checkout/res-1`, () =>
+                HttpResponse.json({ success: false, message: "Erro ao iniciar o pagamento." }, { status: 500 })
+            )
+        );
+        renderPage();
+        await waitFor(() =>
+            expect(screen.getByRole("button", { name: /ir para o pagamento/i })).toBeInTheDocument()
+        );
+        const user = userEvent.setup();
+        await user.click(screen.getByRole("button", { name: /ir para o pagamento/i }));
+        await waitFor(() =>
+            expect(screen.getByText(/erro ao iniciar o pagamento/i)).toBeInTheDocument()
+        );
+    });
+
     it("redirects to /reservations when loading reservation fails", async () => {
         server.use(
             http.get(`${BASE}/reservations/res-1`, () =>

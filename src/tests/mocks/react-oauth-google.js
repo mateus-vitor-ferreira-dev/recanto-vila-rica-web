@@ -2,4 +2,9 @@ import { vi } from "vitest";
 
 export const GoogleOAuthProvider = ({ children }) => children;
 
-export const useGoogleLogin = () => vi.fn();
+export let lastLoginConfig = null;
+
+export const useGoogleLogin = (config) => {
+    lastLoginConfig = config;
+    return vi.fn();
+};

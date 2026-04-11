@@ -129,6 +129,106 @@ describe("Profile page", () => {
         );
     });
 
+    it("shows error when name is empty on save", async () => {
+        const user = userEvent.setup();
+        renderPage();
+        await waitFor(() =>
+            expect(screen.getByDisplayValue("Mateus")).toBeInTheDocument()
+        );
+        const nameInput = screen.getByDisplayValue("Mateus");
+        await user.clear(nameInput);
+        await user.click(screen.getByRole("button", { name: /salvar alterações/i }));
+        await waitFor(() =>
+            expect(screen.getByText(/o nome é obrigatório/i)).toBeInTheDocument()
+        );
+    });
+
+    it("shows error when email is empty on save", async () => {
+        const user = userEvent.setup();
+        renderPage();
+        await waitFor(() =>
+            expect(screen.getByDisplayValue("mateus@email.com")).toBeInTheDocument()
+        );
+        const emailInput = screen.getByDisplayValue("mateus@email.com");
+        await user.clear(emailInput);
+        await user.click(screen.getByRole("button", { name: /salvar alterações/i }));
+        await waitFor(() =>
+            expect(screen.getByText(/o e-mail é obrigatório/i)).toBeInTheDocument()
+        );
+    });
+
+    it("updates localStorage with flat structure when stored.user is absent", async () => {
+        localStorage.setItem(
+            "recanto:userData",
+            JSON.stringify({ token: "tk", name: "Mateus", email: "mateus@email.com" })
+        );
+        const user = userEvent.setup();
+        renderPage();
+        await waitFor(() =>
+            expect(screen.getByRole("button", { name: /salvar alterações/i })).toBeInTheDocument()
+        );
+        await user.click(screen.getByRole("button", { name: /salvar alterações/i }));
+        await waitFor(() =>
+            expect(screen.getByText(/perfil atualizado com sucesso/i)).toBeInTheDocument()
+        );
+        const stored = JSON.parse(localStorage.getItem("recanto:userData"));
+        expect(stored.name).toBe("Mateus Atualizado");
+    });
+
+    it("shows '?' in avatar and handles null name/email in form", async () => {
+        server.use(
+            http.get(`${BASE}/users/me`, () =>
+                HttpResponse.json({
+                    success: true,
+                    data: { id: "u-1", name: null, email: null, role: "USER", phone: null, birthDate: null },
+                })
+            )
+        );
+        renderPage();
+        await waitFor(() =>
+            expect(screen.getByText("?")).toBeInTheDocument()
+        );
+        expect(document.querySelector('input[name="name"]').value).toBe("");
+        expect(document.querySelector('input[name="email"]').value).toBe("");
+    });
+
+    it("populates birthDate field when user has a birthDate", async () => {
+        server.use(
+            http.get(`${BASE}/users/me`, () =>
+                HttpResponse.json({
+                    success: true,
+                    data: {
+                        id: "u-1",
+                        name: "Mateus",
+                        email: "mateus@email.com",
+                        role: "USER",
+                        phone: null,
+                        birthDate: "1990-01-15T00:00:00.000Z",
+                    },
+                })
+            )
+        );
+        renderPage();
+        await waitFor(() =>
+            expect(document.querySelector('input[name="birthDate"]').value).toBe("1990-01-15")
+        );
+    });
+
+    it("shows two initials when user has multi-word name", async () => {
+        server.use(
+            http.get(`${BASE}/users/me`, () =>
+                HttpResponse.json({
+                    success: true,
+                    data: { id: "u-1", name: "Mateus Ferreira", email: "mateus@email.com", role: "USER", phone: null, birthDate: null },
+                })
+            )
+        );
+        renderPage();
+        await waitFor(() =>
+            expect(screen.getByText("MF")).toBeInTheDocument()
+        );
+    });
+
     it("clears birthDate field when empty string is submitted", async () => {
         const user = userEvent.setup();
         renderPage();

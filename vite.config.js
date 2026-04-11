@@ -21,6 +21,7 @@ export default defineConfig({
         'src/**/*.test.{js,jsx}',
         'src/styles/**',
         'src/assets/**',
+        'src/**/styles.js',
       ],
       thresholds: {
         branches: 90,
