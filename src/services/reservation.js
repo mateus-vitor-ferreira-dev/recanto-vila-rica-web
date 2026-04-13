@@ -1,7 +1,7 @@
 import api from "./api";
 
-export async function quoteReservation(payload) {
-    const { data } = await api.post("/reservations/quote", payload);
+export async function quoteReservation(payload, signal) {
+    const { data } = await api.post("/reservations/quote", payload, { signal });
     return data.data;
 }
 
@@ -10,13 +10,13 @@ export async function createReservation(payload) {
     return data.data;
 }
 
-export async function listReservations() {
-    const { data } = await api.get("/reservations");
+export async function listReservations(signal) {
+    const { data } = await api.get("/reservations", { signal });
     return data.data || [];
 }
 
-export async function getReservation(reservationId) {
-    const { data } = await api.get(`/reservations/${reservationId}`);
+export async function getReservation(reservationId, signal) {
+    const { data } = await api.get(`/reservations/${reservationId}`, { signal });
     return data.data;
 }
 

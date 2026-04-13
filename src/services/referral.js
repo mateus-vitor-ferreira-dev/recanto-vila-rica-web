@@ -5,7 +5,7 @@ export async function createReferral(referredEmail) {
     return data.data;
 }
 
-export async function listReferrals() {
-    const { data } = await api.get("/referrals");
+export async function listReferrals(signal) {
+    const { data } = await api.get("/referrals", { signal });
     return data.data;
 }
