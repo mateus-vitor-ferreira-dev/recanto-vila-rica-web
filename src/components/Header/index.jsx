@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import logo from "../../assets/logo-recanto-vila-rica.png";
+import logo from "../../assets/logo-recanto.svg";
 import * as S from "./styles";
 
 function getInitials(name) {

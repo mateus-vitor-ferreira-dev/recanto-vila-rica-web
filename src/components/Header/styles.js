@@ -31,10 +31,9 @@ export const BrandWrapper = styled(Link)`
 `;
 
 export const Logo = styled.img`
-  width: 36px;
-  height: 36px;
+  width: 52px;
+  height: 52px;
   object-fit: contain;
-  border-radius: 50%;
 `;
 
 export const BrandText = styled.span`
