@@ -148,10 +148,7 @@ export default function SignUp() {
 
                 <S.Divider><span>ou continue com</span></S.Divider>
 
-                <GoogleButton
-                    text="Cadastrar com Google"
-                    navigate={navigate}
-                />
+                <GoogleButton navigate={navigate} />
 
                 <S.FooterText>
                     Já tem conta? <Link to="/login">Entrar</Link>

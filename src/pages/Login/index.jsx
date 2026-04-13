@@ -70,10 +70,7 @@ export default function Login() {
 
                 <S.Divider><span>ou continue com</span></S.Divider>
 
-                <GoogleButton
-                    text="Entrar com Google"
-                    navigate={navigate}
-                />
+                <GoogleButton navigate={navigate} />
 
                 <S.FooterText>
                     Ainda não tem conta? <Link to="/cadastro">Criar conta</Link>

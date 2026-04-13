@@ -41,29 +41,32 @@ export const LeftInner = styled.div`
   z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: 48px;
+  align-items: center;
+  text-align: center;
+  gap: 40px;
 `;
 
 export const Brand = styled.div`
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 12px;
-`;
-
-export const BrandLogo = styled.img`
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  object-fit: contain;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 4px;
+  gap: 20px;
 `;
 
 export const BrandName = styled.span`
-  font-size: 18px;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.9);
-  letter-spacing: -0.01em;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #c9a84c;
+  text-shadow: 0 2px 12px rgba(201, 168, 76, 0.25);
+`;
+
+export const BrandLogo = styled.img`
+  width: 308px;
+  height: 308px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 32px rgba(0, 0, 0, 0.35));
 `;
 
 export const LeftBody = styled.div`
@@ -73,7 +76,7 @@ export const LeftBody = styled.div`
 `;
 
 export const Headline = styled.h1`
-  font-size: 38px;
+  font-size: 36px;
   font-weight: 800;
   color: #ffffff;
   line-height: 1.15;
@@ -86,32 +89,6 @@ export const Tagline = styled.p`
   line-height: 1.7;
   color: rgba(255, 255, 255, 0.6);
   max-width: 360px;
-`;
-
-export const FeatureList = styled.ul`
-  list-style: none;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-top: 8px;
-`;
-
-export const FeatureItem = styled.li`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 14px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.75);
-`;
-
-export const FeatureDot = styled.span`
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #4ade80;
-  flex-shrink: 0;
 `;
 
 /* decorative circles */

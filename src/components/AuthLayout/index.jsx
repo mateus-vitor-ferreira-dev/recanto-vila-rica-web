@@ -1,11 +1,5 @@
-import Logo from "../../assets/logo-recanto-vila-rica.png";
+import Logo from "../../assets/logo-recanto.svg";
 import * as S from "./styles";
-
-const FEATURES = [
-    "Reserve espaços para festas e eventos",
-    "Pagamentos seguros processados pelo Stripe",
-    "Acompanhe e gerencie todas as suas reservas",
-];
 
 export default function AuthLayout({ title, subtitle, children }) {
     return (
@@ -13,8 +7,8 @@ export default function AuthLayout({ title, subtitle, children }) {
             <S.LeftSide>
                 <S.LeftInner>
                     <S.Brand>
-                        <S.BrandLogo src={Logo} alt="Recanto Vila Rica" />
                         <S.BrandName>Recanto Vila Rica</S.BrandName>
+                        <S.BrandLogo src={Logo} alt="Recanto Vila Rica" />
                     </S.Brand>
 
                     <S.LeftBody>
@@ -23,15 +17,6 @@ export default function AuthLayout({ title, subtitle, children }) {
                             Uma experiência profissional para organizar eventos, pagamentos
                             e disponibilidade em um só lugar.
                         </S.Tagline>
-
-                        <S.FeatureList>
-                            {FEATURES.map((f) => (
-                                <S.FeatureItem key={f}>
-                                    <S.FeatureDot />
-                                    {f}
-                                </S.FeatureItem>
-                            ))}
-                        </S.FeatureList>
                     </S.LeftBody>
                 </S.LeftInner>
 
