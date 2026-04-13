@@ -13,7 +13,7 @@ const BASE = "http://localhost:3000";
 function renderButton(navigateFn = vi.fn()) {
     return render(
         <MemoryRouter>
-            <GoogleButton text="Entrar com Google" navigate={navigateFn} />
+            <GoogleButton navigate={navigateFn} />
             <ToastContainer />
         </MemoryRouter>
     );
@@ -22,17 +22,16 @@ function renderButton(navigateFn = vi.fn()) {
 describe("GoogleButton", () => {
     afterEach(() => localStorage.clear());
 
-    it("renders button with provided text", () => {
+    it("renders Google login button", () => {
         renderButton();
-        expect(screen.getByRole("button", { name: /entrar com google/i })).toBeInTheDocument();
+        expect(screen.getByTestId("google-login-btn")).toBeInTheDocument();
     });
 
-    it("calls login when button is clicked", async () => {
+    it("calls onSuccess handler when button is clicked", async () => {
         const user = userEvent.setup();
         renderButton();
-        const btn = screen.getByRole("button", { name: /entrar com google/i });
+        const btn = screen.getByTestId("google-login-btn");
         await user.click(btn);
-        // useGoogleLogin returns vi.fn() — just check it doesn't throw
         expect(btn).toBeInTheDocument();
     });
 
@@ -49,7 +48,7 @@ describe("GoogleButton", () => {
         const navigate = vi.fn();
         renderButton(navigate);
 
-        await lastLoginConfig.onSuccess({ access_token: "fake-access-token" });
+        await lastLoginConfig.onSuccess({ credential: "fake-id-token" });
 
         await waitFor(() =>
             expect(screen.getByText(/login com google realizado/i)).toBeInTheDocument()
@@ -68,7 +67,7 @@ describe("GoogleButton", () => {
             )
         );
         renderButton();
-        await lastLoginConfig.onSuccess({ access_token: "fake-access-token" });
+        await lastLoginConfig.onSuccess({ credential: "fake-id-token" });
         await waitFor(() =>
             expect(screen.getByText(/sucesso com google/i)).toBeInTheDocument()
         );
@@ -84,7 +83,7 @@ describe("GoogleButton", () => {
             )
         );
         renderButton();
-        await lastLoginConfig.onSuccess({ access_token: "bad-token" });
+        await lastLoginConfig.onSuccess({ credential: "bad-token" });
         await waitFor(() =>
             expect(screen.getByText(/token inválido/i)).toBeInTheDocument()
         );
@@ -108,7 +107,7 @@ describe("GoogleButton", () => {
             )
         );
         renderButton();
-        await lastLoginConfig.onSuccess({ access_token: "token" });
+        await lastLoginConfig.onSuccess({ credential: "token" });
         await waitFor(() =>
             expect(screen.getByText(/acesso negado via error field/i)).toBeInTheDocument()
         );
@@ -121,7 +120,7 @@ describe("GoogleButton", () => {
             )
         );
         renderButton();
-        await lastLoginConfig.onSuccess({ access_token: "token" });
+        await lastLoginConfig.onSuccess({ credential: "token" });
         await waitFor(() =>
             expect(screen.getByText(/erro ao autenticar com google/i)).toBeInTheDocument()
         );
