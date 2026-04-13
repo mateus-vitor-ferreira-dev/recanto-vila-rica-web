@@ -15,4 +15,33 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
+const MAX_RETRIES = 3;
+
+api.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        const config = error.config;
+        const status = error.response?.status;
+
+        if (status === 429) {
+            return Promise.reject(error);
+        }
+
+        const isAuthEndpoint = config.url?.startsWith("/auth/");
+        const isGetRequest = config.method?.toLowerCase() === "get";
+
+        if (!isAuthEndpoint && isGetRequest && status >= 500) {
+            config._retryCount = (config._retryCount || 0) + 1;
+
+            if (config._retryCount <= MAX_RETRIES) {
+                const delay = 1000 * config._retryCount;
+                await new Promise((resolve) => setTimeout(resolve, delay));
+                return api(config);
+            }
+        }
+
+        return Promise.reject(error);
+    }
+);
+
 export default api;
