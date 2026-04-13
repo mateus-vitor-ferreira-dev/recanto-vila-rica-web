@@ -13,19 +13,24 @@ export default function Venues() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
+        const controller = new AbortController();
+
         async function loadVenues() {
             try {
                 setIsLoading(true);
-                const data = await listVenues();
+                const data = await listVenues(controller.signal);
                 setVenues(data);
             } catch (error) {
+                if (error?.name === "CanceledError" || error?.name === "AbortError") return;
                 toast.error(getErrorMessage(error, "Erro ao carregar os espaços."));
             } finally {
-                setIsLoading(false);
+                if (!controller.signal.aborted) setIsLoading(false);
             }
         }
 
         loadVenues();
+
+        return () => controller.abort();
     }, []);
 
     if (isLoading) {

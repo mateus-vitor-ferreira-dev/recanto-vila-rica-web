@@ -109,21 +109,26 @@ export default function ReservationIntent() {
     const quoteTimerRef = useRef(null);
 
     useEffect(() => {
+        const controller = new AbortController();
+
         async function loadVenue() {
             try {
                 setLoading(true);
-                const data = await getVenue(venueId);
+                const data = await getVenue(venueId, controller.signal);
                 setVenue(data);
             } catch (error) {
+                if (error?.name === "CanceledError" || error?.name === "AbortError") return;
                 toast.error(getErrorMessage(error, "Erro ao carregar os dados do salão."));
             } finally {
-                setLoading(false);
+                if (!controller.signal.aborted) setLoading(false);
             }
         }
 
         if (venueId) {
             loadVenue();
         }
+
+        return () => controller.abort();
     }, [venueId]);
 
     useEffect(() => {
@@ -131,6 +136,8 @@ export default function ReservationIntent() {
             setQuote(null);
             return;
         }
+
+        const controller = new AbortController();
 
         clearTimeout(quoteTimerRef.current);
         quoteTimerRef.current = setTimeout(async () => {
@@ -152,16 +159,20 @@ export default function ReservationIntent() {
                     ...(kidsMonitorExtraHours > 0 && { kidsMonitorExtraHours }),
                 };
 
-                const result = await quoteReservation(payload);
-                setQuote(result);
-            } catch {
+                const result = await quoteReservation(payload, controller.signal);
+                if (!controller.signal.aborted) setQuote(result);
+            } catch (error) {
+                if (error?.name === "CanceledError" || error?.name === "AbortError") return;
                 setQuote(null);
             } finally {
-                setQuoteLoading(false);
+                if (!controller.signal.aborted) setQuoteLoading(false);
             }
         }, 600);
 
-        return () => clearTimeout(quoteTimerRef.current);
+        return () => {
+            clearTimeout(quoteTimerRef.current);
+            controller.abort();
+        };
     }, [planCode, eventDate, startTime, endTime, kidsMonitorExtraHours, venueId]);
 
     const today = new Date().toISOString().split("T")[0];

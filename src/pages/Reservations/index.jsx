@@ -21,20 +21,26 @@ export default function Reservations() {
     const [cancellingId, setCancellingId] = useState(null);
     const [confirmCancelId, setConfirmCancelId] = useState(null);
 
-    async function loadReservations() {
-        try {
-            setIsLoading(true);
-            const data = await listReservations();
-            setReservations(data);
-        } catch (error) {
-            toast.error(getErrorMessage(error, "Erro ao carregar reservas."));
-        } finally {
-            setIsLoading(false);
-        }
-    }
-
     useEffect(() => {
-        loadReservations();
+        const controller = new AbortController();
+
+        async function load() {
+            try {
+                setIsLoading(true);
+                const data = await listReservations(controller.signal);
+                setReservations(data);
+            } catch (error) {
+                if (error.name !== "CanceledError" && error.name !== "AbortError") {
+                    toast.error(getErrorMessage(error, "Erro ao carregar reservas."));
+                }
+            } finally {
+                if (!controller.signal.aborted) setIsLoading(false);
+            }
+        }
+
+        load();
+
+        return () => controller.abort();
     }, []);
 
     async function handleCancelReservation() {
@@ -44,7 +50,8 @@ export default function Reservations() {
             setCancellingId(id);
             await cancelReservation(id);
             toast.success("Reserva cancelada com sucesso.");
-            loadReservations();
+            const data = await listReservations();
+            setReservations(data);
         } catch (error) {
             toast.error(getErrorMessage(error, "Erro ao cancelar reserva."));
         } finally {

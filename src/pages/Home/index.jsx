@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import api from "../../services/api";
+import { listReservations } from "../../services/reservation";
+import { listVenues } from "../../services/venue";
 import { listMyGrants } from "../../services/promotion";
 import * as S from "./styles";
 
@@ -44,35 +46,52 @@ export default function Home() {
     });
 
     const [isLoading, setIsLoading] = useState(true);
-    const { key: locationKey } = useLocation();
 
     useEffect(() => {
+        const controller = new AbortController();
+        const { signal } = controller;
+
         async function loadDashboard() {
             try {
                 setIsLoading(true);
 
-                const [userResponse, venuesResponse, reservationsResponse, grantsData] = await Promise.all([
-                    api.get("/users/me"),
-                    api.get("/venues"),
-                    api.get("/reservations"),
-                    listMyGrants().catch(() => []),
+                const [userResult, venuesResult, reservationsResult, grantsResult] = await Promise.allSettled([
+                    api.get("/users/me", { signal }),
+                    listVenues(signal),
+                    listReservations(signal),
+                    listMyGrants(signal),
                 ]);
 
+                if (signal.aborted) return;
+
+                const anyFailed = [userResult, venuesResult, reservationsResult].some(
+                    (r) => r.status === "rejected" &&
+                        r.reason?.name !== "CanceledError" &&
+                        r.reason?.name !== "AbortError"
+                );
+                if (anyFailed) {
+                    toast.error("Erro ao carregar alguns dados da Home.");
+                }
+
                 setDashboard({
-                    user: userResponse.data.data,
-                    venues: venuesResponse.data.data || [],
-                    reservations: reservationsResponse.data.data || [],
-                    grants: grantsData || [],
+                    user: userResult.status === "fulfilled" ? userResult.value.data.data : null,
+                    venues: venuesResult.status === "fulfilled" ? venuesResult.value : [],
+                    reservations: reservationsResult.status === "fulfilled" ? reservationsResult.value : [],
+                    grants: grantsResult.status === "fulfilled" ? grantsResult.value || [] : [],
                 });
-            } catch {
-                toast.error("Erro ao carregar os dados da Home.");
+            } catch (error) {
+                if (error?.name !== "CanceledError" && error?.name !== "AbortError") {
+                    toast.error("Erro ao carregar os dados da Home.");
+                }
             } finally {
-                setIsLoading(false);
+                if (!signal.aborted) setIsLoading(false);
             }
         }
 
         loadDashboard();
-    }, [locationKey]);
+
+        return () => controller.abort();
+    }, []);
 
     const upcomingReservations = useMemo(() => {
         return dashboard.reservations

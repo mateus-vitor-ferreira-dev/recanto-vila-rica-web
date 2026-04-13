@@ -17,22 +17,27 @@ export default function Checkout() {
     const [isRedirecting, setIsRedirecting] = useState(false);
 
     useEffect(() => {
+        const controller = new AbortController();
+
         async function loadReservation() {
             try {
                 setIsLoading(true);
-                const data = await getReservation(reservationId);
+                const data = await getReservation(reservationId, controller.signal);
                 setReservation(data);
             } catch (error) {
+                if (error?.name === "CanceledError" || error?.name === "AbortError") return;
                 toast.error(getErrorMessage(error, "Erro ao carregar a reserva."));
                 navigate("/reservations");
             } finally {
-                setIsLoading(false);
+                if (!controller.signal.aborted) setIsLoading(false);
             }
         }
 
         if (reservationId) {
             loadReservation();
         }
+
+        return () => controller.abort();
     }, [reservationId, navigate]);
 
     async function handleProceedToPayment() {
