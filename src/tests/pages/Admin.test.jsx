@@ -693,4 +693,125 @@ describe("Admin - Holidays tab", () => {
             expect(screen.getByText(/nenhum feriado cadastrado/i)).toBeInTheDocument()
         );
     });
+
+    it("shows error toast when summary load fails", async () => {
+        server.use(
+            http.get(`${BASE}/admin/reservations/summary`, () =>
+                HttpResponse.json({ success: false }, { status: 500 })
+            )
+        );
+
+        renderPage();
+
+        await waitFor(() => {
+            expect(screen.getByRole("alert")).toHaveTextContent(/500/i);
+        });
+    });
+
+    it("shows error toast when deleting holiday fails", async () => {
+        server.use(
+            http.get(`${BASE}/admin/holidays`, () =>
+                HttpResponse.json({
+                    success: true,
+                    data: [
+                        {
+                            id: "holiday-1",
+                            name: "Natal",
+                            date: "2026-12-25",
+                            type: "national",
+                        },
+                    ],
+                })
+            ),
+            http.delete(`${BASE}/admin/holidays/:holidayId`, () =>
+                HttpResponse.json({ success: false }, { status: 500 })
+            )
+        );
+
+        const user = userEvent.setup();
+        renderPage();
+
+        await user.click(screen.getByRole("button", { name: /feriados/i }));
+
+        const deleteButton = await screen.findByRole("button", {
+            name: /remover/i,
+        });
+
+        await user.click(deleteButton);
+
+        await waitFor(() => {
+            expect(screen.getByRole("alert")).toHaveTextContent(/500/i);
+        });
+    });
+
+    it("shows error toast when syncing national holidays fails", async () => {
+        server.use(
+            http.post(`${BASE}/admin/holidays/sync`, () =>
+                HttpResponse.json({ success: false }, { status: 500 })
+            )
+        );
+
+        const user = userEvent.setup();
+        renderPage();
+
+        await user.click(screen.getByRole("button", { name: /feriados/i }));
+
+        await user.click(
+            screen.getByRole("button", { name: /sincronizar feriados nacionais/i })
+        );
+
+        await waitFor(() => {
+            expect(screen.getByRole("alert")).toHaveTextContent(/500/i);
+        });
+    });
+
+    it("shows error toast when syncing municipal holidays fails", async () => {
+        server.use(
+            http.post(`${BASE}/admin/holidays/sync-municipal`, () =>
+                HttpResponse.json({ success: false }, { status: 500 })
+            )
+        );
+
+        const user = userEvent.setup();
+        renderPage();
+
+        await user.click(screen.getByRole("button", { name: /feriados/i }));
+
+        await user.click(
+            screen.getByRole("button", { name: /sincronizar feriados municipais/i })
+        );
+
+        await waitFor(() => {
+            expect(screen.getByRole("alert")).toHaveTextContent(/500/i);
+        });
+    });
+
+    it("shows error toast when creating holiday fails", async () => {
+        server.use(
+            http.post(`${BASE}/admin/holidays`, () =>
+                HttpResponse.json({ success: false }, { status: 500 })
+            )
+        );
+
+        const user = userEvent.setup();
+        renderPage();
+
+        await user.click(screen.getByRole("button", { name: /feriados/i }));
+        await user.click(screen.getByRole("button", { name: /novo feriado/i }));
+
+        await user.type(
+            screen.getByPlaceholderText(/consciência negra/i),
+            "Feriado Teste"
+        );
+
+        const dateInput = document.querySelector("input[type='date']");
+        await user.type(dateInput, "2026-12-25");
+
+        await user.click(screen.getByRole("button", { name: /criar feriado/i }));
+
+        await waitFor(() => {
+            expect(screen.getByRole("alert")).toHaveTextContent(/500/i);
+        });
+    });
+
 });

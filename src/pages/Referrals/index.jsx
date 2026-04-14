@@ -24,7 +24,28 @@ export default function Referrals() {
     const [isSending, setIsSending] = useState(false);
     const [noCampaign, setNoCampaign] = useState(false);
 
-    async function load() {
+    useEffect(() => {
+        const controller = new AbortController();
+
+        async function load() {
+            try {
+                setIsLoading(true);
+                const data = await listReferrals(controller.signal);
+                setReferrals(data ?? []);
+            } catch (error) {
+                if (error?.name === "CanceledError" || error?.name === "AbortError") return;
+                toast.error(getErrorMessage(error, "Erro ao carregar indicações."));
+            } finally {
+                if (!controller.signal.aborted) setIsLoading(false);
+            }
+        }
+
+        load();
+
+        return () => controller.abort();
+    }, []);
+
+    async function refreshReferrals() {
         try {
             setIsLoading(true);
             const data = await listReferrals();
@@ -36,10 +57,6 @@ export default function Referrals() {
         }
     }
 
-    useEffect(() => {
-        load();
-    }, []);
-
     async function handleInvite(e) {
         e.preventDefault();
         if (!email.trim()) return;
@@ -50,7 +67,7 @@ export default function Referrals() {
             await createReferral(email.trim());
             toast.success("Indicação enviada com sucesso!");
             setEmail("");
-            load();
+            refreshReferrals();
         } catch (error) {
             if (error.response?.data?.error?.code === "NO_ACTIVE_REFERRAL_CAMPAIGN") {
                 setNoCampaign(true);

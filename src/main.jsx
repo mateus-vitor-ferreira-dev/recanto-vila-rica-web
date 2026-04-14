@@ -14,5 +14,5 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <ToastContainer position="top-right" autoClose={2500} />
       </GoogleOAuthProvider>
     </BrowserRouter>
-  </React.StrictMode>,
+  </React.StrictMode>
 );

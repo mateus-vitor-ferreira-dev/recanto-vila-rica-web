@@ -117,15 +117,18 @@ describe("Profile page", () => {
         expect(screen.getByText("Home Page")).toBeInTheDocument();
     });
 
-    it("redirects to /home when loading user fails", async () => {
+    it("shows error toast when loading user fails", async () => {
         server.use(
             http.get(`${BASE}/users/me`, () =>
-                HttpResponse.json({ success: false }, { status: 500 })
+                HttpResponse.json(
+                    { success: false, message: "Erro ao carregar os dados do perfil." },
+                    { status: 500 }
+                )
             )
         );
         renderPage();
         await waitFor(() =>
-            expect(screen.getByText("Home Page")).toBeInTheDocument()
+            expect(screen.getByText(/erro ao carregar os dados do perfil/i)).toBeInTheDocument()
         );
     });
 
@@ -246,4 +249,35 @@ describe("Profile page", () => {
             expect(screen.getByText(/perfil atualizado com sucesso/i)).toBeInTheDocument()
         );
     });
+
+    it("shows rate limit toast when loading profile returns 429", async () => {
+        server.use(
+            http.get(`${BASE}/users/me`, () =>
+                HttpResponse.json({ success: false }, { status: 429 })
+            )
+        );
+
+        renderPage();
+
+        await waitFor(() =>
+            expect(
+                screen.getByText(/muitas requisições em pouco tempo/i)
+            ).toBeInTheDocument()
+        );
+    });
+
+    it("redirects to /home when loading profile returns 401", async () => {
+        server.use(
+            http.get(`${BASE}/users/me`, () =>
+                HttpResponse.json({ success: false }, { status: 401 })
+            )
+        );
+
+        renderPage();
+
+        await waitFor(() => {
+            expect(screen.getByText("Home Page")).toBeInTheDocument();
+        });
+    });
+
 });

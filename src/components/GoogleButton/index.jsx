@@ -1,40 +1,42 @@
-import { useGoogleLogin } from "@react-oauth/google";
+import { GoogleLogin } from "@react-oauth/google";
 import { toast } from "react-toastify";
-import GoogleIcon from "../../assets/google-icon.png";
 import api from "../../services/api";
 import * as S from "./styles";
 
-export default function GoogleButton({ text, navigate }) {
-    const login = useGoogleLogin({
-        onSuccess: async (tokenResponse) => {
-            try {
-                const { data } = await api.post("/auth/google", {
-                    access_token: tokenResponse.access_token,
-                });
+async function handleGoogleSuccess({ credential }, navigate) {
+    try {
+        const { data } = await api.post("/auth/google", {
+            id_token: credential,
+        });
 
-                localStorage.setItem("recanto:userData", JSON.stringify(data.data));
+        localStorage.setItem("recanto:userData", JSON.stringify(data.data));
+        toast.success(data.message || "Sucesso com Google.");
+        navigate("/home");
+    } catch (error) {
+        const message =
+            error.response?.data?.message ||
+            error.response?.data?.error?.message ||
+            "Erro ao autenticar com Google.";
 
-                toast.success(data.message || "Sucesso com Google");
-                navigate("/home");
-            } catch (error) {
-                const message =
-                    error.response?.data?.message ||
-                    error.response?.data?.error?.message ||
-                    "Erro ao autenticar com Google.";
+        toast.error(message);
+    }
+}
 
-                toast.error(message);
-            }
-        },
-        onError: () => toast.error("Erro ao autenticar com Google."),
-    });
-
+export default function GoogleButton({ navigate }) {
     return (
-        <S.GoogleBtn type="button" onClick={() => login()}>
-            <img
-                src={GoogleIcon}
-                alt="Google"
+        <S.GoogleBtnWrapper>
+            <GoogleLogin
+                onSuccess={(credentialResponse) =>
+                    handleGoogleSuccess(credentialResponse, navigate)
+                }
+                onError={() => toast.error("Erro ao autenticar com Google.")}
+                width={400}
+                theme="outline"
+                shape="rectangular"
+                size="large"
+                text="signin_with"
+                logo_alignment="left"
             />
-            {text}
-        </S.GoogleBtn>
+        </S.GoogleBtnWrapper>
     );
 }

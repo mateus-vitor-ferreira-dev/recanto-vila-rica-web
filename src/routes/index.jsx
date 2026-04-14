@@ -17,19 +17,28 @@ import {
 import { AdminRoute } from "./AdminRoute";
 import { PrivateRoute } from "./PrivateRoute";
 
-export function AppRoutes() {
+export function AppRoutes({ introFinished }) {
     return (
         <Routes>
             <Route path="/" element={<Navigate to="/cadastro" replace />} />
-            <Route path="/cadastro" element={<SignUp />} />
-            <Route path="/login" element={<Login />} />
+            <Route
+                path="/cadastro"
+                element={<SignUp introFinished={introFinished} />}
+            />
+            <Route
+                path="/login"
+                element={<Login introFinished={introFinished} />}
+            />
 
             <Route element={<PrivateRoute />}>
                 <Route element={<MainLayout />}>
                     <Route path="/home" element={<Home />} />
                     <Route path="/venues" element={<Venues />} />
                     <Route path="/reservations" element={<Reservations />} />
-                    <Route path="/reservation-intent/:venueId" element={<ReservationIntent />} />
+                    <Route
+                        path="/reservation-intent/:venueId"
+                        element={<ReservationIntent />}
+                    />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/referrals" element={<Referrals />} />
                     <Route path="/checkout/:reservationId" element={<Checkout />} />

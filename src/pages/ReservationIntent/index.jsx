@@ -30,20 +30,18 @@ const PLANS = [
     },
 ];
 
-// Feriados nacionais fixos (MM-DD)
 const FIXED_HOLIDAYS = [
-    "01-01", // Confraternização Universal
-    "04-21", // Tiradentes
-    "05-01", // Dia do Trabalho
-    "09-07", // Independência do Brasil
-    "10-12", // Nossa Senhora Aparecida
-    "11-02", // Finados
-    "11-15", // Proclamação da República
-    "11-20", // Consciência Negra
-    "12-25", // Natal
+    "01-01",
+    "04-21",
+    "05-01",
+    "09-07",
+    "10-12",
+    "11-02",
+    "11-15",
+    "11-20",
+    "12-25",
 ];
 
-// Feriados móveis (YYYY-MM-DD) — Carnaval (seg+ter), Sexta-Feira Santa, Corpus Christi
 const VARIABLE_HOLIDAYS = [
     "2025-03-03", "2025-03-04", "2025-04-18", "2025-06-19",
     "2026-02-16", "2026-02-17", "2026-04-03", "2026-06-04",
@@ -60,7 +58,6 @@ function isPlanAvailableForDate(planCode, eventDate) {
     if (!eventDate) return true;
     const dayOfWeek = new Date(`${eventDate}T12:00:00`).getDay();
     const holiday = isHoliday(eventDate);
-    // 0=Dom, 5=Sex, 6=Sáb são fim de semana
     const isWeekendOrHoliday = dayOfWeek === 0 || dayOfWeek === 5 || dayOfWeek === 6 || holiday;
 
     if (planCode === "PROMOCIONAL") return !isWeekendOrHoliday;
@@ -77,6 +74,7 @@ function getBlockedPlanMessage(planCode, eventDate) {
             ? "O plano Promocional não está disponível em feriados. Escolha o Essencial ou o Completa."
             : "O plano Promocional é disponível apenas de Segunda a Quinta. Escolha o Essencial ou o Completa para fins de semana.";
     }
+
     return "Este plano é disponível apenas de Segunda a Quinta (sem feriados). Escolha o Promocional para dias úteis.";
 }
 
@@ -109,21 +107,26 @@ export default function ReservationIntent() {
     const quoteTimerRef = useRef(null);
 
     useEffect(() => {
+        const controller = new AbortController();
+
         async function loadVenue() {
             try {
                 setLoading(true);
-                const data = await getVenue(venueId);
+                const data = await getVenue(venueId, controller.signal);
                 setVenue(data);
             } catch (error) {
+                if (error?.name === "CanceledError" || error?.name === "AbortError") return;
                 toast.error(getErrorMessage(error, "Erro ao carregar os dados do salão."));
             } finally {
-                setLoading(false);
+                if (!controller.signal.aborted) setLoading(false);
             }
         }
 
         if (venueId) {
             loadVenue();
         }
+
+        return () => controller.abort();
     }, [venueId]);
 
     useEffect(() => {
@@ -132,10 +135,13 @@ export default function ReservationIntent() {
             return;
         }
 
+        const controller = new AbortController();
+
         clearTimeout(quoteTimerRef.current);
         quoteTimerRef.current = setTimeout(async () => {
             try {
                 setQuoteLoading(true);
+
                 const startDate = new Date(`${eventDate}T${startTime}:00`);
                 const endDate = new Date(`${eventDate}T${endTime}:00`);
 
@@ -152,16 +158,29 @@ export default function ReservationIntent() {
                     ...(kidsMonitorExtraHours > 0 && { kidsMonitorExtraHours }),
                 };
 
-                const result = await quoteReservation(payload);
-                setQuote(result);
-            } catch {
-                setQuote(null);
+                const result = await quoteReservation(payload, controller.signal);
+
+                if (!controller.signal.aborted) {
+                    setQuote(result);
+                }
+            } catch (error) {
+                if (error?.name === "CanceledError" || error?.name === "AbortError") return;
+
+                if (!controller.signal.aborted) {
+                    toast.error(getErrorMessage(error, "Erro ao calcular orçamento."));
+                    setQuote(null);
+                }
             } finally {
-                setQuoteLoading(false);
+                if (!controller.signal.aborted) {
+                    setQuoteLoading(false);
+                }
             }
         }, 600);
 
-        return () => clearTimeout(quoteTimerRef.current);
+        return () => {
+            clearTimeout(quoteTimerRef.current);
+            controller.abort();
+        };
     }, [planCode, eventDate, startTime, endTime, kidsMonitorExtraHours, venueId]);
 
     const today = new Date().toISOString().split("T")[0];
@@ -176,6 +195,7 @@ export default function ReservationIntent() {
 
     function handleDateChange(newDate) {
         setEventDate(newDate);
+
         if (planCode && !isPlanAvailableForDate(planCode, newDate)) {
             setPlanCode("");
             toast.info("A data alterada não é compatível com o plano anterior. Selecione uma modalidade.");
@@ -187,6 +207,7 @@ export default function ReservationIntent() {
             toast.info("Endereço do salão não disponível.");
             return;
         }
+
         const encodedAddress = encodeURIComponent(venue.location);
         window.open(`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`, "_blank");
     }
@@ -196,14 +217,17 @@ export default function ReservationIntent() {
             toast.warning("Selecione um plano.");
             return;
         }
+
         if (!eventDate) {
             toast.warning("Selecione a data do evento.");
             return;
         }
+
         if (!startTime) {
             toast.warning("Selecione o horário de início.");
             return;
         }
+
         if (!endTime) {
             toast.warning("Selecione o horário de término.");
             return;
@@ -317,10 +341,10 @@ export default function ReservationIntent() {
                             {quoteLoading
                                 ? "Calculando..."
                                 : quote
-                                ? formatCurrency(quote.totalCents)
-                                : selectedPlan
-                                ? formatCurrency(selectedPlan.priceCents)
-                                : "—"}
+                                    ? formatCurrency(quote.totalCents)
+                                    : selectedPlan
+                                        ? formatCurrency(selectedPlan.priceCents)
+                                        : "—"}
                         </strong>
                         <small>{selectedPlan ? selectedPlan.label : "Selecione um plano"}</small>
                     </S.EstimatedCard>
@@ -359,6 +383,7 @@ export default function ReservationIntent() {
 
                             <S.FormRow>
                                 <Input
+                                    id="eventDate"
                                     label="Data do evento"
                                     type="date"
                                     min={today}
@@ -367,6 +392,7 @@ export default function ReservationIntent() {
                                 />
 
                                 <Input
+                                    id="startTime"
                                     label="Início"
                                     type="time"
                                     min="08:00"
@@ -376,6 +402,7 @@ export default function ReservationIntent() {
                                 />
 
                                 <Input
+                                    id="endTime"
                                     label="Término"
                                     type="time"
                                     min="08:00"
@@ -397,6 +424,7 @@ export default function ReservationIntent() {
                             <S.PlanGrid>
                                 {PLANS.map((plan) => {
                                     const available = isPlanAvailableForDate(plan.code, eventDate);
+
                                     return (
                                         <S.PlanCard
                                             key={plan.code}
@@ -425,6 +453,7 @@ export default function ReservationIntent() {
                                         <strong>Horas extras de monitor</strong>
                                         <span>Incluso no plano — horas adicionais têm custo extra</span>
                                     </div>
+
                                     <S.KidsInput
                                         type="number"
                                         min="0"
@@ -443,6 +472,7 @@ export default function ReservationIntent() {
                             <S.CardDescription>
                                 Informe qualquer detalhe adicional para a sua reserva (opcional).
                             </S.CardDescription>
+
                             <S.NotesField
                                 placeholder="Ex: festa infantil, decoração temática..."
                                 value={notes}
@@ -511,6 +541,7 @@ export default function ReservationIntent() {
                                                 <span>Subtotal</span>
                                                 <strong>{formatCurrency(quote.subtotalCents)}</strong>
                                             </S.SummaryItem>
+
                                             <S.DiscountItem>
                                                 <span>Desconto</span>
                                                 <strong>- {formatCurrency(quote.discountCents)}</strong>

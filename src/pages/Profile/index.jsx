@@ -31,10 +31,16 @@ export default function Profile() {
     });
 
     useEffect(() => {
+        const controller = new AbortController();
+        const { signal } = controller;
+
         async function loadUser() {
             try {
                 setIsLoading(true);
-                const { data } = await api.get("/users/me");
+                const { data } = await api.get("/users/me", { signal });
+
+                if (signal.aborted) return;
+
                 const u = data.data;
                 setUser(u);
                 setForm({
@@ -44,17 +50,22 @@ export default function Profile() {
                     birthDate: u.birthDate ? u.birthDate.split("T")[0] : "",
                 });
             } catch (error) {
-                toast.error(getErrorMessage(error, "Erro ao carregar os dados do perfil."));
+                if (error?.name === "CanceledError" || error?.name === "AbortError") return;
                 const status = error.response?.status;
-                if (status === 401 || status === 403) {
-                    navigate("/home");
+                if (status === 401 || status === 403) return navigate("/home");
+                if (status === 429) {
+                    toast.error("Muitas requisições em pouco tempo. Aguarde alguns instantes e tente novamente.");
+                    return;
                 }
+                toast.error(getErrorMessage(error, "Erro ao carregar os dados do perfil."));
             } finally {
-                setIsLoading(false);
+                if (!signal.aborted) setIsLoading(false);
             }
         }
 
         loadUser();
+
+        return () => controller.abort();
     }, [navigate]);
 
     function handleChange(e) {

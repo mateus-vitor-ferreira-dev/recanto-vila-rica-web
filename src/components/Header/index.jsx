@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import logo from "../../assets/logo-recanto-vila-rica.png";
+import logo from "../../assets/logo-recanto.svg";
 import * as S from "./styles";
 
 function getInitials(name) {
@@ -14,7 +14,14 @@ export default function Header() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const userData = JSON.parse(localStorage.getItem("recanto:userData") || "{}");
+    let userData = {};
+
+    try {
+        userData = JSON.parse(localStorage.getItem("recanto:userData") || "{}");
+    } catch {
+        userData = {};
+    }
+
     const userName = userData?.user?.name || userData?.name || "Usuário";
     const userRole = userData?.user?.role || userData?.role;
 

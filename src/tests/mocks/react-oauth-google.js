@@ -1,10 +1,10 @@
-import { vi } from "vitest";
+import React from "react";
 
 export const GoogleOAuthProvider = ({ children }) => children;
 
 export let lastLoginConfig = null;
 
-export const useGoogleLogin = (config) => {
-    lastLoginConfig = config;
-    return vi.fn();
+export const GoogleLogin = ({ onSuccess, onError }) => {
+    lastLoginConfig = { onSuccess, onError };
+    return React.createElement("button", { "data-testid": "google-login-btn" }, "Entrar com Google");
 };

@@ -1,6 +1,6 @@
 import api from "./api";
 
-export async function listMyGrants() {
-    const { data } = await api.get("/promotions/my-grants");
+export async function listMyGrants(signal) {
+    const { data } = await api.get("/promotions/my-grants", { signal });
     return data.data;
 }
