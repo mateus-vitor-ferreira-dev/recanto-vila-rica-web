@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import api from "../../services/api";
+import { listMyGrants } from "../../services/promotion";
 import { listReservations } from "../../services/reservation";
 import { listVenues } from "../../services/venue";
-import { listMyGrants } from "../../services/promotion";
 import * as S from "./styles";
 
 function getGreeting() {
@@ -70,7 +70,7 @@ export default function Home() {
                         r.reason?.name !== "AbortError"
                 );
                 if (anyFailed) {
-                    toast.error("Erro ao carregar alguns dados da Home.");
+                    toast.error("Erro ao carregar os dados da Home.");
                 }
 
                 setDashboard({

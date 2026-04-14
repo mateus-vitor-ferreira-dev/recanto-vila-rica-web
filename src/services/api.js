@@ -16,11 +16,14 @@ api.interceptors.request.use((config) => {
 });
 
 const MAX_RETRIES = 3;
+const isTestEnv =
+    import.meta.env.MODE === "test" ||
+    Boolean(import.meta.env.VITEST);
 
 api.interceptors.response.use(
     (response) => response,
     async (error) => {
-        const config = error.config;
+        const config = error.config ?? {};
         const status = error.response?.status;
 
         if (status === 429) {
@@ -29,8 +32,16 @@ api.interceptors.response.use(
 
         const isAuthEndpoint = config.url?.startsWith("/auth/");
         const isGetRequest = config.method?.toLowerCase() === "get";
+        const isAbortError =
+            error?.name === "CanceledError" || error?.name === "AbortError";
 
-        if (!isAuthEndpoint && isGetRequest && status >= 500) {
+        if (
+            !isTestEnv &&
+            !isAbortError &&
+            !isAuthEndpoint &&
+            isGetRequest &&
+            status >= 500
+        ) {
             config._retryCount = (config._retryCount || 0) + 1;
 
             if (config._retryCount <= MAX_RETRIES) {
