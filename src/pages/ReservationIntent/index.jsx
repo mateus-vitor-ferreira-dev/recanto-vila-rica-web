@@ -48,6 +48,12 @@ const VARIABLE_HOLIDAYS = [
     "2027-02-08", "2027-02-09", "2027-03-26", "2027-05-20",
 ];
 
+const INCLUDED_KIDS_HOURS_BY_PLAN = {
+    PROMOCIONAL: 4,
+    ESSENCIAL: 4,
+    COMPLETA: 4,
+};
+
 function isHoliday(dateString) {
     if (!dateString) return false;
     if (VARIABLE_HOLIDAYS.includes(dateString)) return true;
@@ -82,7 +88,7 @@ function formatCurrency(cents) {
     return new Intl.NumberFormat("pt-BR", {
         style: "currency",
         currency: "BRL",
-    }).format(cents / 100);
+    }).format(Number(cents || 0) / 100);
 }
 
 export default function ReservationIntent() {
@@ -97,7 +103,7 @@ export default function ReservationIntent() {
     const [eventDate, setEventDate] = useState("");
     const [startTime, setStartTime] = useState("");
     const [endTime, setEndTime] = useState("");
-    const [kidsMonitorExtraHours, setKidsMonitorExtraHours] = useState(0);
+    const [kidsMonitorHours, setKidsMonitorHours] = useState(0);
     const [notes, setNotes] = useState("");
     const [acceptedContract, setAcceptedContract] = useState(false);
 
@@ -128,6 +134,20 @@ export default function ReservationIntent() {
 
         return () => controller.abort();
     }, [venueId]);
+
+    useEffect(() => {
+        if (!venue?.hasKidsArea) return;
+
+        const includedHours = INCLUDED_KIDS_HOURS_BY_PLAN[planCode] ?? 0;
+
+        setKidsMonitorHours((current) => {
+            if (!planCode) return 0;
+            return current < includedHours ? includedHours : current;
+        });
+    }, [planCode, venue?.hasKidsArea]);
+
+    const minimumKidsHours = INCLUDED_KIDS_HOURS_BY_PLAN[planCode] ?? 0;
+    const kidsMonitorExtraHours = Math.max(0, kidsMonitorHours - minimumKidsHours);
 
     useEffect(() => {
         if (!planCode || !eventDate || !startTime || !endTime) {
@@ -297,6 +317,39 @@ export default function ReservationIntent() {
     }
 
     const selectedPlan = PLANS.find((p) => p.code === planCode);
+
+    const normalizedQuote = (() => {
+        if (!quote || planCode !== "COMPLETA") return quote;
+
+        const targetBasePriceCents = 100000;
+        const planBaseItem = quote.items?.find((item) => item.type === "PLAN_BASE");
+
+        const currentBasePriceCents =
+            planBaseItem?.totalAmountCents ??
+            planBaseItem?.totalCents ??
+            selectedPlan?.priceCents ??
+            targetBasePriceCents;
+
+        const diffCents = targetBasePriceCents - currentBasePriceCents;
+
+        if (diffCents === 0) return quote;
+
+        return {
+            ...quote,
+            items: (quote.items ?? []).map((item) =>
+                item.type === "PLAN_BASE"
+                    ? {
+                        ...item,
+                        unitAmountCents: targetBasePriceCents,
+                        totalAmountCents: targetBasePriceCents,
+                    }
+                    : item
+            ),
+            subtotalCents: Number(quote.subtotalCents ?? 0) + diffCents,
+            totalCents: Number(quote.totalCents ?? 0) + diffCents,
+        };
+    })();
+
     const planIsIncompatible = planCode && eventDate && !isPlanAvailableForDate(planCode, eventDate);
 
     const locatario = (() => {
@@ -321,7 +374,7 @@ export default function ReservationIntent() {
         comKids,
         comPiscina,
         planCode: planCode || "ESSENCIAL",
-        totalCents: quote?.totalCents ?? selectedPlan?.priceCents ?? null,
+        totalCents: normalizedQuote?.totalCents ?? selectedPlan?.priceCents ?? null,
     };
 
     return (
@@ -340,8 +393,8 @@ export default function ReservationIntent() {
                         <strong>
                             {quoteLoading
                                 ? "Calculando..."
-                                : quote
-                                    ? formatCurrency(quote.totalCents)
+                                : normalizedQuote
+                                    ? formatCurrency(normalizedQuote.totalCents)
                                     : selectedPlan
                                         ? formatCurrency(selectedPlan.priceCents)
                                         : "—"}
@@ -445,22 +498,25 @@ export default function ReservationIntent() {
                             <S.Card>
                                 <S.CardTitle>Área Kids com monitor</S.CardTitle>
                                 <S.CardDescription>
-                                    Adicione horas extras de monitor para a área kids.
+                                    O plano selecionado inclui 4 horas de monitor. Caso deseje mais tempo,
+                                    cada hora adicional será cobrada à parte.
                                 </S.CardDescription>
 
                                 <S.OptionItem>
                                     <div>
-                                        <strong>Horas extras de monitor</strong>
-                                        <span>Incluso no plano — horas adicionais têm custo extra</span>
+                                        <strong>Horas do monitor</strong>
+                                        <span>4h incluídas no plano. Horas adicionais: R$ 30,00/h</span>
                                     </div>
 
                                     <S.KidsInput
                                         type="number"
-                                        min="0"
+                                        min={minimumKidsHours}
                                         max="12"
-                                        value={kidsMonitorExtraHours}
+                                        value={kidsMonitorHours}
                                         onChange={(e) =>
-                                            setKidsMonitorExtraHours(Math.max(0, Number(e.target.value)))
+                                            setKidsMonitorHours(
+                                                Math.max(minimumKidsHours, Number(e.target.value) || 0)
+                                            )
                                         }
                                     />
                                 </S.OptionItem>
@@ -512,10 +568,10 @@ export default function ReservationIntent() {
                                     <strong>{endTime || "—"}</strong>
                                 </S.SummaryItem>
 
-                                {kidsMonitorExtraHours > 0 && (
+                                {kidsMonitorHours > 0 && (
                                     <S.SummaryItem>
-                                        <span>Monitor kids extra</span>
-                                        <strong>{kidsMonitorExtraHours}h</strong>
+                                        <span>Monitor kids</span>
+                                        <strong>{kidsMonitorHours}h</strong>
                                     </S.SummaryItem>
                                 )}
                             </S.SummaryList>
@@ -526,37 +582,40 @@ export default function ReservationIntent() {
                                 <S.QuoteLoading>Calculando cotação...</S.QuoteLoading>
                             )}
 
-                            {quote && !quoteLoading && (
+                            {normalizedQuote && !quoteLoading && (
                                 <>
-                                    {quote.items?.map((item, i) => (
+                                    {normalizedQuote.items?.map((item, i) => (
                                         <S.SummaryItem key={i}>
-                                            <span>{item.description || item.label}</span>
-                                            <strong>{formatCurrency(item.amountCents ?? item.totalCents ?? 0)}</strong>
+                                            <span>
+                                                {item.type === "PLAN_BASE"
+                                                    ? `Plano: ${selectedPlan?.label || item.description || item.label}`
+                                                    : item.type === "KIDS_MONITOR_EXTRA_HOUR"
+                                                        ? "Horas extras área kids"
+                                                        : item.description || item.label}
+                                            </span>
+                                            <strong>
+                                                {formatCurrency(
+                                                    Number(
+                                                        item.totalAmountCents ??
+                                                        item.amountCents ??
+                                                        item.totalCents ??
+                                                        item.totalAmount ??
+                                                        item.amount ??
+                                                        0
+                                                    )
+                                                )}
+                                            </strong>
                                         </S.SummaryItem>
                                     ))}
 
-                                    {quote.discountApplied && (
-                                        <>
-                                            <S.SummaryItem>
-                                                <span>Subtotal</span>
-                                                <strong>{formatCurrency(quote.subtotalCents)}</strong>
-                                            </S.SummaryItem>
-
-                                            <S.DiscountItem>
-                                                <span>Desconto</span>
-                                                <strong>- {formatCurrency(quote.discountCents)}</strong>
-                                            </S.DiscountItem>
-                                        </>
-                                    )}
-
                                     <S.TotalRow>
                                         <span>Total</span>
-                                        <strong>{formatCurrency(quote.totalCents)}</strong>
+                                        <strong>{formatCurrency(normalizedQuote.totalCents)}</strong>
                                     </S.TotalRow>
                                 </>
                             )}
 
-                            {!quote && !quoteLoading && selectedPlan && (
+                            {!normalizedQuote && !quoteLoading && selectedPlan && (
                                 <S.TotalRow>
                                     <span>Valor base do plano</span>
                                     <strong>{formatCurrency(selectedPlan.priceCents)}</strong>
