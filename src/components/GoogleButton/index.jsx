@@ -10,11 +10,13 @@ async function handleGoogleSuccess({ credential }, navigate) {
         });
 
         localStorage.setItem("recanto:userData", JSON.stringify(data.data));
-        toast.success(data.message || "Login realizado com sucesso.");
+        toast.success(data.message || "Sucesso com Google.");
         navigate("/home");
     } catch (error) {
         const message =
-            error.response?.data?.message || "Erro ao autenticar com Google.";
+            error.response?.data?.message ||
+            error.response?.data?.error?.message ||
+            "Erro ao autenticar com Google.";
 
         toast.error(message);
     }
