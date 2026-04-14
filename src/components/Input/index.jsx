@@ -17,6 +17,7 @@ function EyeIcon({ visible }) {
 }
 
 export default function Input({
+    id,
     label,
     error,
     prefix,
@@ -31,27 +32,27 @@ export default function Input({
 
     return (
         <S.Container>
-            {label && <S.Label>{label}</S.Label>}
+            {label && <S.Label htmlFor={id}>{label}</S.Label>}
 
             {prefix ? (
                 <S.InputWrapper $error={!!error}>
                     <S.Prefix>{prefix}</S.Prefix>
                     <S.Divider />
-                    <S.InnerInput {...props} />
+                    <S.InnerInput id={id} {...props} />
                 </S.InputWrapper>
             ) : showPasswordToggle ? (
                 <S.InputWrapper $error={!!error}>
-                    <S.InnerInput {...props} type={resolvedType} />
+                    <S.InnerInput id={id} {...props} type={resolvedType} />
                     <S.ToggleButton
                         type="button"
-                        onClick={() => setPasswordVisible(v => !v)}
+                        onClick={() => setPasswordVisible((v) => !v)}
                         aria-label={passwordVisible ? "Ocultar senha" : "Mostrar senha"}
                     >
                         <EyeIcon visible={passwordVisible} />
                     </S.ToggleButton>
                 </S.InputWrapper>
             ) : (
-                <S.Input {...props} $error={!!error} />
+                <S.Input id={id} {...props} $error={!!error} />
             )}
 
             {error && <S.Error>{error}</S.Error>}

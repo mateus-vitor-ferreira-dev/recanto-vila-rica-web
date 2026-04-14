@@ -249,4 +249,35 @@ describe("Profile page", () => {
             expect(screen.getByText(/perfil atualizado com sucesso/i)).toBeInTheDocument()
         );
     });
+
+    it("shows rate limit toast when loading profile returns 429", async () => {
+        server.use(
+            http.get(`${BASE}/users/me`, () =>
+                HttpResponse.json({ success: false }, { status: 429 })
+            )
+        );
+
+        renderPage();
+
+        await waitFor(() =>
+            expect(
+                screen.getByText(/muitas requisições em pouco tempo/i)
+            ).toBeInTheDocument()
+        );
+    });
+
+    it("redirects to /home when loading profile returns 401", async () => {
+        server.use(
+            http.get(`${BASE}/users/me`, () =>
+                HttpResponse.json({ success: false }, { status: 401 })
+            )
+        );
+
+        renderPage();
+
+        await waitFor(() => {
+            expect(screen.getByText("Home Page")).toBeInTheDocument();
+        });
+    });
+
 });
