@@ -10,14 +10,11 @@ async function handleGoogleSuccess({ credential }, navigate) {
         });
 
         localStorage.setItem("recanto:userData", JSON.stringify(data.data));
-
-        toast.success(data.message || "Sucesso com Google");
+        toast.success(data.message || "Login realizado com sucesso.");
         navigate("/home");
     } catch (error) {
         const message =
-            error.response?.data?.message ||
-            error.response?.data?.error?.message ||
-            "Erro ao autenticar com Google.";
+            error.response?.data?.message || "Erro ao autenticar com Google.";
 
         toast.error(message);
     }
@@ -31,7 +28,7 @@ export default function GoogleButton({ navigate }) {
                     handleGoogleSuccess(credentialResponse, navigate)
                 }
                 onError={() => toast.error("Erro ao autenticar com Google.")}
-                width="100%"
+                width={400}
                 theme="outline"
                 shape="rectangular"
                 size="large"

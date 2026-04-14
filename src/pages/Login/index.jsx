@@ -7,7 +7,7 @@ import { AuthLayout, Button, GoogleButton, Input } from "../../components";
 import api from "../../services/api";
 import * as S from "./styles";
 
-export default function Login() {
+export default function Login({ introFinished = true }) {
     const navigate = useNavigate();
 
     const [form, setForm] = useState({
@@ -38,6 +38,7 @@ export default function Login() {
                 error.response?.data?.message ||
                 error.response?.data?.error?.message ||
                 "Erro ao fazer login.";
+
             toast.error(message);
         }
     }
@@ -46,6 +47,7 @@ export default function Login() {
         <AuthLayout
             title="Entrar"
             subtitle="Acesse sua conta para continuar."
+            introFinished={introFinished}
         >
             <S.Form onSubmit={handleSubmit}>
                 <Input
@@ -68,7 +70,9 @@ export default function Login() {
 
                 <Button type="submit">Entrar</Button>
 
-                <S.Divider><span>ou continue com</span></S.Divider>
+                <S.Divider>
+                    <span>ou continue com</span>
+                </S.Divider>
 
                 <GoogleButton navigate={navigate} />
 

@@ -62,11 +62,19 @@ export const BrandName = styled.span`
   text-shadow: 0 2px 12px rgba(201, 168, 76, 0.25);
 `;
 
+export const BrandLogoWrapper = styled.div`
+  width: min(190px, 28vw);
+  opacity: ${({ $visible }) => ($visible ? 1 : 0)};
+  transition: opacity 180ms ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
 export const BrandLogo = styled.img`
-  width: 308px;
-  height: 308px;
+  width: 100%;
+  display: block;
   object-fit: contain;
-  filter: drop-shadow(0 8px 32px rgba(0, 0, 0, 0.35));
 `;
 
 export const LeftBody = styled.div`
@@ -82,6 +90,7 @@ export const Headline = styled.h1`
   line-height: 1.15;
   letter-spacing: -0.02em;
   max-width: 380px;
+  margin: 0;
 `;
 
 export const Tagline = styled.p`
@@ -89,6 +98,7 @@ export const Tagline = styled.p`
   line-height: 1.7;
   color: rgba(255, 255, 255, 0.6);
   max-width: 360px;
+  margin: 0;
 `;
 
 /* decorative circles */
@@ -151,6 +161,34 @@ export const FormArea = styled.div`
   animation: ${fadeIn} 0.35s ease;
 `;
 
+export const MobileBrand = styled.div`
+  display: none;
+
+  @media (max-width: 860px) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+    opacity: ${({ $visible }) => ($visible ? 1 : 0)};
+    transition: opacity 180ms ease;
+  }
+`;
+
+export const MobileBrandLogo = styled.img`
+  width: min(150px, 42vw);
+  display: block;
+  object-fit: contain;
+`;
+
+export const MobileBrandName = styled.span`
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #c9a84c;
+`;
+
 export const FormHeader = styled.div`
   display: flex;
   flex-direction: column;
@@ -162,10 +200,12 @@ export const Title = styled.h2`
   font-weight: 800;
   color: #111827;
   letter-spacing: -0.02em;
+  margin: 0;
 `;
 
 export const Subtitle = styled.p`
   font-size: 14px;
   color: #6b7280;
   line-height: 1.5;
+  margin: 0;
 `;

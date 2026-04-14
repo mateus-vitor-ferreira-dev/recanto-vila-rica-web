@@ -1,14 +1,26 @@
 import Logo from "../../assets/logo-recanto.svg";
 import * as S from "./styles";
 
-export default function AuthLayout({ title, subtitle, children }) {
+export default function AuthLayout({
+    title,
+    subtitle,
+    children,
+    introFinished = true,
+}) {
     return (
         <S.Container>
             <S.LeftSide>
                 <S.LeftInner>
                     <S.Brand>
                         <S.BrandName>Recanto Vila Rica</S.BrandName>
-                        <S.BrandLogo src={Logo} alt="Recanto Vila Rica" />
+
+                        <S.BrandLogoWrapper
+                            data-intro-logo-target="true"
+                            data-intro-target-desktop="true"
+                            $visible={introFinished}
+                        >
+                            <S.BrandLogo src={Logo} alt="Recanto Vila Rica" />
+                        </S.BrandLogoWrapper>
                     </S.Brand>
 
                     <S.LeftBody>
@@ -27,6 +39,15 @@ export default function AuthLayout({ title, subtitle, children }) {
 
             <S.RightSide>
                 <S.FormArea>
+                    <S.MobileBrand
+                        data-intro-logo-target="true"
+                        data-intro-target-mobile="true"
+                        $visible={introFinished}
+                    >
+                        <S.MobileBrandLogo src={Logo} alt="Recanto Vila Rica" />
+                        <S.MobileBrandName>Recanto Vila Rica</S.MobileBrandName>
+                    </S.MobileBrand>
+
                     <S.FormHeader>
                         <S.Title>{title}</S.Title>
                         <S.Subtitle>{subtitle}</S.Subtitle>

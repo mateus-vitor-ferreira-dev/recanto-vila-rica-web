@@ -8,7 +8,7 @@ import api from "../../services/api";
 import { formatPhone } from "../../utils/formatPhone";
 import * as S from "./styles";
 
-export default function SignUp() {
+export default function SignUp({ introFinished = true }) {
     const navigate = useNavigate();
 
     const [form, setForm] = useState({
@@ -20,10 +20,32 @@ export default function SignUp() {
     });
 
     function handleChange(event) {
-        const value = event.target.name === "phone"
-            ? formatPhone(event.target.value)
-            : event.target.value;
+        const value =
+            event.target.name === "phone"
+                ? formatPhone(event.target.value)
+                : event.target.value;
+
         setForm({ ...form, [event.target.name]: value });
+    }
+
+    function validatePassword(password) {
+        if (password.length < 8) {
+            return "A senha deve ter pelo menos 8 caracteres.";
+        }
+
+        if (!/[A-Z]/.test(password)) {
+            return "A senha deve conter pelo menos 1 letra maiúscula.";
+        }
+
+        if (!/[0-9]/.test(password)) {
+            return "A senha deve conter pelo menos 1 número.";
+        }
+
+        if (!/[!@#$%^&*(),.?":{}|<>_\-\\[\]/+=;']/.test(password)) {
+            return "A senha deve conter pelo menos 1 caractere especial.";
+        }
+
+        return null;
     }
 
     async function handleSubmit(event) {
@@ -73,30 +95,11 @@ export default function SignUp() {
         }
     }
 
-    function validatePassword(password) {
-        if (password.length < 8) {
-            return "A senha deve ter pelo menos 8 caracteres.";
-        }
-
-        if (!/[A-Z]/.test(password)) {
-            return "A senha deve conter pelo menos 1 letra maiúscula.";
-        }
-
-        if (!/[0-9]/.test(password)) {
-            return "A senha deve conter pelo menos 1 número.";
-        }
-
-        if (!/[!@#$%^&*(),.?":{}|<>_\-\\[\]/+=;']/.test(password)) {
-            return "A senha deve conter pelo menos 1 caractere especial.";
-        }
-
-        return null;
-    }
-
     return (
         <AuthLayout
             title="Criar conta"
             subtitle="Preencha os dados para acessar a plataforma."
+            introFinished={introFinished}
         >
             <S.Form onSubmit={handleSubmit}>
                 <Input
@@ -146,7 +149,9 @@ export default function SignUp() {
 
                 <Button type="submit">Criar conta</Button>
 
-                <S.Divider><span>ou continue com</span></S.Divider>
+                <S.Divider>
+                    <span>ou continue com</span>
+                </S.Divider>
 
                 <GoogleButton navigate={navigate} />
 
