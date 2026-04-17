@@ -130,9 +130,9 @@ export default function Home() {
             </S.PageHeader>
 
             <S.StatsGrid>
-                <S.StatCard $accent="#2563eb">
+                <S.StatCard $accent="var(--accent-olive)">
                     <S.StatLabel>Total de reservas</S.StatLabel>
-                    <S.StatNumber $accent="#2563eb">
+                    <S.StatNumber $accent="var(--accent-olive)">
                         {dashboard.reservations.length}
                     </S.StatNumber>
                     <S.StatDescription>
@@ -140,9 +140,9 @@ export default function Home() {
                     </S.StatDescription>
                 </S.StatCard>
 
-                <S.StatCard $accent="#7c3aed">
+                <S.StatCard $accent="var(--accent-teal)">
                     <S.StatLabel>Espaços disponíveis</S.StatLabel>
-                    <S.StatNumber $accent="#7c3aed">
+                    <S.StatNumber $accent="var(--accent-teal)">
                         {dashboard.venues.length}
                     </S.StatNumber>
                     <S.StatDescription>
@@ -150,9 +150,9 @@ export default function Home() {
                     </S.StatDescription>
                 </S.StatCard>
 
-                <S.StatCard $accent="#ea580c">
+                <S.StatCard $accent="var(--brand-dark)">
                     <S.StatLabel>Próximas reservas</S.StatLabel>
-                    <S.StatNumber $accent="#ea580c">
+                    <S.StatNumber $accent="var(--brand-dark)">
                         {upcomingReservations.length}
                     </S.StatNumber>
                     <S.StatDescription>
