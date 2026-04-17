@@ -1,4 +1,7 @@
+import { useRef } from "react";
+import { useGSAP } from "@gsap/react";
 import Logo from "../../assets/logo-recanto.svg";
+import { animateStagger } from "../../utils/animations";
 import * as S from "./styles";
 
 export default function AuthLayout({
@@ -7,6 +10,12 @@ export default function AuthLayout({
     children,
     introFinished = true,
 }) {
+    const formAreaRef = useRef(null);
+
+    useGSAP(() => {
+        animateStagger(formAreaRef.current.children, { delay: 0.1 });
+    }, { scope: formAreaRef, dependencies: [] });
+
     return (
         <S.Container>
             <S.LeftSide>
@@ -38,7 +47,7 @@ export default function AuthLayout({
             </S.LeftSide>
 
             <S.RightSide>
-                <S.FormArea>
+                <S.FormArea ref={formAreaRef}>
                     <S.MobileBrand
                         data-intro-logo-target="true"
                         data-intro-target-mobile="true"

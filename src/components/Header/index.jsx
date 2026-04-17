@@ -1,6 +1,9 @@
+import { useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useGSAP } from "@gsap/react";
 import logo from "../../assets/logo-recanto.svg";
 import { useTheme } from "../../contexts/ThemeContext";
+import { animateFadeInUp } from "../../utils/animations";
 import * as S from "./styles";
 
 function getInitials(name) {
@@ -39,6 +42,11 @@ export default function Header() {
     const navigate = useNavigate();
     const location = useLocation();
     const { theme, toggleTheme } = useTheme();
+    const containerRef = useRef(null);
+
+    useGSAP(() => {
+        animateFadeInUp(containerRef.current, { y: -20, duration: 0.5 });
+    }, { scope: containerRef, dependencies: [] });
 
     let userData = {};
 
@@ -57,7 +65,7 @@ export default function Header() {
     }
 
     return (
-        <S.Container>
+        <S.Container ref={containerRef}>
             <S.Content>
                 <S.BrandWrapper to="/home">
                     <S.Logo src={logo} alt="Logo Recanto Vila Rica" />
