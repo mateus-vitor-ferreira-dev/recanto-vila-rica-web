@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
+import { useGSAP } from "@gsap/react";
 
 import {
     createCampaign,
@@ -15,6 +16,7 @@ import {
     updateCampaign,
 } from "../../services/admin";
 import { getErrorMessage } from "../../utils/getErrorMessage";
+import { animateStagger } from "../../utils/animations";
 import * as S from "./styles";
 
 // ─── Constants ─────────────────────────────────────────────────────────────
@@ -120,6 +122,7 @@ function formatCurrency(value) {
 // ─── Dashboard Tab ───────────────────────────────────────────────────────────
 
 function DashboardTab() {
+    const sectionRef = useRef(null);
     const [summary, setSummary] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -137,48 +140,77 @@ function DashboardTab() {
         load();
     }, []);
 
+    useGSAP(() => {
+        if (isLoading || !sectionRef.current) return;
+        animateStagger(sectionRef.current.querySelectorAll(".anim-card"));
+    }, { scope: sectionRef, dependencies: [isLoading] });
+
     if (isLoading) return <S.LoadingSpinner />;
 
     if (!summary) return null;
 
+    const stripe = summary.revenueByMethod?.stripe;
+    const pix = summary.revenueByMethod?.pix;
+
     return (
-        <S.Section>
+        <S.Section ref={sectionRef}>
             <S.SectionTitle>Visão geral</S.SectionTitle>
             <S.SummaryGrid>
-                <S.SummaryCard>
+                <S.SummaryCard className="anim-card">
                     <S.SummaryLabel>Total de reservas</S.SummaryLabel>
                     <S.SummaryValue>{summary.totalReservations ?? 0}</S.SummaryValue>
                 </S.SummaryCard>
 
-                <S.SummaryCard>
+                <S.SummaryCard className="anim-card">
                     <S.SummaryLabel>Receita confirmada</S.SummaryLabel>
                     <S.SummaryValue $accent>
                         {formatCurrency(summary.totalRevenue ?? 0)}
                     </S.SummaryValue>
                 </S.SummaryCard>
 
-                <S.SummaryCard>
+                <S.SummaryCard className="anim-card">
                     <S.SummaryLabel>Pendentes</S.SummaryLabel>
                     <S.SummaryValue>{summary.pendingReservations ?? 0}</S.SummaryValue>
                     <S.SummarySubtitle>aguardando pagamento</S.SummarySubtitle>
                 </S.SummaryCard>
 
-                <S.SummaryCard>
+                <S.SummaryCard className="anim-card">
                     <S.SummaryLabel>Pagas</S.SummaryLabel>
                     <S.SummaryValue>{summary.paidReservations ?? 0}</S.SummaryValue>
                     <S.SummarySubtitle>confirmadas</S.SummarySubtitle>
                 </S.SummaryCard>
 
-                <S.SummaryCard>
+                <S.SummaryCard className="anim-card">
                     <S.SummaryLabel>Canceladas</S.SummaryLabel>
                     <S.SummaryValue>{summary.cancelledReservations ?? 0}</S.SummaryValue>
                 </S.SummaryCard>
 
-                <S.SummaryCard>
+                <S.SummaryCard className="anim-card">
                     <S.SummaryLabel>Expiradas</S.SummaryLabel>
                     <S.SummaryValue>{summary.expiredReservations ?? 0}</S.SummaryValue>
                 </S.SummaryCard>
             </S.SummaryGrid>
+
+            <S.SectionTitle style={{ marginTop: "32px" }}>Receita por método</S.SectionTitle>
+            <S.RevenueBreakdown>
+                <S.RevenueMethodCard className="anim-card">
+                    <S.RevenueMethodIcon>💳</S.RevenueMethodIcon>
+                    <S.RevenueMethodInfo>
+                        <S.SummaryLabel>Cartão de Crédito</S.SummaryLabel>
+                        <S.SummaryValue $accent>{formatCurrency(stripe?.amount ?? 0)}</S.SummaryValue>
+                        <S.SummarySubtitle>{stripe?.count ?? 0} pagamento{stripe?.count !== 1 ? "s" : ""}</S.SummarySubtitle>
+                    </S.RevenueMethodInfo>
+                </S.RevenueMethodCard>
+
+                <S.RevenueMethodCard className="anim-card">
+                    <S.RevenueMethodIcon>⚡</S.RevenueMethodIcon>
+                    <S.RevenueMethodInfo>
+                        <S.SummaryLabel>PIX</S.SummaryLabel>
+                        <S.SummaryValue $accent>{formatCurrency(pix?.amount ?? 0)}</S.SummaryValue>
+                        <S.SummarySubtitle>{pix?.count ?? 0} pagamento{pix?.count !== 1 ? "s" : ""}</S.SummarySubtitle>
+                    </S.RevenueMethodInfo>
+                </S.RevenueMethodCard>
+            </S.RevenueBreakdown>
         </S.Section>
     );
 }

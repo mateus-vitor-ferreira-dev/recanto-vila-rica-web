@@ -102,6 +102,37 @@ export const SummarySubtitle = styled.span`
   color: var(--text-muted);
 `;
 
+export const RevenueBreakdown = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+export const RevenueMethodCard = styled.div`
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 16px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+`;
+
+export const RevenueMethodIcon = styled.span`
+  font-size: 28px;
+  flex-shrink: 0;
+`;
+
+export const RevenueMethodInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+`;
+
 /* Generic section */
 export const Section = styled.div`
   display: flex;
