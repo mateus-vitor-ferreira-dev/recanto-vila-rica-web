@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, describe, expect, it } from "vitest";
 import Header from "../../components/Header";
+import { ThemeProvider } from "../../contexts/ThemeContext";
 
 function renderHeader(userData = null, path = "/home") {
     if (userData) {
@@ -12,16 +13,18 @@ function renderHeader(userData = null, path = "/home") {
     }
 
     return render(
-        <MemoryRouter initialEntries={[path]}>
-            <Routes>
-                <Route path="*" element={<Header />} />
-            </Routes>
-            <div id="pages">
+        <ThemeProvider>
+            <MemoryRouter initialEntries={[path]}>
                 <Routes>
-                    <Route path="/login" element={<div>Login Page</div>} />
+                    <Route path="*" element={<Header />} />
                 </Routes>
-            </div>
-        </MemoryRouter>
+                <div id="pages">
+                    <Routes>
+                        <Route path="/login" element={<div>Login Page</div>} />
+                    </Routes>
+                </div>
+            </MemoryRouter>
+        </ThemeProvider>
     );
 }
 
