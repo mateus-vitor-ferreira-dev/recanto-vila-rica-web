@@ -25,7 +25,7 @@ export function formatTime(date) {
 }
 
 export function formatCurrency(value) {
-    return (Number(value) / 100).toLocaleString("pt-BR", {
+    return Number(value).toLocaleString("pt-BR", {
         style: "currency",
         currency: "BRL",
     });

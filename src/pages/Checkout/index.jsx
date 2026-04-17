@@ -142,7 +142,7 @@ export default function Checkout() {
                 <S.PaymentCard>
                     <S.PaymentTitle>Pagamento seguro</S.PaymentTitle>
                     <S.PaymentDescription>
-                        Você será redirecionado para o ambiente seguro do Stripe para concluir o pagamento.
+                        Você será redirecionado para o ambiente seguro do Stripe para concluir o pagamento com cartão de crédito ou PIX.
                     </S.PaymentDescription>
 
                     <S.SecurityBadges>
@@ -158,7 +158,12 @@ export default function Checkout() {
 
                         <S.SecurityItem>
                             <S.SecurityDot />
-                            Dados do cartão não armazenados
+                            Aceita cartão de crédito e PIX
+                        </S.SecurityItem>
+
+                        <S.SecurityItem>
+                            <S.SecurityDot />
+                            PIX expira em 1 hora
                         </S.SecurityItem>
                     </S.SecurityBadges>
 

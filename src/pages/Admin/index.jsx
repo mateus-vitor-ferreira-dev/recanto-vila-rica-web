@@ -110,8 +110,8 @@ function formatDateTime(date) {
     });
 }
 
-function formatCurrency(cents) {
-    return (cents / 100).toLocaleString("pt-BR", {
+function formatCurrency(value) {
+    return Number(value).toLocaleString("pt-BR", {
         style: "currency",
         currency: "BRL",
     });
@@ -567,14 +567,14 @@ function CampaignsTab() {
                             {winnerResult.winner.phone && (
                                 <span>{winnerResult.winner.phone}</span>
                             )}
-                            <span style={{ marginTop: 4, fontSize: 12, color: "#6b7280" }}>
+                            <span style={{ marginTop: 4, fontSize: 12, color: "var(--text-muted)" }}>
                                 Sorteado entre {winnerResult.totalEntries}{" "}
                                 {winnerResult.totalEntries === 1 ? "participante" : "participantes"}
                             </span>
                         </S.WinnerCard>
 
                         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                            <span style={{ fontSize: 13, fontWeight: 600, color: "#374151" }}>
+                            <span style={{ fontSize: 13, fontWeight: 600, color: "var(--text-secondary)" }}>
                                 Mensagem para enviar ao ganhador:
                             </span>
                             <S.MessagePreview>
