@@ -26,7 +26,7 @@ export const LoadingState = styled.div`
   text-align: center;
 
   p {
-    color: #6b7280;
+    color: var(--text-muted);
     font-size: 15px;
   }
 `;
@@ -35,8 +35,8 @@ export const Spinner = styled.div`
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border: 3px solid #e5e7eb;
-  border-top-color: #1f4f41;
+  border: 3px solid var(--border-default);
+  border-top-color: var(--brand);
   animation: ${spinAnim} 0.8s linear infinite;
 `;
 
@@ -49,11 +49,11 @@ export const PageHeader = styled.div`
 export const PageTitle = styled.h1`
   font-size: 32px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
 `;
 
 export const PageDescription = styled.p`
-  color: #6b7280;
+  color: var(--text-muted);
   font-size: 15px;
   line-height: 1.6;
 `;
@@ -62,7 +62,7 @@ export const Grid = styled.div`
   display: grid;
   grid-template-columns: 1fr 420px;
   gap: 24px;
-  align-items: start;
+  align-items: stretch;
 
   @media (max-width: 900px) {
     grid-template-columns: 1fr;
@@ -72,8 +72,8 @@ export const Grid = styled.div`
 /* ─── Reservation Summary Card ─── */
 
 export const SummaryCard = styled.article`
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 24px;
   padding: 32px;
   box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
@@ -93,7 +93,7 @@ export const SummaryHeader = styled.div`
 export const VenueName = styled.h2`
   font-size: 26px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
 `;
 
 export const StatusBadge = styled.span`
@@ -109,19 +109,19 @@ export const StatusBadge = styled.span`
   ${({ status }) => {
     switch (status) {
       case "PAID":
-        return `background: #ecfdf3; color: #166534; border-color: #bbf7d0;`;
+        return `background: var(--status-paid-bg); color: var(--status-paid-text); border-color: var(--status-paid-border);`;
       case "CANCELLED":
-        return `background: #fef2f2; color: #b91c1c; border-color: #fecaca;`;
+        return `background: var(--status-error-bg); color: var(--status-error-text); border-color: var(--status-error-border);`;
       case "PENDING":
       default:
-        return `background: #fffbeb; color: #b45309; border-color: #fde68a;`;
+        return `background: var(--status-pending-bg); color: var(--status-pending-text); border-color: var(--status-pending-border);`;
     }
   }}
 `;
 
 export const Divider = styled.div`
   height: 1px;
-  background: #f3f4f6;
+  background: var(--bg-muted);
 `;
 
 export const DetailList = styled.div`
@@ -135,8 +135,8 @@ export const DetailList = styled.div`
 `;
 
 export const DetailItem = styled.div`
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-page);
+  border: 1px solid var(--border-default);
   border-radius: 12px;
   padding: 14px 16px;
   display: flex;
@@ -147,7 +147,7 @@ export const DetailItem = styled.div`
 export const DetailLabel = styled.span`
   font-size: 11px;
   font-weight: 600;
-  color: #9ca3af;
+  color: var(--text-faint);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 `;
@@ -155,7 +155,7 @@ export const DetailLabel = styled.span`
 export const DetailValue = styled.strong`
   font-size: 15px;
   font-weight: 600;
-  color: #111827;
+  color: var(--text-primary);
 `;
 
 export const TotalRow = styled.div`
@@ -168,53 +168,50 @@ export const TotalRow = styled.div`
 export const TotalLabel = styled.span`
   font-size: 16px;
   font-weight: 600;
-  color: #374151;
+  color: var(--text-secondary);
 `;
 
 export const TotalValue = styled.strong`
   font-size: 30px;
   font-weight: 800;
-  color: #1f4f41;
+  color: var(--brand);
 `;
 
 /* ─── Payment Card ─── */
 
 export const PaymentCard = styled.article`
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 24px;
   padding: 32px;
   box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
   display: flex;
   flex-direction: column;
   gap: 20px;
-  position: sticky;
-  top: 96px;
 `;
 
 export const PaymentTitle = styled.h3`
   font-size: 20px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
 `;
 
 export const PaymentDescription = styled.p`
   font-size: 14px;
-  color: #6b7280;
+  color: var(--text-muted);
   line-height: 1.6;
   margin-top: -8px;
 `;
 
 export const SecurityBadges = styled.ul`
   list-style: none;
-  padding: 0;
+  padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-page);
+  border: 1px solid var(--border-default);
   border-radius: 14px;
-  padding: 16px;
 `;
 
 export const SecurityItem = styled.li`
@@ -222,7 +219,7 @@ export const SecurityItem = styled.li`
   align-items: center;
   gap: 10px;
   font-size: 13px;
-  color: #4b5563;
+  color: var(--text-medium);
   font-weight: 500;
 `;
 
@@ -230,7 +227,7 @@ export const SecurityDot = styled.span`
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #1f4f41;
+  background: var(--brand);
   flex-shrink: 0;
 `;
 
@@ -239,20 +236,20 @@ export const AmountSummary = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 16px 20px;
-  background: #f0fdf9;
-  border: 1px solid #d1fae5;
+  background: var(--brand-subtle);
+  border: 1px solid var(--brand-border);
   border-radius: 14px;
 
   span {
     font-size: 15px;
     font-weight: 600;
-    color: #374151;
+    color: var(--text-secondary);
   }
 
   strong {
     font-size: 22px;
     font-weight: 800;
-    color: #1f4f41;
+    color: var(--brand);
   }
 `;
 
@@ -261,7 +258,7 @@ export const PayButton = styled.button`
   padding: 16px;
   border: none;
   border-radius: 14px;
-  background: #1f4f41;
+  background: var(--brand);
   color: #ffffff;
   font-size: 16px;
   font-weight: 700;
@@ -284,19 +281,19 @@ export const PayButton = styled.button`
 `;
 
 export const InfoBox = styled.div`
-  background: #fffbeb;
-  border: 1px solid #fde68a;
+  background: var(--status-pending-bg);
+  border: 1px solid var(--status-pending-border);
   border-radius: 12px;
   padding: 14px 16px;
   font-size: 14px;
-  color: #92400e;
+  color: var(--status-pending-text-deep);
   line-height: 1.5;
 `;
 
 export const CancelLink = styled.button`
   background: none;
   border: none;
-  color: #6b7280;
+  color: var(--text-muted);
   font-size: 14px;
   cursor: pointer;
   text-align: center;
@@ -305,19 +302,19 @@ export const CancelLink = styled.button`
   padding: 0;
 
   &:hover {
-    color: #374151;
+    color: var(--text-secondary);
   }
 `;
 
 export const StripeBadge = styled.p`
   text-align: center;
   font-size: 12px;
-  color: #9ca3af;
-  border-top: 1px solid #f3f4f6;
+  color: var(--text-faint);
+  border-top: 1px solid var(--bg-muted);
   padding-top: 16px;
   margin-top: -4px;
 
   strong {
-    color: #6b7280;
+    color: var(--text-muted);
   }
 `;

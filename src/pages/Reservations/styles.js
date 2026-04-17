@@ -19,11 +19,11 @@ export const Header = styled.section`
 export const Title = styled.h1`
   font-size: 32px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
 `;
 
 export const Description = styled.p`
-  color: #6b7280;
+  color: var(--text-muted);
   line-height: 1.6;
   font-size: 15px;
 `;
@@ -35,8 +35,8 @@ export const List = styled.div`
 `;
 
 export const Card = styled.article`
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 18px;
   padding: 22px;
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
@@ -55,13 +55,13 @@ export const CardHeader = styled.div`
   strong {
     display: block;
     font-size: 18px;
-    color: #111827;
+    color: var(--text-primary);
     margin-bottom: 4px;
   }
 
   span {
     font-size: 14px;
-    color: #6b7280;
+    color: var(--text-muted);
   }
 `;
 
@@ -75,8 +75,8 @@ export const CardBody = styled.div`
   }
 
   div {
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
+    background: var(--bg-page);
+    border: 1px solid var(--border-default);
     border-radius: 12px;
     padding: 14px;
     display: flex;
@@ -87,7 +87,7 @@ export const CardBody = styled.div`
   span {
     font-size: 12px;
     font-weight: 500;
-    color: #9ca3af;
+    color: var(--text-faint);
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
@@ -95,7 +95,7 @@ export const CardBody = styled.div`
   strong {
     font-size: 16px;
     font-weight: 700;
-    color: #111827;
+    color: var(--text-primary);
   }
 `;
 
@@ -107,7 +107,7 @@ export const CardFooter = styled.div`
 `;
 
 export const PayButton = styled.button`
-  background: #1f4f41;
+  background: var(--brand);
   color: #ffffff;
   border: none;
   height: 44px;
@@ -124,9 +124,9 @@ export const PayButton = styled.button`
 `;
 
 export const CancelButton = styled.button`
-  background: #fef2f2;
-  color: #b91c1c;
-  border: 1px solid #fecaca;
+  background: var(--status-error-bg);
+  color: var(--status-error-text);
+  border: 1px solid var(--status-error-border);
   height: 44px;
   padding: 0 20px;
   border-radius: 12px;
@@ -136,7 +136,7 @@ export const CancelButton = styled.button`
   transition: background 0.15s ease;
 
   &:hover:not(:disabled) {
-    background: #fee2e2;
+    background: var(--status-error-hover);
   }
 
   &:disabled {
@@ -160,33 +160,33 @@ export const Status = styled.span`
     switch (status) {
       case "PAID":
         return `
-          background: #ecfdf3;
-          color: #166534;
-          border-color: #bbf7d0;
+          background: var(--status-paid-bg);
+          color: var(--status-paid-text);
+          border-color: var(--status-paid-border);
         `;
       case "CANCELLED":
       case "EXPIRED":
         return `
-          background: #f3f4f6;
-          color: #6b7280;
-          border-color: #e5e7eb;
+          background: var(--bg-muted);
+          color: var(--text-muted);
+          border-color: var(--border-default);
         `;
       case "PENDING":
       default:
         return `
-          background: #fffbeb;
-          color: #b45309;
-          border-color: #fde68a;
+          background: var(--status-pending-bg);
+          color: var(--status-pending-text);
+          border-color: var(--status-pending-border);
         `;
     }
   }}
 `;
 
 export const LoadingCard = styled.div`
-  background: #ffffff;
+  background: var(--bg-surface);
   border-radius: 20px;
   padding: 56px 32px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-default);
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
   display: flex;
   flex-direction: column;
@@ -199,18 +199,18 @@ export const LoadingCard = styled.div`
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    border: 3px solid #e5e7eb;
-    border-top-color: #1f4f41;
+    border: 3px solid var(--border-default);
+    border-top-color: var(--brand);
     animation: ${spin} 0.8s linear infinite;
   }
 
   h2 {
     font-size: 18px;
-    color: #111827;
+    color: var(--text-primary);
   }
 
   p {
-    color: #6b7280;
+    color: var(--text-muted);
     font-size: 14px;
     max-width: 300px;
     line-height: 1.6;
@@ -229,7 +229,7 @@ export const ModalOverlay = styled.div`
 `;
 
 export const ModalBox = styled.div`
-  background: #ffffff;
+  background: var(--bg-surface);
   border-radius: 20px;
   padding: 32px;
   max-width: 420px;
@@ -243,12 +243,12 @@ export const ModalBox = styled.div`
 export const ModalTitle = styled.h2`
   font-size: 20px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
 `;
 
 export const ModalBody = styled.p`
   font-size: 15px;
-  color: #6b7280;
+  color: var(--text-muted);
   line-height: 1.6;
 `;
 
@@ -262,16 +262,16 @@ export const ModalCancelBtn = styled.button`
   height: 42px;
   padding: 0 20px;
   border-radius: 12px;
-  border: 1px solid #e5e7eb;
-  background: #ffffff;
-  color: #374151;
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.15s ease;
 
   &:hover {
-    background: #f9fafb;
+    background: var(--bg-page);
   }
 `;
 
@@ -280,7 +280,7 @@ export const ModalConfirmBtn = styled.button`
   padding: 0 20px;
   border-radius: 12px;
   border: none;
-  background: #b91c1c;
+  background: var(--status-error-text);
   color: #ffffff;
   font-size: 14px;
   font-weight: 700;
@@ -298,10 +298,10 @@ export const ModalConfirmBtn = styled.button`
 `;
 
 export const EmptyState = styled.div`
-  background: #ffffff;
+  background: var(--bg-surface);
   border-radius: 20px;
   padding: 56px 32px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-default);
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
   display: flex;
   flex-direction: column;
@@ -314,17 +314,17 @@ export const EmptyState = styled.div`
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background: #f3f4f6;
-    border: 2px dashed #d1d5db;
+    background: var(--bg-muted);
+    border: 2px dashed var(--border-medium);
   }
 
   h2 {
     font-size: 18px;
-    color: #111827;
+    color: var(--text-primary);
   }
 
   p {
-    color: #6b7280;
+    color: var(--text-muted);
     font-size: 14px;
     max-width: 300px;
     line-height: 1.6;

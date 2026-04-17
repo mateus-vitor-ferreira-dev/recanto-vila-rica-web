@@ -22,20 +22,20 @@ export const TopSection = styled.div`
 export const PageTitle = styled.h1`
   font-size: 32px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
   margin-bottom: 8px;
 `;
 
 export const PageDescription = styled.p`
-  color: #6b7280;
+  color: var(--text-muted);
   max-width: 600px;
   line-height: 1.6;
   font-size: 15px;
 `;
 
 export const EstimatedCard = styled.div`
-  background: #ffffff;
-  border: 1px solid #d1fae5;
+  background: var(--bg-surface);
+  border: 1px solid var(--brand-border);
   border-radius: 16px;
   padding: 20px 24px;
   min-width: 220px;
@@ -44,7 +44,7 @@ export const EstimatedCard = styled.div`
 
   span {
     display: block;
-    color: #6b7280;
+    color: var(--text-muted);
     font-size: 13px;
     font-weight: 500;
   }
@@ -53,12 +53,12 @@ export const EstimatedCard = styled.div`
     display: block;
     font-size: 26px;
     font-weight: 800;
-    color: #1f4f41;
+    color: var(--brand);
     margin: 6px 0 4px;
   }
 
   small {
-    color: #9ca3af;
+    color: var(--text-faint);
     font-size: 13px;
   }
 `;
@@ -86,8 +86,8 @@ export const RightColumn = styled.div`
 `;
 
 export const Card = styled.div`
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 20px;
   padding: 24px;
   box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
@@ -96,12 +96,12 @@ export const Card = styled.div`
 export const CardTitle = styled.h2`
   font-size: 18px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
   margin-bottom: 6px;
 `;
 
 export const CardDescription = styled.p`
-  color: #6b7280;
+  color: var(--text-muted);
   font-size: 14px;
   line-height: 1.5;
   margin-bottom: 20px;
@@ -115,14 +115,14 @@ export const InfoGrid = styled.div`
 `;
 
 export const InfoBox = styled.div`
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-page);
+  border: 1px solid var(--border-default);
   padding: 14px;
   border-radius: 12px;
 
   span {
     display: block;
-    color: #6b7280;
+    color: var(--text-muted);
     font-size: 12px;
     font-weight: 500;
     margin-bottom: 4px;
@@ -131,7 +131,7 @@ export const InfoBox = styled.div`
   }
 
   strong {
-    color: #111827;
+    color: var(--text-primary);
     font-size: 14px;
     font-weight: 600;
   }
@@ -139,9 +139,9 @@ export const InfoBox = styled.div`
 
 export const RouteButton = styled.button`
   width: 100%;
-  background: #ffffff;
-  color: #374151;
-  border: 1px solid #d1d5db;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-medium);
   padding: 12px;
   border-radius: 12px;
   font-weight: 600;
@@ -150,7 +150,7 @@ export const RouteButton = styled.button`
   transition: background 0.15s ease;
 
   &:hover {
-    background: #f9fafb;
+    background: var(--bg-page);
   }
 `;
 
@@ -166,7 +166,7 @@ export const FormRow = styled.div`
 export const RangeValue = styled.div`
   font-size: 20px;
   font-weight: 700;
-  color: #1f4f41;
+  color: var(--brand);
   margin-bottom: 12px;
 `;
 
@@ -175,7 +175,7 @@ export const StyledRange = styled.input`
   appearance: none;
   height: 6px;
   border-radius: 4px;
-  background: #e5e7eb;
+  background: var(--border-default);
   outline: none;
   margin-bottom: 8px;
   cursor: pointer;
@@ -184,7 +184,7 @@ export const StyledRange = styled.input`
     appearance: none;
     width: 20px;
     height: 20px;
-    background: #1f4f41;
+    background: var(--brand);
     border-radius: 50%;
     cursor: pointer;
     box-shadow: 0 0 0 4px rgba(31, 79, 65, 0.15);
@@ -199,7 +199,7 @@ export const StyledRange = styled.input`
 export const RangeLabels = styled.div`
   display: flex;
   justify-content: space-between;
-  color: #9ca3af;
+  color: var(--text-faint);
   font-size: 12px;
 `;
 
@@ -213,15 +213,15 @@ export const OptionItem = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-page);
+  border: 1px solid var(--border-default);
   padding: 14px 16px;
   border-radius: 12px;
   transition: border-color 0.15s ease, background 0.15s ease;
 
   &:has(input:checked:not(:disabled)) {
-    border-color: #6ee7b7;
-    background: #f0fdf9;
+    border-color: var(--brand-border);
+    background: var(--brand-subtle);
   }
 
   div {
@@ -231,13 +231,13 @@ export const OptionItem = styled.div`
   }
 
   strong {
-    color: #111827;
+    color: var(--text-primary);
     font-size: 14px;
     font-weight: 600;
   }
 
   span {
-    color: #6b7280;
+    color: var(--text-muted);
     font-size: 13px;
   }
 
@@ -245,7 +245,7 @@ export const OptionItem = styled.div`
     width: 18px;
     height: 18px;
     cursor: pointer;
-    accent-color: #1f4f41;
+    accent-color: var(--brand);
     flex-shrink: 0;
   }
 `;
@@ -264,12 +264,12 @@ export const SummaryItem = styled.div`
 
   span {
     font-size: 14px;
-    color: #6b7280;
+    color: var(--text-muted);
   }
 
   strong {
     font-size: 14px;
-    color: #111827;
+    color: var(--text-primary);
     font-weight: 600;
     text-align: right;
   }
@@ -277,7 +277,7 @@ export const SummaryItem = styled.div`
 
 export const Divider = styled.div`
   height: 1px;
-  background: #e5e7eb;
+  background: var(--border-default);
   margin: 16px 0;
 `;
 
@@ -289,19 +289,19 @@ export const TotalRow = styled.div`
   span {
     font-size: 15px;
     font-weight: 600;
-    color: #374151;
+    color: var(--text-secondary);
   }
 
   strong {
-    color: #1f4f41;
+    color: var(--brand);
     font-size: 22px;
     font-weight: 800;
   }
 `;
 
 export const ActionCard = styled.div`
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 20px;
   padding: 24px;
   box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
@@ -312,7 +312,7 @@ export const ConfirmButton = styled.button`
   padding: 14px;
   border-radius: 12px;
   border: none;
-  background: #1f4f41;
+  background: var(--brand);
   color: #ffffff;
   font-size: 15px;
   font-weight: 700;
@@ -332,7 +332,7 @@ export const ConfirmButton = styled.button`
 export const ContractCard = styled.div`
   margin-top: 20px;
   padding-top: 20px;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--border-default);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -341,13 +341,13 @@ export const ContractCard = styled.div`
 export const ContractTitle = styled.h3`
   font-size: 15px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
 `;
 
 export const ContractDescription = styled.p`
   font-size: 13px;
   line-height: 1.5;
-  color: #6b7280;
+  color: var(--text-muted);
 `;
 
 export const ContractLink = styled.a`
@@ -357,16 +357,16 @@ export const ContractLink = styled.a`
   width: fit-content;
   padding: 10px 14px;
   border-radius: 10px;
-  background: #f3f4f6;
-  border: 1px solid #e5e7eb;
-  color: #374151;
+  background: var(--bg-muted);
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 600;
   text-decoration: none;
   transition: background 0.15s ease;
 
   &:hover {
-    background: #e5e7eb;
+    background: var(--border-default);
   }
 `;
 
@@ -378,16 +378,16 @@ export const ContractDownloadWrapper = styled.div`
     width: fit-content;
     padding: 10px 14px;
     border-radius: 10px;
-    background: #f3f4f6;
-    border: 1px solid #e5e7eb;
-    color: #374151;
+    background: var(--bg-muted);
+    border: 1px solid var(--border-default);
+    color: var(--text-secondary);
     font-size: 13px;
     font-weight: 600;
     text-decoration: none;
     transition: background 0.15s ease;
 
     &:hover {
-      background: #e5e7eb;
+      background: var(--border-default);
     }
   }
 `;
@@ -402,14 +402,14 @@ export const ContractCheckboxWrapper = styled.div`
     width: 16px;
     height: 16px;
     cursor: pointer;
-    accent-color: #1f4f41;
+    accent-color: var(--brand);
     flex-shrink: 0;
   }
 
   label {
     font-size: 13px;
     line-height: 1.5;
-    color: #374151;
+    color: var(--text-secondary);
     cursor: pointer;
   }
 `;
@@ -426,31 +426,31 @@ export const PlanGrid = styled.div`
 
 export const PlanCard = styled.div`
   border: 2px solid ${({ $selected, $disabled }) =>
-    $disabled ? "#e5e7eb" : $selected ? "#1f4f41" : "#e5e7eb"};
+    $disabled ? "var(--border-default)" : $selected ? "var(--brand)" : "var(--border-default)"};
   border-radius: 16px;
   padding: 16px;
   cursor: ${({ $disabled }) => ($disabled ? "no-drop" : "pointer")};
   background: ${({ $selected, $disabled }) =>
-    $disabled ? "#f3f4f6" : $selected ? "#f0fdf9" : "#ffffff"};
+    $disabled ? "var(--bg-muted)" : $selected ? "var(--brand-subtle)" : "var(--bg-surface)"};
   opacity: ${({ $disabled }) => ($disabled ? "0.5" : "1")};
   transition: border-color 0.15s ease, background 0.15s ease, opacity 0.15s ease;
 
   &:hover {
-    border-color: ${({ $disabled }) => ($disabled ? "#e5e7eb" : "#6ee7b7")};
-    background: ${({ $disabled }) => ($disabled ? "#f3f4f6" : "#f9fefb")};
+    border-color: ${({ $disabled }) => ($disabled ? "var(--border-default)" : "var(--brand-border)")};
+    background: ${({ $disabled }) => ($disabled ? "var(--bg-muted)" : "var(--brand-subtle)")};
   }
 `;
 
 export const PlanLabel = styled.div`
   font-size: 14px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
   margin-bottom: 4px;
 `;
 
 export const PlanDays = styled.div`
   font-size: 12px;
-  color: #6b7280;
+  color: var(--text-muted);
   margin-bottom: 10px;
   line-height: 1.4;
 `;
@@ -458,12 +458,12 @@ export const PlanDays = styled.div`
 export const PlanPrice = styled.div`
   font-size: 18px;
   font-weight: 800;
-  color: #1f4f41;
+  color: var(--brand);
 `;
 
 export const QuoteLoading = styled.p`
   font-size: 13px;
-  color: #9ca3af;
+  color: var(--text-faint);
   text-align: center;
   padding: 8px 0;
 `;
@@ -476,12 +476,12 @@ export const DiscountItem = styled.div`
 
   span {
     font-size: 14px;
-    color: #16a34a;
+    color: var(--status-success-text);
   }
 
   strong {
     font-size: 14px;
-    color: #16a34a;
+    color: var(--status-success-text);
     font-weight: 600;
     text-align: right;
   }
@@ -491,13 +491,13 @@ export const PlanWarning = styled.div`
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  background: #fffbeb;
-  border: 1px solid #fde68a;
+  background: var(--status-pending-bg);
+  border: 1px solid var(--status-pending-border);
   border-radius: 12px;
   padding: 12px 14px;
   margin-top: 12px;
   font-size: 13px;
-  color: #92400e;
+  color: var(--status-pending-text-deep);
   line-height: 1.5;
 
   &::before {
@@ -511,16 +511,17 @@ export const PlanWarning = styled.div`
 export const KidsInput = styled.input`
   width: 72px;
   padding: 8px 10px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-medium);
   border-radius: 10px;
+  background: var(--bg-surface);
+  color: var(--text-primary);
   font-size: 15px;
   font-weight: 600;
-  color: #111827;
   text-align: center;
   outline: none;
 
   &:focus {
-    border-color: #1f4f41;
+    border-color: var(--brand);
     box-shadow: 0 0 0 3px rgba(31, 79, 65, 0.1);
   }
 `;
@@ -528,10 +529,11 @@ export const KidsInput = styled.input`
 export const NotesField = styled.textarea`
   width: 100%;
   padding: 12px 14px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-default);
   border-radius: 12px;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
   font-size: 14px;
-  color: #374151;
   resize: vertical;
   outline: none;
   font-family: inherit;
@@ -539,11 +541,11 @@ export const NotesField = styled.textarea`
   box-sizing: border-box;
 
   &:focus {
-    border-color: #1f4f41;
+    border-color: var(--brand);
     box-shadow: 0 0 0 3px rgba(31, 79, 65, 0.1);
   }
 
   &::placeholder {
-    color: #9ca3af;
+    color: var(--text-faint);
   }
 `;

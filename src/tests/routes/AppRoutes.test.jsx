@@ -1,13 +1,16 @@
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, describe, expect, it } from "vitest";
+import { ThemeProvider } from "../../contexts/ThemeContext";
 import { AppRoutes } from "../../routes";
 
 function renderRoutes(initialPath = "/") {
     return render(
-        <MemoryRouter initialEntries={[initialPath]}>
-            <AppRoutes />
-        </MemoryRouter>
+        <ThemeProvider>
+            <MemoryRouter initialEntries={[initialPath]}>
+                <AppRoutes />
+            </MemoryRouter>
+        </ThemeProvider>
     );
 }
 

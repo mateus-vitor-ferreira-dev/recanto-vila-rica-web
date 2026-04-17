@@ -1,17 +1,22 @@
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import Header from "../../components/Header";
+import { ThemeProvider } from "../../contexts/ThemeContext";
+
+function renderHeader() {
+    return render(
+        <ThemeProvider>
+            <MemoryRouter>
+                <Header />
+            </MemoryRouter>
+        </ThemeProvider>
+    );
+}
 
 describe("Header extra coverage", () => {
     it("handles invalid JSON in localStorage gracefully", () => {
         localStorage.setItem("recanto:userData", "INVALID_JSON");
-
-        render(
-            <MemoryRouter>
-                <Header />
-            </MemoryRouter>
-        );
-
+        renderHeader();
         expect(screen.getByText(/usuário/i)).toBeInTheDocument();
     });
 
@@ -20,13 +25,7 @@ describe("Header extra coverage", () => {
             "recanto:userData",
             JSON.stringify({ user: {} })
         );
-
-        render(
-            <MemoryRouter>
-                <Header />
-            </MemoryRouter>
-        );
-
+        renderHeader();
         expect(screen.getByText(/usuário/i)).toBeInTheDocument();
     });
 
@@ -35,13 +34,7 @@ describe("Header extra coverage", () => {
             "recanto:userData",
             JSON.stringify({ name: "Admin Root", role: "ADMIN" })
         );
-
-        render(
-            <MemoryRouter>
-                <Header />
-            </MemoryRouter>
-        );
-
+        renderHeader();
         expect(screen.getByRole("link", { name: /^admin$/i })).toBeInTheDocument();
     });
 
@@ -55,13 +48,7 @@ describe("Header extra coverage", () => {
                 },
             })
         );
-
-        render(
-            <MemoryRouter>
-                <Header />
-            </MemoryRouter>
-        );
-
+        renderHeader();
         expect(
             screen.queryByRole("link", { name: /admin/i })
         ).not.toBeInTheDocument();
@@ -75,13 +62,7 @@ describe("Header extra coverage", () => {
                 user: { role: "USER" },
             })
         );
-
-        render(
-            <MemoryRouter>
-                <Header />
-            </MemoryRouter>
-        );
-
+        renderHeader();
         expect(screen.getByText(/alex/i)).toBeInTheDocument();
     });
 
@@ -93,14 +74,7 @@ describe("Header extra coverage", () => {
                 user: { name: "Alex" },
             })
         );
-
-        render(
-            <MemoryRouter>
-                <Header />
-            </MemoryRouter>
-        );
-
+        renderHeader();
         expect(screen.getByRole("link", { name: /admin/i })).toBeInTheDocument();
     });
-
 });

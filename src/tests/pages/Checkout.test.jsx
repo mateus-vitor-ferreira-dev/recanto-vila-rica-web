@@ -13,8 +13,7 @@ const mockReservation = {
     id: "res-1",
     status: "PENDING",
     planCode: "ESSENCIAL",
-    totalPrice: 85000,
-    checkoutUrl: "https://stripe.com/pay/session-1",
+    totalPrice: 850,
     startDate: "2026-06-01T10:00:00.000Z",
     endDate: "2026-06-01T18:00:00.000Z",
     venue: { name: "Salão Principal" },
@@ -62,33 +61,17 @@ describe("Checkout page", () => {
         );
     });
 
-    it("redirects to checkoutUrl when available", async () => {
+    it("creates checkout session and redirects on payment button click", async () => {
         server.use(
             http.get(`${BASE}/reservations/res-1`, () =>
                 HttpResponse.json({ success: true, data: mockReservation })
-            )
-        );
-        renderPage();
-        await waitFor(() =>
-            expect(screen.getByRole("button", { name: /ir para o pagamento/i })).toBeInTheDocument()
-        );
-
-        vi.stubGlobal("location", { href: "http://localhost/" });
-        const user = userEvent.setup();
-        await user.click(screen.getByRole("button", { name: /ir para o pagamento/i }));
-        expect(window.location.href).toBe("https://stripe.com/pay/session-1");
-    });
-
-    it("creates checkout session when checkoutUrl is absent", async () => {
-        server.use(
-            http.get(`${BASE}/reservations/res-1`, () =>
-                HttpResponse.json({
-                    success: true,
-                    data: { ...mockReservation, checkoutUrl: null },
-                })
             ),
             http.post(`${BASE}/payments/checkout/res-1`, () =>
-                HttpResponse.json({ success: true, data: { url: "https://stripe.com/pay/new" } })
+                HttpResponse.json({
+                    message: "Checkout session created successfully",
+                    sessionId: "cs_test_123",
+                    url: "https://stripe.com/pay/session-1",
+                })
             )
         );
         renderPage();
@@ -100,17 +83,14 @@ describe("Checkout page", () => {
         const user = userEvent.setup();
         await user.click(screen.getByRole("button", { name: /ir para o pagamento/i }));
         await waitFor(() =>
-            expect(window.location.href).toBe("https://stripe.com/pay/new")
+            expect(window.location.href).toBe("https://stripe.com/pay/session-1")
         );
     });
 
     it("shows 409 specific error when payment session already exists", async () => {
         server.use(
             http.get(`${BASE}/reservations/res-1`, () =>
-                HttpResponse.json({
-                    success: true,
-                    data: { ...mockReservation, checkoutUrl: null },
-                })
+                HttpResponse.json({ success: true, data: mockReservation })
             ),
             http.post(`${BASE}/payments/checkout/res-1`, () =>
                 HttpResponse.json({ success: false }, { status: 409 })
@@ -161,10 +141,7 @@ describe("Checkout page", () => {
     it("shows generic error toast when payment POST fails with non-409 status", async () => {
         server.use(
             http.get(`${BASE}/reservations/res-1`, () =>
-                HttpResponse.json({
-                    success: true,
-                    data: { ...mockReservation, checkoutUrl: null },
-                })
+                HttpResponse.json({ success: true, data: mockReservation })
             ),
             http.post(`${BASE}/payments/checkout/res-1`, () =>
                 HttpResponse.json({ success: false, message: "Erro ao iniciar o pagamento." }, { status: 500 })

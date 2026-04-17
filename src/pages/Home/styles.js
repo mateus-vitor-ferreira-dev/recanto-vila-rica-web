@@ -30,7 +30,7 @@ export const LoadingState = styled.div`
     text-align: center;
 
     p {
-        color: #6b7280;
+        color: var(--text-muted);
         font-size: 15px;
     }
 `;
@@ -39,8 +39,8 @@ export const Spinner = styled.div`
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    border: 3px solid #e5e7eb;
-    border-top-color: #1f4f41;
+    border: 3px solid var(--border-default);
+    border-top-color: var(--brand);
     animation: ${spinAnim} 0.8s linear infinite;
 `;
 
@@ -63,24 +63,24 @@ export const HeaderLeft = styled.div`
 export const Greeting = styled.h1`
     font-size: 30px;
     font-weight: 700;
-    color: #111827;
+    color: var(--text-primary);
     line-height: 1.2;
 
     span {
-        color: #1f4f41;
+        color: var(--brand-dark);
     }
 `;
 
 export const Subgreeting = styled.p`
     font-size: 15px;
-    color: #6b7280;
+    color: var(--text-muted);
 `;
 
 export const NewReservationButton = styled.a`
     display: inline-flex;
     align-items: center;
     padding: 10px 20px;
-    background: #1f4f41;
+    background: var(--brand-dark);
     color: #ffffff;
     border-radius: 10px;
     font-size: 14px;
@@ -107,8 +107,8 @@ export const StatsGrid = styled.div`
 `;
 
 export const StatCard = styled.article`
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
     border-left: 4px solid ${({ $accent }) => $accent};
     border-radius: 14px;
     padding: 22px 24px;
@@ -123,18 +123,10 @@ export const StatCard = styled.article`
     }
 `;
 
-/*
-  Paleta de acento acessível:
-    #2563eb  — azul   (distinguível por daltônicos de todos os tipos)
-    #7c3aed  — violeta (distinguível por todos os tipos)
-    #ea580c  — laranja (distinguível por todos os tipos)
-  Evita o par verde+vermelho/laranja, que é o problema mais comum (deuteranopia).
-*/
-
 export const StatLabel = styled.p`
     font-size: 12px;
     font-weight: 600;
-    color: #9ca3af;
+    color: var(--text-faint);
     text-transform: uppercase;
     letter-spacing: 0.06em;
 `;
@@ -150,7 +142,7 @@ export const StatNumber = styled.strong`
 
 export const StatDescription = styled.p`
     font-size: 13px;
-    color: #6b7280;
+    color: var(--text-muted);
     line-height: 1.4;
 `;
 
@@ -177,13 +169,14 @@ export const ActionCard = styled.a`
     cursor: pointer;
     transition: opacity 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 
-    background: ${({ $primary }) => ($primary ? "#1f4f41" : "#ffffff")};
-    border: 1px solid ${({ $primary }) => ($primary ? "transparent" : "#e5e7eb")};
+    background: ${({ $primary }) => ($primary ? "var(--brand-dark)" : "var(--bg-surface)")};
+    color: ${({ $primary }) => ($primary ? "#ffffff" : "var(--text-primary)")};
+    border: 1px solid ${({ $primary }) => ($primary ? "transparent" : "var(--border-default)")};
     box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
 
     &:hover {
         opacity: ${({ $primary }) => ($primary ? "0.92" : "1")};
-        background: ${({ $primary }) => ($primary ? "#1f4f41" : "#f9fafb")};
+        background: ${({ $primary }) => ($primary ? "var(--brand-dark)" : "var(--bg-page)")};
         box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
     }
 `;
@@ -210,7 +203,7 @@ export const ActionDesc = styled.p`
 export const ActionArrow = styled.span`
     font-size: 28px;
     line-height: 1;
-    color: ${({ $primary }) => ($primary ? "rgba(255,255,255,0.7)" : "#9ca3af")};
+    color: ${({ $primary }) => ($primary ? "rgba(255,255,255,0.7)" : "var(--text-faint)")};
     flex-shrink: 0;
     transition: transform 0.15s ease;
 
@@ -232,8 +225,8 @@ export const ContentGrid = styled.div`
 `;
 
 export const Panel = styled.article`
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
     border-radius: 14px;
     padding: 24px;
     display: flex;
@@ -252,13 +245,13 @@ export const PanelHeader = styled.div`
 export const PanelTitle = styled.h2`
     font-size: 15px;
     font-weight: 700;
-    color: #111827;
+    color: var(--text-primary);
 `;
 
 export const PanelLink = styled.a`
     font-size: 13px;
     font-weight: 600;
-    color: #1f4f41;
+    color: var(--brand);
     text-decoration: none;
     white-space: nowrap;
 
@@ -284,7 +277,7 @@ export const ListItem = styled.li`
     justify-content: space-between;
     gap: 12px;
     padding: 12px 0;
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 1px solid var(--bg-muted);
 
     &:last-child {
         border-bottom: none;
@@ -302,7 +295,7 @@ export const ListItemMain = styled.div`
 export const ListItemTitle = styled.strong`
     font-size: 14px;
     font-weight: 600;
-    color: #111827;
+    color: var(--text-primary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -310,17 +303,10 @@ export const ListItemTitle = styled.strong`
 
 export const ListItemSub = styled.span`
     font-size: 12px;
-    color: #9ca3af;
+    color: var(--text-faint);
 `;
 
 /* ─── Chips ─── */
-
-const CHIP_COLORS = {
-    green: { bg: "#ecfdf3", text: "#166534", border: "#bbf7d0" },
-    amber: { bg: "#fffbeb", text: "#92400e", border: "#fde68a" },
-    red:   { bg: "#fef2f2", text: "#b91c1c", border: "#fecaca" },
-    gray:  { bg: "#f3f4f6", text: "#4b5563", border: "#e5e7eb" },
-};
 
 export const StatusChip = styled.span`
     display: inline-flex;
@@ -333,9 +319,34 @@ export const StatusChip = styled.span`
     border: 1px solid;
     flex-shrink: 0;
 
-    background: ${({ $color }) => CHIP_COLORS[$color]?.bg ?? CHIP_COLORS.gray.bg};
-    color: ${({ $color }) => CHIP_COLORS[$color]?.text ?? CHIP_COLORS.gray.text};
-    border-color: ${({ $color }) => CHIP_COLORS[$color]?.border ?? CHIP_COLORS.gray.border};
+    ${({ $color }) => {
+        switch ($color) {
+            case "green":
+                return `
+                    background: var(--status-paid-bg);
+                    color: var(--status-paid-text);
+                    border-color: var(--status-paid-border);
+                `;
+            case "amber":
+                return `
+                    background: var(--status-pending-bg);
+                    color: var(--status-pending-text);
+                    border-color: var(--status-pending-border);
+                `;
+            case "red":
+                return `
+                    background: var(--status-error-bg);
+                    color: var(--status-error-text);
+                    border-color: var(--status-error-border);
+                `;
+            default:
+                return `
+                    background: var(--bg-muted);
+                    color: var(--text-medium);
+                    border-color: var(--border-default);
+                `;
+        }
+    }}
 `;
 
 export const PriceChip = styled.span`
@@ -346,9 +357,9 @@ export const PriceChip = styled.span`
     font-size: 12px;
     font-weight: 600;
     white-space: nowrap;
-    background: #f0fdf9;
-    color: #1f4f41;
-    border: 1px solid #d1fae5;
+    background: var(--brand-subtle);
+    color: var(--brand);
+    border: 1px solid var(--brand-border);
     flex-shrink: 0;
 `;
 
@@ -360,9 +371,9 @@ export const DiscountChip = styled.span`
     font-size: 12px;
     font-weight: 700;
     white-space: nowrap;
-    background: #ecfdf3;
-    color: #166534;
-    border: 1px solid #bbf7d0;
+    background: var(--status-paid-bg);
+    color: var(--status-paid-text);
+    border: 1px solid var(--status-paid-border);
     flex-shrink: 0;
 `;
 
@@ -376,7 +387,7 @@ export const EmptyState = styled.div`
 
     span {
         font-size: 14px;
-        color: #9ca3af;
+        color: var(--text-faint);
     }
 `;
 
@@ -384,6 +395,6 @@ export const EmptyDot = styled.div`
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #e5e7eb;
+    background: var(--border-default);
     flex-shrink: 0;
 `;

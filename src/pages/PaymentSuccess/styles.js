@@ -20,8 +20,8 @@ export const Container = styled.div`
 `;
 
 export const Card = styled.div`
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 28px;
   padding: 56px 48px;
   max-width: 520px;
@@ -43,8 +43,8 @@ export const IconWrapper = styled.div`
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: #ecfdf3;
-  border: 2px solid #bbf7d0;
+  background: var(--status-paid-bg);
+  border: 2px solid var(--status-paid-border);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -63,7 +63,7 @@ export const CheckIcon = styled.div`
     top: 50%;
     width: 10px;
     height: 3px;
-    background: #166534;
+    background: var(--status-paid-text);
     border-radius: 2px;
     transform: rotate(45deg) translateY(-4px);
   }
@@ -75,7 +75,7 @@ export const CheckIcon = styled.div`
     top: 50%;
     width: 20px;
     height: 3px;
-    background: #166534;
+    background: var(--status-paid-text);
     border-radius: 2px;
     transform: rotate(-50deg) translateY(-6px);
   }
@@ -84,12 +84,12 @@ export const CheckIcon = styled.div`
 export const Title = styled.h1`
   font-size: 26px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
 `;
 
 export const Description = styled.p`
   font-size: 15px;
-  color: #6b7280;
+  color: var(--text-muted);
   line-height: 1.7;
   max-width: 380px;
 `;
@@ -107,7 +107,7 @@ export const PrimaryButton = styled.button`
   padding: 14px;
   border: none;
   border-radius: 12px;
-  background: #1f4f41;
+  background: var(--brand);
   color: #ffffff;
   font-size: 15px;
   font-weight: 700;
@@ -122,16 +122,16 @@ export const PrimaryButton = styled.button`
 export const SecondaryButton = styled.button`
   width: 100%;
   padding: 14px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-default);
   border-radius: 12px;
-  background: #ffffff;
-  color: #374151;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.15s ease;
 
   &:hover {
-    background: #f9fafb;
+    background: var(--bg-page);
   }
 `;

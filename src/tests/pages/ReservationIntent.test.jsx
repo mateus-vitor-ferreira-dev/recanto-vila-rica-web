@@ -430,4 +430,45 @@ describe("ReservationIntent page", () => {
             expect(screen.getByText(/data alterada não é compatível/i)).toBeInTheDocument()
         );
     });
+
+    it("allows typing in the notes field", async () => {
+        const { container } = renderPage();
+        const user = userEvent.setup();
+
+        await waitFor(() =>
+            expect(screen.getAllByText("Salão Principal").length).toBeGreaterThan(0)
+        );
+
+        fillDateTime(container);
+        await waitFor(() =>
+            expect(screen.getByText("Essencial")).toBeInTheDocument()
+        );
+        await user.click(screen.getByText("Essencial"));
+
+        const notes = screen.getByPlaceholderText(/festa infantil/i);
+        await user.type(notes, "Aniversário de 5 anos");
+        expect(notes).toHaveValue("Aniversário de 5 anos");
+    });
+
+    it("uses stored.name as locatario when stored.user is absent", async () => {
+        localStorage.setItem(
+            "recanto:userData",
+            JSON.stringify({ name: "Convidado Teste", token: "tk" })
+        );
+        const { container } = renderPage();
+        const user = userEvent.setup();
+
+        await waitFor(() =>
+            expect(screen.getAllByText("Salão Principal").length).toBeGreaterThan(0)
+        );
+
+        fillDateTime(container);
+        await waitFor(() =>
+            expect(screen.getByText("Essencial")).toBeInTheDocument()
+        );
+        await user.click(screen.getByText("Essencial"));
+
+        expect(screen.getByText(/intenção de reserva/i)).toBeInTheDocument();
+        localStorage.removeItem("recanto:userData");
+    });
 });

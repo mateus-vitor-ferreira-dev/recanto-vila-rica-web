@@ -46,7 +46,7 @@ describe("Home extra coverage", () => {
 
         renderPage();
 
-        expect(await screen.findByText(/boa (tarde|noite|dia)/i)).toBeInTheDocument();
+        expect(await screen.findByText(/bo[ma] (tarde|noite|dia)/i)).toBeInTheDocument();
         expect(screen.getByText(/usuário/i)).toBeInTheDocument();
     });
 

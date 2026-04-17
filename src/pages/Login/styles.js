@@ -17,25 +17,25 @@ export const Divider = styled.div`
     content: '';
     flex: 1;
     height: 1px;
-    background: #e5e7eb;
+    background: var(--border-default);
   }
 
   span {
     font-size: 12px;
     font-weight: 500;
-    color: #9ca3af;
+    color: var(--text-faint);
     white-space: nowrap;
   }
 `;
 
 export const FooterText = styled.p`
   text-align: center;
-  color: #6b7280;
+  color: var(--text-muted);
   font-size: 13px;
   margin-top: 4px;
 
   a {
-    color: #1f4f41;
+    color: var(--brand);
     font-weight: 600;
     text-decoration: underline;
     text-underline-offset: 3px;

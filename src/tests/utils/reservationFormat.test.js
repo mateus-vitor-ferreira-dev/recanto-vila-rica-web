@@ -30,7 +30,7 @@ describe("reservationFormat utils", () => {
     });
 
     it("formats currency", () => {
-        const result = formatCurrency(85000);
+        const result = formatCurrency(850);
 
         expect(result).toContain("R$");
     });

@@ -25,7 +25,7 @@ export const LoadingState = styled.div`
   min-height: 320px;
 
   p {
-    color: #6b7280;
+    color: var(--text-muted);
     font-size: 15px;
   }
 `;
@@ -34,8 +34,8 @@ export const Spinner = styled.div`
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border: 3px solid #e5e7eb;
-  border-top-color: #1f4f41;
+  border: 3px solid var(--border-default);
+  border-top-color: var(--brand);
   animation: ${spinAnim} 0.8s linear infinite;
 `;
 
@@ -55,12 +55,12 @@ export const HeaderLeft = styled.div`
 export const PageTitle = styled.h1`
   font-size: 30px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
 `;
 
 export const PageSubtitle = styled.p`
   font-size: 15px;
-  color: #6b7280;
+  color: var(--text-muted);
 `;
 
 export const Layout = styled.div`
@@ -77,8 +77,8 @@ export const Layout = styled.div`
 /* ─── Identity sidebar ─── */
 
 export const IdentityCard = styled.div`
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 20px;
   padding: 32px 24px;
   display: flex;
@@ -93,7 +93,7 @@ export const AvatarLarge = styled.div`
   width: 72px;
   height: 72px;
   border-radius: 50%;
-  background: #1f4f41;
+  background: var(--brand);
   color: #ffffff;
   font-size: 24px;
   font-weight: 700;
@@ -107,12 +107,12 @@ export const AvatarLarge = styled.div`
 export const IdentityName = styled.strong`
   font-size: 16px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
 `;
 
 export const IdentityEmail = styled.span`
   font-size: 13px;
-  color: #6b7280;
+  color: var(--text-muted);
   word-break: break-all;
 `;
 
@@ -123,17 +123,17 @@ export const RoleBadge = styled.span`
   border-radius: 999px;
   font-size: 12px;
   font-weight: 600;
-  background: #ecfdf3;
-  color: #1f4f41;
-  border: 1px solid #d1fae5;
+  background: var(--status-paid-bg);
+  color: var(--brand);
+  border: 1px solid var(--brand-border);
   margin-top: 4px;
 `;
 
 /* ─── Edit form ─── */
 
 export const FormCard = styled.form`
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 20px;
   padding: 32px;
   display: flex;
@@ -145,7 +145,7 @@ export const FormCard = styled.form`
 export const SectionTitle = styled.h2`
   font-size: 17px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
 `;
 
 export const FieldGrid = styled.div`
@@ -163,22 +163,22 @@ export const FormFooter = styled.div`
   justify-content: flex-end;
   gap: 12px;
   padding-top: 8px;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid var(--bg-muted);
 `;
 
 export const CancelButton = styled.button`
   padding: 10px 20px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-default);
   border-radius: 10px;
-  background: #ffffff;
-  color: #374151;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.15s ease;
 
   &:hover {
-    background: #f9fafb;
+    background: var(--bg-page);
   }
 `;
 
@@ -186,7 +186,7 @@ export const SaveButton = styled.button`
   padding: 10px 24px;
   border: none;
   border-radius: 10px;
-  background: #1f4f41;
+  background: var(--brand);
   color: #ffffff;
   font-size: 14px;
   font-weight: 700;

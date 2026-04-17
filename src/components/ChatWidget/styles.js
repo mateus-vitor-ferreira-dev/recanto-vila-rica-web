@@ -13,7 +13,7 @@ export const Fab = styled.button`
   height: 52px;
   border-radius: 50%;
   border: none;
-  background: #1f4f41;
+  background: var(--brand);
   color: white;
   font-size: 22px;
   cursor: pointer;
@@ -36,7 +36,7 @@ export const Window = styled.div`
   right: 28px;
   width: 340px;
   height: 480px;
-  background: #fff;
+  background: var(--bg-surface);
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.14);
   display: flex;
@@ -52,7 +52,7 @@ export const Window = styled.div`
 `;
 
 export const Header = styled.div`
-  background: #1f4f41;
+  background: var(--brand);
   color: white;
   padding: 14px 16px;
   font-size: 14px;
@@ -83,7 +83,7 @@ export const Messages = styled.div`
     background: transparent;
   }
   &::-webkit-scrollbar-thumb {
-    background: #d1d5db;
+    background: var(--border-medium);
     border-radius: 4px;
   }
 `;
@@ -93,8 +93,8 @@ export const Bubble = styled.div`
   padding: 10px 13px;
   border-radius: ${({ $role }) =>
     $role === "user" ? "16px 16px 4px 16px" : "16px 16px 16px 4px"};
-  background: ${({ $role }) => ($role === "user" ? "#1f4f41" : "#f3f4f6")};
-  color: ${({ $role }) => ($role === "user" ? "#fff" : "#111827")};
+  background: ${({ $role }) => ($role === "user" ? "var(--brand)" : "var(--bg-muted)")};
+  color: ${({ $role }) => ($role === "user" ? "#fff" : "var(--text-primary)")};
   font-size: 13.5px;
   line-height: 1.5;
   align-self: ${({ $role }) => ($role === "user" ? "flex-end" : "flex-start")};
@@ -106,24 +106,28 @@ export const InputRow = styled.div`
   display: flex;
   gap: 8px;
   padding: 10px 12px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--bg-muted);
 `;
 
 export const Input = styled.input`
   flex: 1;
   height: 38px;
   padding: 0 12px;
-  border: 1.5px solid #e5e7eb;
+  border: 1.5px solid var(--border-default);
   border-radius: 10px;
   font-size: 13.5px;
-  color: #111827;
-  background: #f9fafb;
+  color: var(--text-primary);
+  background: var(--bg-page);
   outline: none;
   transition: border-color 0.15s;
 
+  &::placeholder {
+    color: var(--text-faint);
+  }
+
   &:focus {
-    border-color: #1f4f41;
-    background: #fff;
+    border-color: var(--brand);
+    background: var(--bg-surface);
   }
 
   &:disabled {
@@ -136,7 +140,7 @@ export const SendBtn = styled.button`
   padding: 0 14px;
   border: none;
   border-radius: 10px;
-  background: #1f4f41;
+  background: var(--brand);
   color: white;
   font-size: 13px;
   font-weight: 600;

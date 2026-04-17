@@ -19,11 +19,11 @@ export const PageHeader = styled.section`
 export const Title = styled.h1`
   font-size: 32px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
 `;
 
 export const Description = styled.p`
-  color: #6b7280;
+  color: var(--text-muted);
   font-size: 15px;
   line-height: 1.6;
 `;
@@ -32,7 +32,7 @@ export const Description = styled.p`
 export const TabBar = styled.div`
   display: flex;
   gap: 4px;
-  background: #f3f4f6;
+  background: var(--bg-muted);
   border-radius: 14px;
   padding: 4px;
   width: fit-content;
@@ -53,11 +53,11 @@ export const Tab = styled.button`
   cursor: pointer;
   transition: all 0.15s ease;
 
-  background: ${({ $active }) => ($active ? "#1f4f41" : "transparent")};
-  color: ${({ $active }) => ($active ? "#ffffff" : "#6b7280")};
+  background: ${({ $active }) => ($active ? "var(--brand)" : "transparent")};
+  color: ${({ $active }) => ($active ? "#ffffff" : "var(--text-muted)")};
 
   &:hover:not([disabled]) {
-    color: ${({ $active }) => ($active ? "#ffffff" : "#111827")};
+    color: ${({ $active }) => ($active ? "#ffffff" : "var(--text-primary)")};
   }
 
   @media (max-width: 600px) {
@@ -73,8 +73,8 @@ export const SummaryGrid = styled.div`
 `;
 
 export const SummaryCard = styled.div`
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 18px;
   padding: 22px;
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
@@ -86,7 +86,7 @@ export const SummaryCard = styled.div`
 export const SummaryLabel = styled.span`
   font-size: 12px;
   font-weight: 500;
-  color: #9ca3af;
+  color: var(--text-faint);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 `;
@@ -94,12 +94,12 @@ export const SummaryLabel = styled.span`
 export const SummaryValue = styled.span`
   font-size: 28px;
   font-weight: 700;
-  color: ${({ $accent }) => ($accent ? "#1f4f41" : "#111827")};
+  color: ${({ $accent }) => ($accent ? "var(--brand)" : "var(--text-primary)")};
 `;
 
 export const SummarySubtitle = styled.span`
   font-size: 13px;
-  color: #6b7280;
+  color: var(--text-muted);
 `;
 
 /* Generic section */
@@ -120,7 +120,7 @@ export const SectionHeader = styled.div`
 export const SectionTitle = styled.h2`
   font-size: 20px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
 `;
 
 /* Filters row */
@@ -134,15 +134,15 @@ export const Select = styled.select`
   height: 40px;
   padding: 0 12px;
   border-radius: 10px;
-  border: 1px solid #d1d5db;
-  background: #ffffff;
+  border: 1px solid var(--border-medium);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
   font-size: 14px;
-  color: #374151;
   cursor: pointer;
   outline: none;
 
   &:focus {
-    border-color: #1f4f41;
+    border-color: var(--brand);
   }
 `;
 
@@ -150,21 +150,21 @@ export const DateInput = styled.input`
   height: 40px;
   padding: 0 12px;
   border-radius: 10px;
-  border: 1px solid #d1d5db;
-  background: #ffffff;
+  border: 1px solid var(--border-medium);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
   font-size: 14px;
-  color: #374151;
   outline: none;
 
   &:focus {
-    border-color: #1f4f41;
+    border-color: var(--brand);
   }
 `;
 
 /* Table */
 export const TableWrapper = styled.div`
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 18px;
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
   overflow: hidden;
@@ -181,24 +181,24 @@ export const Th = styled.th`
   text-align: left;
   font-size: 12px;
   font-weight: 600;
-  color: #9ca3af;
+  color: var(--text-faint);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   padding: 14px 18px;
-  border-bottom: 1px solid #e5e7eb;
-  background: #f9fafb;
+  border-bottom: 1px solid var(--border-default);
+  background: var(--bg-page);
   white-space: nowrap;
 `;
 
 export const Td = styled.td`
   padding: 14px 18px;
   font-size: 14px;
-  color: #374151;
-  border-bottom: 1px solid #f3f4f6;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--bg-muted);
   white-space: nowrap;
 
   &:last-child {
-    color: #111827;
+    color: var(--text-primary);
   }
 `;
 
@@ -208,7 +208,7 @@ export const Tr = styled.tr`
   }
 
   &:hover ${Td} {
-    background: #f9fafb;
+    background: var(--bg-page);
   }
 `;
 
@@ -227,13 +227,13 @@ export const StatusBadge = styled.span`
   ${({ $status }) => {
     switch ($status) {
       case "PAID":
-        return `background: #ecfdf3; color: #166534; border-color: #bbf7d0;`;
+        return `background: var(--status-paid-bg); color: var(--status-paid-text); border-color: var(--status-paid-border);`;
       case "CANCELLED":
       case "EXPIRED":
-        return `background: #f3f4f6; color: #6b7280; border-color: #e5e7eb;`;
+        return `background: var(--bg-muted); color: var(--text-muted); border-color: var(--border-default);`;
       case "PENDING":
       default:
-        return `background: #fffbeb; color: #b45309; border-color: #fde68a;`;
+        return `background: var(--status-pending-bg); color: var(--status-pending-text); border-color: var(--status-pending-border);`;
     }
   }}
 `;
@@ -249,24 +249,24 @@ export const Pagination = styled.div`
 
 export const PageInfo = styled.span`
   font-size: 14px;
-  color: #6b7280;
+  color: var(--text-muted);
 `;
 
 export const PageButton = styled.button`
   height: 36px;
   padding: 0 14px;
   border-radius: 10px;
-  border: 1px solid #e5e7eb;
-  background: #ffffff;
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
   font-size: 14px;
-  color: #374151;
+  color: var(--text-secondary);
   cursor: pointer;
   font-weight: 600;
   transition: all 0.15s ease;
 
   &:hover:not(:disabled) {
-    border-color: #1f4f41;
-    color: #1f4f41;
+    border-color: var(--brand);
+    color: var(--brand);
   }
 
   &:disabled {
@@ -283,8 +283,8 @@ export const CardList = styled.div`
 `;
 
 export const CampaignCard = styled.div`
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 16px;
   padding: 18px 22px;
   box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
@@ -302,12 +302,12 @@ export const CampaignInfo = styled.div`
 
   strong {
     font-size: 15px;
-    color: #111827;
+    color: var(--text-primary);
   }
 
   span {
     font-size: 13px;
-    color: #6b7280;
+    color: var(--text-muted);
   }
 `;
 
@@ -327,8 +327,8 @@ export const ActiveBadge = styled.span`
 
   ${({ $active }) =>
     $active
-      ? `background: #ecfdf3; color: #166534; border-color: #bbf7d0;`
-      : `background: #f3f4f6; color: #6b7280; border-color: #e5e7eb;`}
+      ? `background: var(--status-paid-bg); color: var(--status-paid-text); border-color: var(--status-paid-border);`
+      : `background: var(--bg-muted); color: var(--text-muted); border-color: var(--border-default);`}
 `;
 
 export const CampaignStatusBadge = styled.span`
@@ -342,21 +342,21 @@ export const CampaignStatusBadge = styled.span`
   ${({ $status }) => {
     switch ($status) {
       case "active":
-        return `background: #ecfdf3; color: #166534; border-color: #bbf7d0;`;
+        return `background: var(--status-paid-bg); color: var(--status-paid-text); border-color: var(--status-paid-border);`;
       case "scheduled":
-        return `background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe;`;
+        return `background: var(--status-info-bg); color: var(--status-info-text); border-color: var(--status-info-border);`;
       case "ended":
-        return `background: #f3f4f6; color: #6b7280; border-color: #e5e7eb;`;
+        return `background: var(--bg-muted); color: var(--text-muted); border-color: var(--border-default);`;
       case "disabled":
       default:
-        return `background: #fef2f2; color: #b91c1c; border-color: #fecaca;`;
+        return `background: var(--status-error-bg); color: var(--status-error-text); border-color: var(--status-error-border);`;
     }
   }}
 `;
 
 export const WinnerCard = styled.div`
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
+  background: var(--status-paid-bg);
+  border: 1px solid var(--status-paid-border);
   border-radius: 14px;
   padding: 20px;
   display: flex;
@@ -365,22 +365,22 @@ export const WinnerCard = styled.div`
 
   strong {
     font-size: 18px;
-    color: #111827;
+    color: var(--text-primary);
   }
 
   span {
     font-size: 14px;
-    color: #374151;
+    color: var(--text-secondary);
   }
 `;
 
 export const MessagePreview = styled.div`
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-page);
+  border: 1px solid var(--border-default);
   border-radius: 12px;
   padding: 14px 16px;
   font-size: 14px;
-  color: #374151;
+  color: var(--text-secondary);
   white-space: pre-wrap;
   line-height: 1.6;
 `;
@@ -390,17 +390,17 @@ export const CopyButton = styled.button`
   height: 36px;
   padding: 0 16px;
   border-radius: 10px;
-  border: 1px solid #d1d5db;
-  background: #ffffff;
-  color: #374151;
+  border: 1px solid var(--border-medium);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: border-color 0.15s ease;
 
   &:hover {
-    border-color: #1f4f41;
-    color: #1f4f41;
+    border-color: var(--brand);
+    color: var(--brand);
   }
 `;
 
@@ -408,9 +408,9 @@ export const RaffleButton = styled.button`
   height: 40px;
   padding: 0 18px;
   border-radius: 10px;
-  border: 1px solid #1f4f41;
-  background: #ffffff;
-  color: #1f4f41;
+  border: 1px solid var(--brand);
+  background: var(--bg-surface);
+  color: var(--brand);
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
@@ -418,7 +418,7 @@ export const RaffleButton = styled.button`
   white-space: nowrap;
 
   &:hover:not(:disabled) {
-    background: #1f4f41;
+    background: var(--brand);
     color: #ffffff;
   }
 
@@ -434,7 +434,7 @@ export const PrimaryButton = styled.button`
   padding: 0 18px;
   border-radius: 10px;
   border: none;
-  background: #1f4f41;
+  background: var(--brand);
   color: #ffffff;
   font-size: 14px;
   font-weight: 700;
@@ -456,9 +456,9 @@ export const SecondaryButton = styled.button`
   height: 40px;
   padding: 0 18px;
   border-radius: 10px;
-  border: 1px solid #d1d5db;
-  background: #ffffff;
-  color: #374151;
+  border: 1px solid var(--border-medium);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -466,8 +466,8 @@ export const SecondaryButton = styled.button`
   white-space: nowrap;
 
   &:hover:not(:disabled) {
-    border-color: #1f4f41;
-    color: #1f4f41;
+    border-color: var(--brand);
+    color: var(--brand);
   }
 
   &:disabled {
@@ -480,9 +480,9 @@ export const DangerButton = styled.button`
   height: 36px;
   padding: 0 14px;
   border-radius: 10px;
-  border: 1px solid #fecaca;
-  background: #fef2f2;
-  color: #b91c1c;
+  border: 1px solid var(--status-error-border);
+  background: var(--status-error-bg);
+  color: var(--status-error-text);
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
@@ -490,7 +490,7 @@ export const DangerButton = styled.button`
   white-space: nowrap;
 
   &:hover:not(:disabled) {
-    background: #fee2e2;
+    background: var(--status-error-hover);
   }
 
   &:disabled {
@@ -512,7 +512,7 @@ export const ModalOverlay = styled.div`
 `;
 
 export const ModalBox = styled.div`
-  background: #ffffff;
+  background: var(--bg-surface);
   border-radius: 20px;
   padding: 32px;
   width: 100%;
@@ -525,7 +525,7 @@ export const ModalBox = styled.div`
 export const ModalTitle = styled.h3`
   font-size: 20px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
 `;
 
 export const FormGroup = styled.div`
@@ -536,7 +536,7 @@ export const FormGroup = styled.div`
   label {
     font-size: 13px;
     font-weight: 600;
-    color: #374151;
+    color: var(--text-secondary);
   }
 `;
 
@@ -544,15 +544,20 @@ export const TextInput = styled.input`
   height: 42px;
   padding: 0 14px;
   border-radius: 10px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-medium);
+  background: var(--bg-surface);
+  color: var(--text-primary);
   font-size: 14px;
-  color: #111827;
   outline: none;
   width: 100%;
   box-sizing: border-box;
 
   &:focus {
-    border-color: #1f4f41;
+    border-color: var(--brand);
+  }
+
+  &::placeholder {
+    color: var(--text-faint);
   }
 `;
 
@@ -565,8 +570,8 @@ export const ModalActions = styled.div`
 
 /* Empty / Loading states */
 export const EmptyState = styled.div`
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 18px;
   padding: 48px 32px;
   text-align: center;
@@ -577,13 +582,13 @@ export const EmptyState = styled.div`
 
   h3 {
     font-size: 16px;
-    color: #374151;
+    color: var(--text-secondary);
     font-weight: 600;
   }
 
   p {
     font-size: 14px;
-    color: #9ca3af;
+    color: var(--text-faint);
   }
 `;
 
@@ -591,8 +596,8 @@ export const LoadingSpinner = styled.div`
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  border: 3px solid #e5e7eb;
-  border-top-color: #1f4f41;
+  border: 3px solid var(--border-default);
+  border-top-color: var(--brand);
   animation: ${spin} 0.8s linear infinite;
   margin: 40px auto;
 `;
@@ -604,8 +609,8 @@ export const TabPanel = styled.div`
 
 /* Holiday row */
 export const HolidayCard = styled.div`
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 14px;
   padding: 14px 18px;
   display: flex;
@@ -622,12 +627,12 @@ export const HolidayInfo = styled.div`
 
   strong {
     font-size: 14px;
-    color: #111827;
+    color: var(--text-primary);
   }
 
   span {
     font-size: 13px;
-    color: #6b7280;
+    color: var(--text-muted);
   }
 `;
 
@@ -636,7 +641,7 @@ export const HolidayType = styled.span`
   border-radius: 999px;
   font-size: 12px;
   font-weight: 600;
-  background: #eff6ff;
-  color: #1d4ed8;
-  border: 1px solid #bfdbfe;
+  background: var(--status-info-bg);
+  color: var(--status-info-text);
+  border: 1px solid var(--status-info-border);
 `;
