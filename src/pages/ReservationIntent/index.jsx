@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import ErrorBoundary from "../../components/ErrorBoundary";
 import Input from "../../components/Input";
 import { createReservation, quoteReservation } from "../../services/reservation";
 import { getVenue } from "../../services/venue";
@@ -640,12 +641,14 @@ export default function ReservationIntent() {
 
                                 {planCode ? (
                                     <S.ContractDownloadWrapper>
-                                        <Suspense fallback={<span>Carregando...</span>}>
-                                            <ContratoDownloadLink
-                                                contratoProps={contratoProps}
-                                                fileName={`contrato-recanto-vila-rica-${eventDate || "reserva"}.pdf`}
-                                            />
-                                        </Suspense>
+                                        <ErrorBoundary fallback={<span>Erro ao gerar contrato. Tente novamente.</span>}>
+                                            <Suspense fallback={<span>Carregando...</span>}>
+                                                <ContratoDownloadLink
+                                                    contratoProps={contratoProps}
+                                                    fileName={`contrato-recanto-vila-rica-${eventDate || "reserva"}.pdf`}
+                                                />
+                                            </Suspense>
+                                        </ErrorBoundary>
                                     </S.ContractDownloadWrapper>
                                 ) : (
                                     <S.ContractDescription style={{ fontStyle: "italic" }}>
