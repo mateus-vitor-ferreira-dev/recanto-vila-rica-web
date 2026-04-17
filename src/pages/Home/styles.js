@@ -67,7 +67,7 @@ export const Greeting = styled.h1`
     line-height: 1.2;
 
     span {
-        color: var(--brand-dark);
+        color: var(--brand);
     }
 `;
 
@@ -375,6 +375,100 @@ export const DiscountChip = styled.span`
     color: var(--status-paid-text);
     border: 1px solid var(--status-paid-border);
     flex-shrink: 0;
+`;
+
+/* ─── Venue mini-cards ─── */
+
+export const VenueList = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+`;
+
+export const VenueCard = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    background: var(--bg-page);
+    border: 1px solid var(--border-default);
+    transition: box-shadow 0.15s ease;
+
+    &:hover {
+        box-shadow: 0 3px 12px rgba(15, 23, 42, 0.07);
+    }
+`;
+
+export const VenueCardTop = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+`;
+
+export const VenueCardName = styled.strong`
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+`;
+
+export const VenueCardLocation = styled.span`
+    font-size: 12px;
+    color: var(--text-faint);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+`;
+
+export const VenueCardBottom = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 2px;
+`;
+
+export const VenueAmenities = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+`;
+
+export const AmenityChip = styled.span`
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+    background: var(--bg-muted);
+    color: var(--text-medium);
+    border: 1px solid var(--border-default);
+`;
+
+export const VenueReserveBtn = styled.button`
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    background: var(--brand-dark);
+    color: #ffffff;
+    border: none;
+    transition: opacity 0.15s ease;
+
+    &:hover {
+        opacity: 0.88;
+    }
 `;
 
 /* ─── Empty state ─── */

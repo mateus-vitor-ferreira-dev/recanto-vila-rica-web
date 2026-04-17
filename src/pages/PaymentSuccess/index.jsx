@@ -1,12 +1,23 @@
+import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { FADE_UP } from "../../utils/animations";
 import * as S from "./styles";
 
 export default function PaymentSuccess() {
     const navigate = useNavigate();
+    const cardRef = useRef(null);
+
+    useGSAP(() => {
+        const children = cardRef.current.children;
+        gsap.from(children[0], { scale: 0.5, opacity: 0, duration: 0.6, ease: "back.out(1.7)" });
+        gsap.from(Array.from(children).slice(1), { ...FADE_UP, stagger: 0.1, delay: 0.3 });
+    }, { scope: cardRef, dependencies: [] });
 
     return (
         <S.Container>
-            <S.Card>
+            <S.Card ref={cardRef}>
                 <S.IconWrapper>
                     <S.CheckIcon />
                 </S.IconWrapper>

@@ -1,13 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useGSAP } from "@gsap/react";
 
 import { listVenues } from "../../services/venue";
 import { getErrorMessage } from "../../utils/getErrorMessage";
+import { animateFadeInUp, animateStagger } from "../../utils/animations";
 import * as S from "./styles";
 
 export default function Venues() {
     const navigate = useNavigate();
+    const containerRef = useRef(null);
 
     const [venues, setVenues] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -32,6 +35,13 @@ export default function Venues() {
 
         return () => controller.abort();
     }, []);
+
+    useGSAP(() => {
+        if (isLoading) return;
+        const el = containerRef.current;
+        animateFadeInUp(el.querySelector(".anim-header"));
+        animateStagger(el.querySelectorAll(".anim-card"), { delay: 0.15 });
+    }, { scope: containerRef, dependencies: [isLoading] });
 
     if (isLoading) {
         return (
@@ -74,8 +84,8 @@ export default function Venues() {
     }
 
     return (
-        <S.Container>
-            <S.Header>
+        <S.Container ref={containerRef}>
+            <S.Header className="anim-header">
                 <S.HeaderContent>
                     <S.Title>Espaços disponíveis</S.Title>
                     <S.Description>
@@ -88,7 +98,7 @@ export default function Venues() {
 
             <S.Grid>
                 {venues.map((venue) => (
-                    <S.Card key={venue.id}>
+                    <S.Card className="anim-card" key={venue.id}>
                         <S.CardContent>
                             <S.CardHeader>
                                 <S.CardTitle>{venue.name}</S.CardTitle>
