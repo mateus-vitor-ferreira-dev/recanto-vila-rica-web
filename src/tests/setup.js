@@ -34,7 +34,7 @@ vi.mock("gsap", () => {
 vi.mock("gsap/ScrollTrigger", () => ({ ScrollTrigger: { create: () => {}, refresh: () => {} } }));
 
 vi.mock("@gsap/react", () => ({
-    useGSAP: (cb) => { try { cb(); } catch (_) {} },
+    useGSAP: (cb) => { try { cb(); } catch { /* ignore GSAP errors in jsdom */ } },
 }));
 
 // jsdom does not implement scrollIntoView
