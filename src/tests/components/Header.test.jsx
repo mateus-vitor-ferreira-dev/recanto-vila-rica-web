@@ -80,4 +80,19 @@ describe("Header component", () => {
         await user.click(screen.getByRole("button", { name: /sair/i }));
         expect(localStorage.getItem("recanto:userData")).toBeNull();
     });
+
+    it("renders sun icon when dark theme is active", () => {
+        localStorage.setItem("recanto:theme", "dark");
+        renderHeader({ user: { name: "Mateus", role: "USER" } });
+        expect(screen.getByTitle(/mudar para tema claro/i)).toBeInTheDocument();
+    });
+
+    it("toggles theme from dark to light on button click", async () => {
+        localStorage.setItem("recanto:theme", "dark");
+        renderHeader({ user: { name: "Mateus", role: "USER" } });
+        const user = userEvent.setup();
+        const btn = screen.getByTitle(/mudar para tema claro/i);
+        await user.click(btn);
+        expect(document.documentElement.getAttribute("data-theme")).toBe("light");
+    });
 });

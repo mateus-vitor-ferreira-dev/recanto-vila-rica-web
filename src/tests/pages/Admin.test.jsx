@@ -814,4 +814,58 @@ describe("Admin - Holidays tab", () => {
         });
     });
 
+    it("closes holiday modal via Cancelar button", async () => {
+        const user = userEvent.setup();
+        renderPage();
+        await waitFor(() => screen.getByText(/total de reservas/i));
+
+        await user.click(screen.getByRole("button", { name: /feriados/i }));
+        await waitFor(() => screen.getByRole("button", { name: /\+ novo feriado/i }));
+        await user.click(screen.getByRole("button", { name: /\+ novo feriado/i }));
+
+        await waitFor(() =>
+            expect(screen.getByPlaceholderText(/consciência negra/i)).toBeInTheDocument()
+        );
+        await user.click(screen.getByRole("button", { name: /^cancelar$/i }));
+
+        await waitFor(() =>
+            expect(screen.queryByPlaceholderText(/consciência negra/i)).not.toBeInTheDocument()
+        );
+    });
+
+    it("changes holiday type in modal", async () => {
+        const user = userEvent.setup();
+        renderPage();
+        await waitFor(() => screen.getByText(/total de reservas/i));
+
+        await user.click(screen.getByRole("button", { name: /feriados/i }));
+        await waitFor(() => screen.getByRole("button", { name: /\+ novo feriado/i }));
+        await user.click(screen.getByRole("button", { name: /\+ novo feriado/i }));
+
+        await waitFor(() =>
+            expect(screen.getByPlaceholderText(/consciência negra/i)).toBeInTheDocument()
+        );
+
+        const typeSelect = screen.getAllByRole("combobox").at(-1);
+        await user.selectOptions(typeSelect, "municipal");
+        expect(typeSelect).toHaveValue("municipal");
+    });
+
+    it("shows error toast when holidays fail to load", async () => {
+        server.use(
+            http.get(`${BASE}/admin/holidays`, () =>
+                HttpResponse.json({ success: false }, { status: 500 })
+            )
+        );
+        const user = userEvent.setup();
+        renderPage();
+        await waitFor(() => screen.getByText(/total de reservas/i));
+
+        await user.click(screen.getByRole("button", { name: /feriados/i }));
+
+        await waitFor(() =>
+            expect(screen.getByRole("alert")).toBeInTheDocument()
+        );
+    });
+
 });

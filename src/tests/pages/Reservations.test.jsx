@@ -203,6 +203,27 @@ describe("Reservations page", () => {
         );
     });
 
+        it("closes cancel modal when Voltar is clicked", async () => {
+        server.use(
+            http.get(`${BASE}/reservations`, () =>
+                HttpResponse.json({ success: true, data: [mockReservation] })
+            )
+        );
+        const user = userEvent.setup();
+        renderPage();
+        await waitFor(() =>
+            expect(screen.getByRole("button", { name: /cancelar reserva/i })).toBeInTheDocument()
+        );
+        await user.click(screen.getByRole("button", { name: /cancelar reserva/i }));
+        await waitFor(() =>
+            expect(screen.getByRole("button", { name: /sim, cancelar/i })).toBeInTheDocument()
+        );
+        await user.click(screen.getByRole("button", { name: /voltar/i }));
+        await waitFor(() =>
+            expect(screen.queryByRole("button", { name: /sim, cancelar/i })).not.toBeInTheDocument()
+        );
+    });
+
     it("shows '1 hora' for 1-hour reservation", async () => {
         const now = Date.now();
         server.use(
