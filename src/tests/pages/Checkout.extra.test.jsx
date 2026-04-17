@@ -88,7 +88,7 @@ describe("Checkout extra coverage", () => {
         );
 
         const user = userEvent.setup();
-        await user.click(screen.getByRole("button", { name: /ir para o pagamento/i }));
+        await user.click(screen.getByRole("button", { name: /pagar com cartão/i }));
 
         await waitFor(() =>
             expect(assignSpy).toHaveBeenCalledWith("https://checkout.stripe.com/pay/test")
