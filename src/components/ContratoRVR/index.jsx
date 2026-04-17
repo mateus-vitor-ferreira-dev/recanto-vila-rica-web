@@ -257,7 +257,7 @@ export function ContratoRVR({ locatario, data, horarioInicio, horarioFim, comKid
                     <Text style={styles.planMeta}>Data e horário: {periodo}</Text>
                     <View style={styles.planInclusionsList}>
                         {plan.inclusions.map((item, i) => (
-                            <Text key={i} style={styles.planInclusionItem}>✓  {item}</Text>
+                            <Text key={i} style={styles.planInclusionItem}>•  {item}</Text>
                         ))}
                     </View>
                 </View>
