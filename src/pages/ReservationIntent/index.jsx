@@ -609,6 +609,19 @@ export default function ReservationIntent() {
                                         </S.SummaryItem>
                                     ))}
 
+                                    {normalizedQuote.discountApplied && (
+                                        <>
+                                            <S.SummaryItem>
+                                                <span>Subtotal</span>
+                                                <strong>{formatCurrency(normalizedQuote.subtotalCents)}</strong>
+                                            </S.SummaryItem>
+                                            <S.SummaryItem>
+                                                <span>Desconto</span>
+                                                <strong>- {formatCurrency(normalizedQuote.discountCents)}</strong>
+                                            </S.SummaryItem>
+                                        </>
+                                    )}
+
                                     <S.TotalRow>
                                         <span>Total</span>
                                         <strong>{formatCurrency(normalizedQuote.totalCents)}</strong>

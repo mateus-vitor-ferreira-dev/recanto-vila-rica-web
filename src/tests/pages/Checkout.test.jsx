@@ -13,7 +13,7 @@ const mockReservation = {
     id: "res-1",
     status: "PENDING",
     planCode: "ESSENCIAL",
-    totalPrice: 85000,
+    totalPrice: 850,
     startDate: "2026-06-01T10:00:00.000Z",
     endDate: "2026-06-01T18:00:00.000Z",
     venue: { name: "Salão Principal" },
