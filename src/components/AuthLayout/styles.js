@@ -142,7 +142,7 @@ export const RightSide = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f8fafc;
+  background: var(--bg-page);
   padding: 48px 32px;
 
   @media (max-width: 480px) {
@@ -198,14 +198,14 @@ export const FormHeader = styled.div`
 export const Title = styled.h2`
   font-size: 26px;
   font-weight: 800;
-  color: #111827;
+  color: var(--text-primary);
   letter-spacing: -0.02em;
   margin: 0;
 `;
 
 export const Subtitle = styled.p`
   font-size: 14px;
-  color: #6b7280;
+  color: var(--text-muted);
   line-height: 1.5;
   margin: 0;
 `;

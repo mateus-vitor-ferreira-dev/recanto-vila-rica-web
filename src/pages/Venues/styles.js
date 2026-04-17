@@ -27,20 +27,20 @@ export const HeaderContent = styled.div`
 export const Title = styled.h1`
   font-size: 34px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
 `;
 
 export const Description = styled.p`
-  color: #6b7280;
+  color: var(--text-muted);
   font-size: 16px;
   line-height: 1.6;
   max-width: 680px;
 `;
 
 export const Counter = styled.span`
-  background: #ecfdf3;
-  color: #1f4f41;
-  border: 1px solid #d1fae5;
+  background: var(--status-paid-bg);
+  color: var(--brand);
+  border: 1px solid var(--brand-border);
   border-radius: 999px;
   padding: 10px 14px;
   font-size: 14px;
@@ -58,8 +58,8 @@ export const Grid = styled.section`
 `;
 
 export const Card = styled.article`
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 24px;
   padding: 24px;
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
@@ -85,29 +85,29 @@ export const CardHeader = styled.div`
 export const CardTitle = styled.h2`
   font-size: 24px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
 `;
 
 export const Price = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  color: #1f4f41;
+  color: var(--brand);
   font-size: 18px;
   font-weight: 700;
   white-space: nowrap;
 
   span {
     font-size: 12px;
-    color: #6b7280;
+    color: var(--text-muted);
     font-weight: 600;
   }
 `;
 
 export const PlansTag = styled.div`
-  background: #ecfdf3;
-  color: #1f4f41;
-  border: 1px solid #d1fae5;
+  background: var(--status-paid-bg);
+  color: var(--brand);
+  border: 1px solid var(--brand-border);
   border-radius: 999px;
   padding: 6px 12px;
   font-size: 13px;
@@ -117,7 +117,7 @@ export const PlansTag = styled.div`
 `;
 
 export const CardDescription = styled.p`
-  color: #4b5563;
+  color: var(--text-medium);
   line-height: 1.6;
   font-size: 15px;
 `;
@@ -134,16 +134,16 @@ export const InfoList = styled.ul`
     flex-direction: column;
     gap: 2px;
     padding: 10px 12px;
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
+    background: var(--bg-page);
+    border: 1px solid var(--border-default);
     border-radius: 10px;
     font-size: 13px;
-    color: #4b5563;
+    color: var(--text-medium);
 
     strong {
       font-size: 11px;
       font-weight: 600;
-      color: #9ca3af;
+      color: var(--text-faint);
       text-transform: uppercase;
       letter-spacing: 0.04em;
     }
@@ -157,9 +157,9 @@ export const Actions = styled.div`
 `;
 
 export const ActionButton = styled.button`
-  border: 1px solid #d1d5db;
-  background: #ffffff;
-  color: #374151;
+  border: 1px solid var(--border-medium);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
   border-radius: 12px;
   padding: 12px 16px;
   font-weight: 600;
@@ -168,7 +168,7 @@ export const ActionButton = styled.button`
   transition: background 0.15s ease;
 
   &:hover:enabled {
-    background: #f9fafb;
+    background: var(--bg-page);
   }
 
   &:disabled {
@@ -178,9 +178,9 @@ export const ActionButton = styled.button`
 `;
 
 export const ActionLink = styled.a`
-  border: 1px solid #d1d5db;
-  background: #ffffff;
-  color: #374151;
+  border: 1px solid var(--border-medium);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
   border-radius: 12px;
   padding: 12px 16px;
   font-weight: 600;
@@ -192,13 +192,13 @@ export const ActionLink = styled.a`
   transition: background 0.15s ease;
 
   &:hover {
-    background: #f9fafb;
+    background: var(--bg-page);
   }
 `;
 
 export const PrimaryButton = styled.button`
   border: none;
-  background: #1f4f41;
+  background: var(--brand);
   color: #ffffff;
   border-radius: 12px;
   padding: 12px 20px;
@@ -214,10 +214,10 @@ export const PrimaryButton = styled.button`
 `;
 
 export const LoadingCard = styled.div`
-  background: #ffffff;
+  background: var(--bg-surface);
   border-radius: 20px;
   padding: 56px 32px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-default);
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
   display: flex;
   flex-direction: column;
@@ -230,18 +230,18 @@ export const LoadingCard = styled.div`
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    border: 3px solid #e5e7eb;
-    border-top-color: #1f4f41;
+    border: 3px solid var(--border-default);
+    border-top-color: var(--brand);
     animation: ${spin} 0.8s linear infinite;
   }
 
   h2 {
     font-size: 18px;
-    color: #111827;
+    color: var(--text-primary);
   }
 
   p {
-    color: #6b7280;
+    color: var(--text-muted);
     font-size: 14px;
     max-width: 300px;
     line-height: 1.6;
@@ -249,10 +249,10 @@ export const LoadingCard = styled.div`
 `;
 
 export const EmptyState = styled.div`
-  background: #ffffff;
+  background: var(--bg-surface);
   border-radius: 20px;
   padding: 56px 32px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-default);
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
   display: flex;
   flex-direction: column;
@@ -265,17 +265,17 @@ export const EmptyState = styled.div`
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background: #f3f4f6;
-    border: 2px dashed #d1d5db;
+    background: var(--bg-muted);
+    border: 2px dashed var(--border-medium);
   }
 
   h2 {
     font-size: 18px;
-    color: #111827;
+    color: var(--text-primary);
   }
 
   p {
-    color: #6b7280;
+    color: var(--text-muted);
     font-size: 14px;
     max-width: 300px;
     line-height: 1.6;

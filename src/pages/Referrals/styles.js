@@ -19,18 +19,18 @@ export const Header = styled.section`
 export const Title = styled.h1`
   font-size: 32px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
 `;
 
 export const Description = styled.p`
-  color: #6b7280;
+  color: var(--text-muted);
   line-height: 1.6;
   font-size: 15px;
 `;
 
 export const InviteCard = styled.div`
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 18px;
   padding: 24px;
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
@@ -42,7 +42,7 @@ export const InviteCard = styled.div`
 export const InviteTitle = styled.h2`
   font-size: 18px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
 `;
 
 export const InviteRow = styled.div`
@@ -56,23 +56,24 @@ export const EmailInput = styled.input`
   min-width: 200px;
   height: 44px;
   padding: 0 14px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-medium);
   border-radius: 12px;
+  background: var(--bg-surface);
+  color: var(--text-primary);
   font-size: 14px;
-  color: #111827;
   outline: none;
   transition: border-color 0.15s;
 
   &:focus {
-    border-color: #1f4f41;
+    border-color: var(--brand);
   }
 
   &::placeholder {
-    color: #9ca3af;
+    color: var(--text-faint);
   }
 
   &:disabled {
-    background: #f9fafb;
+    background: var(--bg-page);
     cursor: not-allowed;
   }
 `;
@@ -80,7 +81,7 @@ export const EmailInput = styled.input`
 export const InviteButton = styled.button`
   height: 44px;
   padding: 0 22px;
-  background: #1f4f41;
+  background: var(--brand);
   color: #ffffff;
   border: none;
   border-radius: 12px;
@@ -101,12 +102,12 @@ export const InviteButton = styled.button`
 `;
 
 export const NoCampaignBanner = styled.div`
-  background: #fffbeb;
-  border: 1px solid #fde68a;
+  background: var(--status-pending-bg);
+  border: 1px solid var(--status-pending-border);
   border-radius: 12px;
   padding: 14px 18px;
   font-size: 14px;
-  color: #92400e;
+  color: var(--status-pending-text-deep);
   line-height: 1.5;
 `;
 
@@ -119,12 +120,12 @@ export const List = styled.div`
 export const ListTitle = styled.h2`
   font-size: 18px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
 `;
 
 export const ReferralCard = styled.article`
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 16px;
   padding: 18px 22px;
   box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
@@ -142,12 +143,12 @@ export const ReferralInfo = styled.div`
 
   strong {
     font-size: 15px;
-    color: #111827;
+    color: var(--text-primary);
   }
 
   span {
     font-size: 13px;
-    color: #6b7280;
+    color: var(--text-muted);
   }
 `;
 
@@ -164,24 +165,24 @@ export const StatusBadge = styled.span`
   ${({ $status }) => {
     switch ($status) {
       case "REWARDED":
-        return `background: #ecfdf3; color: #166534; border-color: #bbf7d0;`;
+        return `background: var(--status-paid-bg); color: var(--status-paid-text); border-color: var(--status-paid-border);`;
       case "QUALIFIED":
-        return `background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe;`;
+        return `background: var(--status-info-bg); color: var(--status-info-text); border-color: var(--status-info-border);`;
       case "EXPIRED":
       case "CANCELLED":
-        return `background: #f3f4f6; color: #6b7280; border-color: #e5e7eb;`;
+        return `background: var(--bg-muted); color: var(--text-muted); border-color: var(--border-default);`;
       case "PENDING":
       default:
-        return `background: #fffbeb; color: #b45309; border-color: #fde68a;`;
+        return `background: var(--status-pending-bg); color: var(--status-pending-text); border-color: var(--status-pending-border);`;
     }
   }}
 `;
 
 export const LoadingCard = styled.div`
-  background: #ffffff;
+  background: var(--bg-surface);
   border-radius: 20px;
   padding: 56px 32px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-default);
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
   display: flex;
   flex-direction: column;
@@ -194,18 +195,18 @@ export const LoadingCard = styled.div`
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    border: 3px solid #e5e7eb;
-    border-top-color: #1f4f41;
+    border: 3px solid var(--border-default);
+    border-top-color: var(--brand);
     animation: ${spin} 0.8s linear infinite;
   }
 
   h2 {
     font-size: 18px;
-    color: #111827;
+    color: var(--text-primary);
   }
 
   p {
-    color: #6b7280;
+    color: var(--text-muted);
     font-size: 14px;
     max-width: 300px;
     line-height: 1.6;
@@ -213,8 +214,8 @@ export const LoadingCard = styled.div`
 `;
 
 export const EmptyState = styled.div`
-  background: #f9fafb;
-  border: 1px dashed #d1d5db;
+  background: var(--bg-page);
+  border: 1px dashed var(--border-medium);
   border-radius: 16px;
   padding: 40px 32px;
   display: flex;
@@ -224,7 +225,7 @@ export const EmptyState = styled.div`
   gap: 8px;
 
   p {
-    color: #6b7280;
+    color: var(--text-muted);
     font-size: 14px;
     line-height: 1.6;
   }
