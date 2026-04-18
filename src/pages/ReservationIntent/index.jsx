@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useGSAP } from "@gsap/react";
+import AvailabilityCalendar from "../../components/AvailabilityCalendar";
 import ErrorBoundary from "../../components/ErrorBoundary";
 import Input from "../../components/Input";
 import { createReservation, quoteReservation } from "../../services/reservation";
@@ -442,19 +443,17 @@ export default function ReservationIntent() {
                         <S.Card className="anim-card">
                             <S.CardTitle>Data e horário</S.CardTitle>
                             <S.CardDescription>
-                                Escolha a data do evento e os horários de início e término. As modalidades disponíveis dependem do dia selecionado.
+                                Selecione a data do evento no calendário. Datas em laranja já estão reservadas e datas em roxo estão bloqueadas.
                             </S.CardDescription>
 
-                            <S.FormRow>
-                                <Input
-                                    id="eventDate"
-                                    label="Data do evento"
-                                    type="date"
-                                    min={today}
-                                    value={eventDate}
-                                    onChange={(e) => handleDateChange(e.target.value)}
-                                />
+                            <AvailabilityCalendar
+                                venueId={venueId}
+                                selectedDate={eventDate}
+                                onChange={handleDateChange}
+                                minDate={today}
+                            />
 
+                            <S.FormRow style={{ marginTop: "16px" }}>
                                 <Input
                                     id="startTime"
                                     label="Início"

@@ -97,6 +97,22 @@ export default function Header() {
                         Indicações
                     </S.NavLink>
 
+                    <S.NavLink
+                        $active={location.pathname.startsWith("/negociacoes")}
+                        as={Link}
+                        to="/negociacoes"
+                    >
+                        Negociações
+                    </S.NavLink>
+
+                    <S.NavLink
+                        $active={location.pathname.startsWith("/contate-nos")}
+                        as={Link}
+                        to="/contate-nos"
+                    >
+                        Contate-nos
+                    </S.NavLink>
+
                     {userRole === "ADMIN" && (
                         <S.NavLink $active={location.pathname === "/admin"} as={Link} to="/admin">
                             Admin

@@ -3,8 +3,11 @@ import { MainLayout } from "../components";
 import {
     Admin,
     Checkout,
+    ContactUs,
     Home,
     Login,
+    NegotiationChat,
+    Negotiations,
     PaymentCancel,
     PaymentSuccess,
     Profile,
@@ -41,6 +44,9 @@ export function AppRoutes({ introFinished }) {
                     />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/referrals" element={<Referrals />} />
+                    <Route path="/contate-nos" element={<ContactUs />} />
+                    <Route path="/negociacoes" element={<Negotiations />} />
+                    <Route path="/negociacoes/:id" element={<NegotiationChat />} />
                     <Route path="/checkout/:reservationId" element={<Checkout />} />
                     <Route path="/payment/success" element={<PaymentSuccess />} />
                     <Route path="/payment/cancel" element={<PaymentCancel />} />

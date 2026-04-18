@@ -269,6 +269,32 @@ export const StatusBadge = styled.span`
   }}
 `;
 
+export const NegStatusBadge = styled.span`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid;
+  white-space: nowrap;
+
+  ${({ $status }) => {
+    switch ($status) {
+      case "ACCEPTED":
+        return `background: var(--status-paid-bg); color: var(--status-paid-text); border-color: var(--status-paid-border);`;
+      case "REJECTED":
+        return `background: var(--status-error-bg); color: var(--status-error-text); border-color: var(--status-error-border);`;
+      case "CLOSED":
+        return `background: var(--bg-muted); color: var(--text-muted); border-color: var(--border-default);`;
+      case "OPEN":
+      default:
+        return `background: var(--status-info-bg); color: var(--status-info-text); border-color: var(--status-info-border);`;
+    }
+  }}
+`;
+
 /* Pagination */
 export const Pagination = styled.div`
   display: flex;

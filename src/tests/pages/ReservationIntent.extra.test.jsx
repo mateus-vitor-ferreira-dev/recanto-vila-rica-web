@@ -3,9 +3,20 @@ import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import ReservationIntent from "../../pages/ReservationIntent";
 import { server } from "../mocks/server";
+
+vi.mock("../../components/AvailabilityCalendar", () => ({
+    default: ({ onChange, selectedDate }) => (
+        <input
+            type="date"
+            aria-label="Data do evento"
+            value={selectedDate || ""}
+            onChange={(e) => onChange(e.target.value)}
+        />
+    ),
+}));
 
 const BASE = "http://localhost:3000";
 

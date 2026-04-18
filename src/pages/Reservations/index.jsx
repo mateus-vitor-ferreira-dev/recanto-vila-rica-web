@@ -47,11 +47,12 @@ export default function Reservations() {
     }, []);
 
     useGSAP(() => {
-        if (isLoading) return;
+        if (isLoading || !reservations.length) return;
         const el = containerRef.current;
+        if (!el) return;
         animateFadeInUp(el.querySelector(".anim-header"));
         animateStagger(el.querySelectorAll(".anim-card"), { delay: 0.15 });
-    }, { scope: containerRef, dependencies: [isLoading] });
+    }, { scope: containerRef, dependencies: [isLoading, reservations.length] });
 
     async function handleCancelReservation() {
         const id = confirmCancelId;

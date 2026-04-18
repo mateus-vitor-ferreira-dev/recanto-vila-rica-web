@@ -40,6 +40,13 @@ vi.mock("@gsap/react", () => ({
 // jsdom does not implement scrollIntoView
 window.HTMLElement.prototype.scrollIntoView = () => {};
 
+// jsdom does not implement navigator.clipboard — define as writable so tests can spy on it
+Object.defineProperty(navigator, "clipboard", {
+    value: { writeText: vi.fn().mockResolvedValue(undefined), readText: vi.fn().mockResolvedValue("") },
+    configurable: true,
+    writable: true,
+});
+
 // jsdom does not implement matchMedia (required by GSAP/ScrollTrigger)
 window.matchMedia =
   window.matchMedia ||
