@@ -869,3 +869,131 @@ describe("Admin - Holidays tab", () => {
     });
 
 });
+
+// ─── Negotiations Tab ─────────────────────────────────────────────────────────
+
+describe("Admin - Negotiations tab", () => {
+    it("shows empty state when there are no negotiations", async () => {
+        const user = userEvent.setup();
+        renderPage();
+        await waitFor(() => expect(screen.getByText("Dashboard")).toBeInTheDocument());
+        await user.click(screen.getByRole("button", { name: /negociações/i }));
+        await waitFor(() =>
+            expect(screen.getByText(/nenhuma negociação encontrada/i)).toBeInTheDocument()
+        );
+    });
+
+    it("shows negotiations list with status badge", async () => {
+        server.use(
+            http.get(`${BASE}/negotiations`, () =>
+                HttpResponse.json({
+                    success: true,
+                    data: [
+                        {
+                            id: "neg-1",
+                            subject: "Reserva especial",
+                            status: "OPEN",
+                            user: { id: "u-1", name: "Mateus", email: "m@email.com" },
+                            createdAt: new Date().toISOString(),
+                        },
+                    ],
+                })
+            )
+        );
+        const user = userEvent.setup();
+        renderPage();
+        await waitFor(() => expect(screen.getByText("Dashboard")).toBeInTheDocument());
+        await user.click(screen.getByRole("button", { name: /negociações/i }));
+        await waitFor(() =>
+            expect(screen.getByText("Reserva especial")).toBeInTheDocument()
+        );
+        expect(screen.getAllByText("Aberta").length).toBeGreaterThan(0);
+        expect(screen.getByText("m@email.com")).toBeInTheDocument();
+    });
+
+    it("shows '—' when negotiation user is absent", async () => {
+        server.use(
+            http.get(`${BASE}/negotiations`, () =>
+                HttpResponse.json({
+                    success: true,
+                    data: [
+                        {
+                            id: "neg-2",
+                            subject: "Sem usuário",
+                            status: "CLOSED",
+                            user: null,
+                            createdAt: new Date().toISOString(),
+                        },
+                    ],
+                })
+            )
+        );
+        const user = userEvent.setup();
+        renderPage();
+        await waitFor(() => expect(screen.getByText("Dashboard")).toBeInTheDocument());
+        await user.click(screen.getByRole("button", { name: /negociações/i }));
+        await waitFor(() =>
+            expect(screen.getAllByText("—").length).toBeGreaterThan(0)
+        );
+    });
+
+    it("filters negotiations by status", async () => {
+        server.use(
+            http.get(`${BASE}/negotiations`, () =>
+                HttpResponse.json({
+                    success: true,
+                    data: [
+                        { id: "neg-1", subject: "Open neg", status: "OPEN", user: { name: "A", email: "a@e.com" }, createdAt: new Date().toISOString() },
+                        { id: "neg-2", subject: "Closed neg", status: "CLOSED", user: { name: "B", email: "b@e.com" }, createdAt: new Date().toISOString() },
+                    ],
+                })
+            )
+        );
+        const user = userEvent.setup();
+        renderPage();
+        await waitFor(() => expect(screen.getByText("Dashboard")).toBeInTheDocument());
+        await user.click(screen.getByRole("button", { name: /negociações/i }));
+        await waitFor(() =>
+            expect(screen.getByText("Open neg")).toBeInTheDocument()
+        );
+        const selects = screen.getAllByRole("combobox");
+        await user.selectOptions(selects[0], "CLOSED");
+        expect(screen.queryByText("Open neg")).not.toBeInTheDocument();
+        expect(screen.getByText("Closed neg")).toBeInTheDocument();
+    });
+
+    it("shows error toast when negotiations load fails", async () => {
+        server.use(
+            http.get(`${BASE}/negotiations`, () =>
+                HttpResponse.json({ success: false, message: "Erro ao carregar negociações." }, { status: 500 })
+            )
+        );
+        const user = userEvent.setup();
+        renderPage();
+        await waitFor(() => expect(screen.getByText("Dashboard")).toBeInTheDocument());
+        await user.click(screen.getByRole("button", { name: /negociações/i }));
+        await waitFor(() =>
+            expect(screen.getByText(/erro ao carregar negociações/i)).toBeInTheDocument()
+        );
+    });
+
+    it("shows unknown status as raw value", async () => {
+        server.use(
+            http.get(`${BASE}/negotiations`, () =>
+                HttpResponse.json({
+                    success: true,
+                    data: [
+                        { id: "neg-3", subject: "Unknown", status: "SOME_NEW_STATUS", user: { name: "C", email: "c@e.com" }, createdAt: new Date().toISOString() },
+                    ],
+                })
+            )
+        );
+        const user = userEvent.setup();
+        renderPage();
+        await waitFor(() => expect(screen.getByText("Dashboard")).toBeInTheDocument());
+        await user.click(screen.getByRole("button", { name: /negociações/i }));
+        await waitFor(() =>
+            expect(screen.getByText("SOME_NEW_STATUS")).toBeInTheDocument()
+        );
+    });
+});
