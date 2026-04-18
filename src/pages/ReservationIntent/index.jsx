@@ -1,11 +1,14 @@
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useGSAP } from "@gsap/react";
+import AvailabilityCalendar from "../../components/AvailabilityCalendar";
 import ErrorBoundary from "../../components/ErrorBoundary";
 import Input from "../../components/Input";
 import { createReservation, quoteReservation } from "../../services/reservation";
 import { getVenue } from "../../services/venue";
 import { getErrorMessage } from "../../utils/getErrorMessage";
+import { animateFadeInUp, animateStagger } from "../../utils/animations";
 import * as S from "./styles";
 
 const ContratoDownloadLink = lazy(() => import("../../components/ContratoRVR/DownloadLink"));
@@ -95,6 +98,7 @@ function formatCurrency(cents) {
 export default function ReservationIntent() {
     const { venueId } = useParams();
     const navigate = useNavigate();
+    const containerRef = useRef(null);
 
     const [venue, setVenue] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -295,6 +299,13 @@ export default function ReservationIntent() {
         }
     }
 
+    useGSAP(() => {
+        if (loading || !containerRef.current) return;
+        const el = containerRef.current;
+        animateFadeInUp(el.querySelector(".anim-top"));
+        animateStagger(el.querySelectorAll(".anim-card"), { delay: 0.15 });
+    }, { scope: containerRef, dependencies: [loading] });
+
     if (loading) {
         return (
             <S.Container>
@@ -379,9 +390,9 @@ export default function ReservationIntent() {
     };
 
     return (
-        <S.Container>
+        <S.Container ref={containerRef}>
             <S.Content>
-                <S.TopSection>
+                <S.TopSection className="anim-top">
                     <div>
                         <S.PageTitle>Intenção de reserva</S.PageTitle>
                         <S.PageDescription>
@@ -406,7 +417,7 @@ export default function ReservationIntent() {
 
                 <S.Grid>
                     <S.LeftColumn>
-                        <S.Card>
+                        <S.Card className="anim-card">
                             <S.CardTitle>{venue.name}</S.CardTitle>
                             <S.CardDescription>
                                 {venue.description || "Salão principal para eventos e reservas"}
@@ -429,22 +440,20 @@ export default function ReservationIntent() {
                             </S.RouteButton>
                         </S.Card>
 
-                        <S.Card>
+                        <S.Card className="anim-card">
                             <S.CardTitle>Data e horário</S.CardTitle>
                             <S.CardDescription>
-                                Escolha a data do evento e os horários de início e término. As modalidades disponíveis dependem do dia selecionado.
+                                Selecione a data do evento no calendário. Datas em laranja já estão reservadas e datas em roxo estão bloqueadas.
                             </S.CardDescription>
 
-                            <S.FormRow>
-                                <Input
-                                    id="eventDate"
-                                    label="Data do evento"
-                                    type="date"
-                                    min={today}
-                                    value={eventDate}
-                                    onChange={(e) => handleDateChange(e.target.value)}
-                                />
+                            <AvailabilityCalendar
+                                venueId={venueId}
+                                selectedDate={eventDate}
+                                onChange={handleDateChange}
+                                minDate={today}
+                            />
 
+                            <S.FormRow style={{ marginTop: "16px" }}>
                                 <Input
                                     id="startTime"
                                     label="Início"
@@ -467,7 +476,7 @@ export default function ReservationIntent() {
                             </S.FormRow>
                         </S.Card>
 
-                        <S.Card>
+                        <S.Card className="anim-card">
                             <S.CardTitle>Escolha a modalidade</S.CardTitle>
                             <S.CardDescription>
                                 {eventDate
@@ -496,7 +505,7 @@ export default function ReservationIntent() {
                         </S.Card>
 
                         {venue.hasKidsArea && (
-                            <S.Card>
+                            <S.Card className="anim-card">
                                 <S.CardTitle>Área Kids com monitor</S.CardTitle>
                                 <S.CardDescription>
                                     O plano selecionado inclui 4 horas de monitor. Caso deseje mais tempo,
@@ -524,7 +533,7 @@ export default function ReservationIntent() {
                             </S.Card>
                         )}
 
-                        <S.Card>
+                        <S.Card className="anim-card">
                             <S.CardTitle>Observações</S.CardTitle>
                             <S.CardDescription>
                                 Informe qualquer detalhe adicional para a sua reserva (opcional).
@@ -540,7 +549,7 @@ export default function ReservationIntent() {
                     </S.LeftColumn>
 
                     <S.RightColumn>
-                        <S.Card>
+                        <S.Card className="anim-card">
                             <S.CardTitle>Resumo da reserva</S.CardTitle>
 
                             <S.SummaryList>
@@ -637,7 +646,7 @@ export default function ReservationIntent() {
                             )}
                         </S.Card>
 
-                        <S.ActionCard>
+                        <S.ActionCard className="anim-card">
                             <S.ConfirmButton
                                 type="button"
                                 onClick={handleConfirmReservation}

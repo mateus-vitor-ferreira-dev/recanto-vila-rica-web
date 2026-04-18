@@ -318,3 +318,126 @@ export const StripeBadge = styled.p`
     color: var(--text-muted);
   }
 `;
+
+/* ─── Method Selector ─── */
+
+export const MethodSelector = styled.div`
+  display: flex;
+  gap: 10px;
+`;
+
+export const MethodButton = styled.button`
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  ${({ $active }) =>
+    $active
+      ? `
+    background: var(--brand);
+    color: #ffffff;
+    border: 2px solid var(--brand);
+  `
+      : `
+    background: transparent;
+    color: var(--text-secondary);
+    border: 2px solid var(--border-default);
+
+    &:hover {
+      border-color: var(--brand);
+      color: var(--brand);
+    }
+  `}
+`;
+
+/* ─── PIX QR Code ─── */
+
+const pulseAnim = keyframes`
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+`;
+
+export const PixContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  animation: ${fadeIn} 0.3s ease;
+`;
+
+export const PixQrImage = styled.img`
+  width: 200px;
+  height: 200px;
+  border-radius: 12px;
+  border: 1px solid var(--border-default);
+`;
+
+export const PixCopyPasteBox = styled.div`
+  width: 100%;
+  background: var(--bg-page);
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+export const PixCopyPasteLabel = styled.span`
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+`;
+
+export const PixCopyPasteValue = styled.span`
+  font-size: 11px;
+  font-family: monospace;
+  color: var(--text-secondary);
+  word-break: break-all;
+  line-height: 1.5;
+`;
+
+export const CopyButton = styled.button`
+  align-self: flex-start;
+  background: none;
+  border: none;
+  color: var(--brand);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+
+  &:hover {
+    opacity: 0.8;
+  }
+`;
+
+export const PixStatus = styled.p`
+  font-size: 13px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--brand);
+    flex-shrink: 0;
+    animation: ${pulseAnim} 1.5s ease-in-out infinite;
+  }
+`;
+
+export const PixExpiry = styled.p`
+  font-size: 12px;
+  color: var(--text-faint);
+`;

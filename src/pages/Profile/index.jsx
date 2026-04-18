@@ -1,11 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useGSAP } from "@gsap/react";
 
 import { Input } from "../../components";
 import api from "../../services/api";
 import { getErrorMessage } from "../../utils/getErrorMessage";
 import { formatPhone } from "../../utils/formatPhone";
+import { animateFadeInUp, animateStagger } from "../../utils/animations";
 import * as S from "./styles";
 
 function getInitials(name) {
@@ -18,6 +20,7 @@ function getInitials(name) {
 
 export default function Profile() {
     const navigate = useNavigate();
+    const containerRef = useRef(null);
 
     const [user, setUser] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -119,6 +122,13 @@ export default function Profile() {
         }
     }
 
+    useGSAP(() => {
+        if (isLoading) return;
+        const el = containerRef.current;
+        animateFadeInUp(el.querySelector(".anim-header"));
+        animateStagger(el.querySelectorAll(".anim-card"), { delay: 0.15 });
+    }, { scope: containerRef, dependencies: [isLoading] });
+
     if (isLoading) {
         return (
             <S.Container>
@@ -131,8 +141,8 @@ export default function Profile() {
     }
 
     return (
-        <S.Container>
-            <S.PageHeader>
+        <S.Container ref={containerRef}>
+            <S.PageHeader className="anim-header">
                 <S.HeaderLeft>
                     <S.PageTitle>Meu perfil</S.PageTitle>
                     <S.PageSubtitle>Gerencie suas informações pessoais e de acesso.</S.PageSubtitle>
@@ -140,14 +150,14 @@ export default function Profile() {
             </S.PageHeader>
 
             <S.Layout>
-                <S.IdentityCard>
+                <S.IdentityCard className="anim-card">
                     <S.AvatarLarge>{getInitials(user?.name)}</S.AvatarLarge>
                     <S.IdentityName>{user?.name}</S.IdentityName>
                     <S.IdentityEmail>{user?.email}</S.IdentityEmail>
                     <S.RoleBadge>{user?.role === "ADMIN" ? "Administrador" : "Usuário"}</S.RoleBadge>
                 </S.IdentityCard>
 
-                <S.FormCard onSubmit={handleSubmit}>
+                <S.FormCard className="anim-card" onSubmit={handleSubmit}>
                     <S.SectionTitle>Informações pessoais</S.SectionTitle>
 
                     <S.FieldGrid>

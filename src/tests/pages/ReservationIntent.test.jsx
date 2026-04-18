@@ -7,6 +7,17 @@ import { describe, expect, it, vi } from "vitest";
 import ReservationIntent from "../../pages/ReservationIntent";
 import { server } from "../mocks/server";
 
+vi.mock("../../components/AvailabilityCalendar", () => ({
+    default: ({ onChange, selectedDate }) => (
+        <input
+            type="date"
+            aria-label="Data do evento"
+            value={selectedDate || ""}
+            onChange={(e) => onChange(e.target.value)}
+        />
+    ),
+}));
+
 const BASE = "http://localhost:3000";
 
 const mockVenue = {

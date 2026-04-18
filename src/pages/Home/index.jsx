@@ -1,11 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useGSAP } from "@gsap/react";
 
 import api from "../../services/api";
 import { listMyGrants } from "../../services/promotion";
 import { listReservations } from "../../services/reservation";
 import { listVenues } from "../../services/venue";
+import { animateFadeInUp, animateStagger } from "../../utils/animations";
 import * as S from "./styles";
 
 function getGreeting() {
@@ -38,6 +40,8 @@ const STATUS_MAP = {
 };
 
 export default function Home() {
+    const navigate = useNavigate();
+    const containerRef = useRef(null);
     const [dashboard, setDashboard] = useState({
         user: null,
         venues: [],
@@ -101,6 +105,15 @@ export default function Home() {
 
     const userName = dashboard.user?.name?.split(" ")[0] || "Usuário";
 
+    useGSAP(() => {
+        if (isLoading) return;
+        const el = containerRef.current;
+        animateFadeInUp(el.querySelector(".anim-header"));
+        animateStagger(el.querySelectorAll(".anim-stat-card"));
+        animateStagger(el.querySelectorAll(".anim-action-card"), { delay: 0.2 });
+        animateStagger(el.querySelectorAll(".anim-panel"), { delay: 0.3 });
+    }, { scope: containerRef, dependencies: [isLoading] });
+
     if (isLoading) {
         return (
             <S.Container>
@@ -113,8 +126,8 @@ export default function Home() {
     }
 
     return (
-        <S.Container>
-            <S.PageHeader>
+        <S.Container ref={containerRef}>
+            <S.PageHeader className="anim-header">
                 <S.HeaderLeft>
                     <S.Greeting>
                         {getGreeting()}, <span>{userName}</span>.
@@ -130,7 +143,7 @@ export default function Home() {
             </S.PageHeader>
 
             <S.StatsGrid>
-                <S.StatCard $accent="var(--accent-olive)">
+                <S.StatCard className="anim-stat-card" $accent="var(--accent-olive)">
                     <S.StatLabel>Total de reservas</S.StatLabel>
                     <S.StatNumber $accent="var(--accent-olive)">
                         {dashboard.reservations.length}
@@ -140,7 +153,7 @@ export default function Home() {
                     </S.StatDescription>
                 </S.StatCard>
 
-                <S.StatCard $accent="var(--accent-teal)">
+                <S.StatCard className="anim-stat-card" $accent="var(--accent-teal)">
                     <S.StatLabel>Espaços disponíveis</S.StatLabel>
                     <S.StatNumber $accent="var(--accent-teal)">
                         {dashboard.venues.length}
@@ -150,7 +163,7 @@ export default function Home() {
                     </S.StatDescription>
                 </S.StatCard>
 
-                <S.StatCard $accent="var(--brand-dark)">
+                <S.StatCard className="anim-stat-card" $accent="var(--brand-dark)">
                     <S.StatLabel>Próximas reservas</S.StatLabel>
                     <S.StatNumber $accent="var(--brand-dark)">
                         {upcomingReservations.length}
@@ -162,7 +175,7 @@ export default function Home() {
             </S.StatsGrid>
 
             <S.ActionRow>
-                <S.ActionCard as={Link} to="/venues" $primary>
+                <S.ActionCard className="anim-action-card" as={Link} to="/venues" $primary>
                     <S.ActionContent>
                         <S.ActionTitle>Reservar um espaço</S.ActionTitle>
                         <S.ActionDesc>
@@ -172,7 +185,7 @@ export default function Home() {
                     <S.ActionArrow $primary>›</S.ActionArrow>
                 </S.ActionCard>
 
-                <S.ActionCard as={Link} to="/reservations">
+                <S.ActionCard className="anim-action-card" as={Link} to="/reservations">
                     <S.ActionContent>
                         <S.ActionTitle>Minhas reservas</S.ActionTitle>
                         <S.ActionDesc>
@@ -184,7 +197,7 @@ export default function Home() {
             </S.ActionRow>
 
             <S.ContentGrid>
-                <S.Panel>
+                <S.Panel className="anim-panel">
                     <S.PanelHeader>
                         <S.PanelTitle>Próximas reservas</S.PanelTitle>
                         <S.PanelLink as={Link} to="/reservations">
@@ -221,7 +234,7 @@ export default function Home() {
                     )}
                 </S.Panel>
 
-                <S.Panel>
+                <S.Panel className="anim-panel">
                     <S.PanelHeader>
                         <S.PanelTitle>Espaços disponíveis</S.PanelTitle>
                         <S.PanelLink as={Link} to="/venues">
@@ -235,23 +248,42 @@ export default function Home() {
                             <span>Nenhum espaço encontrado.</span>
                         </S.EmptyState>
                     ) : (
-                        <S.List>
-                            {dashboard.venues.slice(0, 5).map((v) => (
-                                <S.ListItem key={v.id}>
-                                    <S.ListItemMain>
-                                        <S.ListItemTitle>{v.name}</S.ListItemTitle>
-                                        <S.ListItemSub>
-                                            {v.location || "Localização não informada"}
-                                        </S.ListItemSub>
-                                    </S.ListItemMain>
-                                    {v.basePrice != null && (
-                                        <S.PriceChip>
-                                            A partir de {formatCurrency(v.basePrice)}
-                                        </S.PriceChip>
-                                    )}
-                                </S.ListItem>
+                        <S.VenueList>
+                            {dashboard.venues.slice(0, 3).map((v) => (
+                                <S.VenueCard key={v.id}>
+                                    <S.VenueCardTop>
+                                        <S.VenueCardName>{v.name}</S.VenueCardName>
+                                        {v.basePrice != null && (
+                                            <S.PriceChip>
+                                                A partir de {formatCurrency(v.basePrice)}
+                                            </S.PriceChip>
+                                        )}
+                                    </S.VenueCardTop>
+                                    <S.VenueCardLocation>
+                                        {v.location || "Localização não informada"}
+                                    </S.VenueCardLocation>
+                                    <S.VenueCardBottom>
+                                        <S.VenueAmenities>
+                                            {v.capacity && (
+                                                <S.AmenityChip>{v.capacity} pessoas</S.AmenityChip>
+                                            )}
+                                            {v.hasPool && (
+                                                <S.AmenityChip>Piscina</S.AmenityChip>
+                                            )}
+                                            {v.hasKidsArea && (
+                                                <S.AmenityChip>Área Kids</S.AmenityChip>
+                                            )}
+                                        </S.VenueAmenities>
+                                        <S.VenueReserveBtn
+                                            type="button"
+                                            onClick={() => navigate(`/reservation-intent/${v.id}`)}
+                                        >
+                                            Reservar
+                                        </S.VenueReserveBtn>
+                                    </S.VenueCardBottom>
+                                </S.VenueCard>
                             ))}
-                        </S.List>
+                        </S.VenueList>
                     )}
                 </S.Panel>
             </S.ContentGrid>

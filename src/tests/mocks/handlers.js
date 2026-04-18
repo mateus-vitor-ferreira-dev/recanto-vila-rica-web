@@ -168,9 +168,87 @@ export const adminHandlers = [
     ),
 ];
 
+// ─── Availability ─────────────────────────────────────────────────────────────
+
+export const availabilityHandlers = [
+    http.get(`${BASE_URL}/blocked-dates`, () =>
+        HttpResponse.json({ success: true, data: [] })
+    ),
+
+    http.get(`${BASE_URL}/reservations/occupied-dates`, () =>
+        HttpResponse.json({ success: true, data: [] })
+    ),
+];
+
+// ─── Negotiations ─────────────────────────────────────────────────────────────
+
+export const negotiationHandlers = [
+    http.get(`${BASE_URL}/negotiations`, () =>
+        HttpResponse.json({ success: true, data: [] })
+    ),
+
+    http.post(`${BASE_URL}/negotiations`, () =>
+        HttpResponse.json({ success: true, data: { id: "neg-1", subject: "Nova negociação", status: "OPEN" } }, { status: 201 })
+    ),
+
+    http.get(`${BASE_URL}/negotiations/:id`, () =>
+        HttpResponse.json({
+            success: true,
+            data: {
+                id: "neg-1",
+                subject: "Quero reservar para 80 pessoas",
+                status: "OPEN",
+                user: { id: "user-1", name: "Mateus", email: "mateus@email.com", role: "USER" },
+                messages: [],
+                reservationId: null,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+            },
+        })
+    ),
+
+    http.post(`${BASE_URL}/negotiations/:id/messages`, () =>
+        HttpResponse.json({
+            success: true,
+            data: {
+                id: "msg-1",
+                content: "Olá, gostaria de saber mais.",
+                isSystem: false,
+                author: { id: "user-1", name: "Mateus", role: "USER" },
+                metadata: null,
+                createdAt: new Date().toISOString(),
+            },
+        }, { status: 201 })
+    ),
+
+    http.patch(`${BASE_URL}/negotiations/:id/status`, () =>
+        HttpResponse.json({ success: true, data: { id: "neg-1", status: "CLOSED" } })
+    ),
+
+    http.post(`${BASE_URL}/negotiations/:id/proposal`, () =>
+        HttpResponse.json({ success: true, data: { id: "neg-1", status: "PENDING_APPROVAL" } })
+    ),
+
+    http.post(`${BASE_URL}/negotiations/:id/proposal/respond`, () =>
+        HttpResponse.json({ success: true, data: { id: "neg-1", status: "ACCEPTED", reservation: { id: "res-1" } } })
+    ),
+
+    http.get(`${BASE_URL}/contact`, () =>
+        HttpResponse.json({
+            success: true,
+            data: {
+                whatsapp: { number: "5535999718824", display: "(35) 9 9971-8824" },
+                email: "recanto.vilaricafestas@gmail.com",
+                instagram: { url: "https://www.instagram.com/recanto.vilarica", display: "@recanto.vilarica" },
+            },
+        })
+    ),
+];
+
 // ─── All handlers ─────────────────────────────────────────────────────────────
 
 export const handlers = [
+    ...availabilityHandlers,  // must come before reservationHandlers (/reservations/:id would match /reservations/occupied-dates)
     ...authHandlers,
     ...userHandlers,
     ...venueHandlers,
@@ -178,4 +256,5 @@ export const handlers = [
     ...promotionHandlers,
     ...referralHandlers,
     ...adminHandlers,
+    ...negotiationHandlers,
 ];

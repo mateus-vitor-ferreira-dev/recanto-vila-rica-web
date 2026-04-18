@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
+import { useGSAP } from "@gsap/react";
 
 import { createReferral, listReferrals } from "../../services/referral";
 import { getErrorMessage } from "../../utils/getErrorMessage";
+import { animateFadeInUp, animateStagger } from "../../utils/animations";
 import * as S from "./styles";
 
 const STATUS_LABELS = {
@@ -18,6 +20,7 @@ function formatDate(date) {
 }
 
 export default function Referrals() {
+    const containerRef = useRef(null);
     const [referrals, setReferrals] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [email, setEmail] = useState("");
@@ -79,16 +82,21 @@ export default function Referrals() {
         }
     }
 
+    useGSAP(() => {
+        animateFadeInUp(containerRef.current.querySelector(".anim-header"));
+        animateStagger(containerRef.current.querySelectorAll(".anim-card"), { delay: 0.1 });
+    }, { scope: containerRef, dependencies: [] });
+
     return (
-        <S.Container>
-            <S.Header>
+        <S.Container ref={containerRef}>
+            <S.Header className="anim-header">
                 <S.Title>Indicações</S.Title>
                 <S.Description>
                     Indique amigos e ganhe descontos na sua próxima reserva quando eles fizerem a primeira deles.
                 </S.Description>
             </S.Header>
 
-            <S.InviteCard>
+            <S.InviteCard className="anim-card">
                 <S.InviteTitle>Convidar um amigo</S.InviteTitle>
 
                 {noCampaign && (

@@ -76,12 +76,12 @@ describe("Checkout page", () => {
         );
         renderPage();
         await waitFor(() =>
-            expect(screen.getByRole("button", { name: /ir para o pagamento/i })).toBeInTheDocument()
+            expect(screen.getByRole("button", { name: /pagar com cartão/i })).toBeInTheDocument()
         );
 
         vi.stubGlobal("location", { href: "http://localhost/" });
         const user = userEvent.setup();
-        await user.click(screen.getByRole("button", { name: /ir para o pagamento/i }));
+        await user.click(screen.getByRole("button", { name: /pagar com cartão/i }));
         await waitFor(() =>
             expect(window.location.href).toBe("https://stripe.com/pay/session-1")
         );
@@ -98,11 +98,11 @@ describe("Checkout page", () => {
         );
         renderPage();
         await waitFor(() =>
-            expect(screen.getByRole("button", { name: /ir para o pagamento/i })).toBeInTheDocument()
+            expect(screen.getByRole("button", { name: /pagar com cartão/i })).toBeInTheDocument()
         );
 
         const user = userEvent.setup();
-        await user.click(screen.getByRole("button", { name: /ir para o pagamento/i }));
+        await user.click(screen.getByRole("button", { name: /pagar com cartão/i }));
         await waitFor(() =>
             expect(screen.getByText(/já existe uma sessão de pagamento/i)).toBeInTheDocument()
         );
@@ -149,10 +149,10 @@ describe("Checkout page", () => {
         );
         renderPage();
         await waitFor(() =>
-            expect(screen.getByRole("button", { name: /ir para o pagamento/i })).toBeInTheDocument()
+            expect(screen.getByRole("button", { name: /pagar com cartão/i })).toBeInTheDocument()
         );
         const user = userEvent.setup();
-        await user.click(screen.getByRole("button", { name: /ir para o pagamento/i }));
+        await user.click(screen.getByRole("button", { name: /pagar com cartão/i }));
         await waitFor(() =>
             expect(screen.getByText(/erro ao iniciar o pagamento/i)).toBeInTheDocument()
         );

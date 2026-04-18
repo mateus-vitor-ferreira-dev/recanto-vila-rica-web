@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useGSAP } from "@gsap/react";
 
 import { cancelReservation, listReservations } from "../../services/reservation";
 import { getErrorMessage } from "../../utils/getErrorMessage";
 import { PLAN_LABELS, formatDate, formatTime, formatCurrency, calcDuration } from "../../utils/reservationFormat";
+import { animateFadeInUp, animateStagger } from "../../utils/animations";
 import * as S from "./styles";
 
 const STATUS_MAP = {
@@ -16,6 +18,7 @@ const STATUS_MAP = {
 
 export default function Reservations() {
     const navigate = useNavigate();
+    const containerRef = useRef(null);
     const [reservations, setReservations] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [cancellingId, setCancellingId] = useState(null);
@@ -42,6 +45,14 @@ export default function Reservations() {
 
         return () => controller.abort();
     }, []);
+
+    useGSAP(() => {
+        if (isLoading || !reservations.length) return;
+        const el = containerRef.current;
+        if (!el) return;
+        animateFadeInUp(el.querySelector(".anim-header"));
+        animateStagger(el.querySelectorAll(".anim-card"), { delay: 0.15 });
+    }, { scope: containerRef, dependencies: [isLoading, reservations.length] });
 
     async function handleCancelReservation() {
         const id = confirmCancelId;
@@ -83,7 +94,7 @@ export default function Reservations() {
     }
 
     return (
-        <S.Container>
+        <S.Container ref={containerRef}>
             {confirmCancelId && (
                 <S.ModalOverlay>
                     <S.ModalBox>
@@ -106,7 +117,7 @@ export default function Reservations() {
                 </S.ModalOverlay>
             )}
 
-            <S.Header>
+            <S.Header className="anim-header">
                 <S.Title>Minhas reservas</S.Title>
                 <S.Description>
                     Acompanhe o status das suas reservas e gerencie seus eventos.
@@ -119,7 +130,7 @@ export default function Reservations() {
                     const duration = calcDuration(reservation.startDate, reservation.endDate);
 
                     return (
-                        <S.Card key={reservation.id}>
+                        <S.Card className="anim-card" key={reservation.id}>
                             <S.CardHeader>
                                 <div>
                                     <strong>{reservation.venue?.name || "Salão"}</strong>

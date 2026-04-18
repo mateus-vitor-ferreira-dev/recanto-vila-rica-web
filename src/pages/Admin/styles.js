@@ -102,6 +102,37 @@ export const SummarySubtitle = styled.span`
   color: var(--text-muted);
 `;
 
+export const RevenueBreakdown = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+export const RevenueMethodCard = styled.div`
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 16px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+`;
+
+export const RevenueMethodIcon = styled.span`
+  font-size: 28px;
+  flex-shrink: 0;
+`;
+
+export const RevenueMethodInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+`;
+
 /* Generic section */
 export const Section = styled.div`
   display: flex;
@@ -234,6 +265,32 @@ export const StatusBadge = styled.span`
       case "PENDING":
       default:
         return `background: var(--status-pending-bg); color: var(--status-pending-text); border-color: var(--status-pending-border);`;
+    }
+  }}
+`;
+
+export const NegStatusBadge = styled.span`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid;
+  white-space: nowrap;
+
+  ${({ $status }) => {
+    switch ($status) {
+      case "ACCEPTED":
+        return `background: var(--status-paid-bg); color: var(--status-paid-text); border-color: var(--status-paid-border);`;
+      case "REJECTED":
+        return `background: var(--status-error-bg); color: var(--status-error-text); border-color: var(--status-error-border);`;
+      case "CLOSED":
+        return `background: var(--bg-muted); color: var(--text-muted); border-color: var(--border-default);`;
+      case "OPEN":
+      default:
+        return `background: var(--status-info-bg); color: var(--status-info-text); border-color: var(--status-info-border);`;
     }
   }}
 `;

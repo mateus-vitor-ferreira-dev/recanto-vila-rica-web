@@ -1,7 +1,10 @@
 export { default as Admin } from "./Admin";
 export { default as Checkout } from "./Checkout";
+export { default as ContactUs } from "./ContactUs";
 export { default as Home } from "./Home";
 export { default as Login } from "./Login";
+export { default as NegotiationChat } from "./NegotiationChat";
+export { default as Negotiations } from "./Negotiations";
 export { default as PaymentCancel } from "./PaymentCancel";
 export { default as PaymentSuccess } from "./PaymentSuccess";
 export { default as Profile } from "./Profile";
