@@ -539,8 +539,7 @@ describe("NegotiationChat page", () => {
             expect(screen.getByRole("button", { name: /selecionar data/i })).toBeInTheDocument()
         );
 
-        // Fill time and price fields
-        const timeInputs = screen.getAllByDisplayValue("");
+        // Fill price field
         await user.type(screen.getByPlaceholderText(/750,00/i), "750,00");
     });
 
