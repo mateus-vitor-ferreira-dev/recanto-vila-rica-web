@@ -693,6 +693,87 @@ export const HolidayInfo = styled.div`
   }
 `;
 
+/* Monthly revenue table */
+export const MonthlyTable = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+`;
+
+export const MonthlyTh = styled.th`
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border-default);
+  background: var(--bg-page);
+  white-space: nowrap;
+`;
+
+export const MonthlyTd = styled.td`
+  padding: 10px 16px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--bg-muted);
+
+  &:first-child { color: var(--text-primary); font-weight: 600; }
+`;
+
+export const MonthlyTr = styled.tr`
+  &:last-child ${MonthlyTd} { border-bottom: none; }
+  &:hover ${MonthlyTd} { background: var(--bg-page); }
+`;
+
+export const RevenueBar = styled.div`
+  height: 6px;
+  border-radius: 999px;
+  background: var(--border-default);
+  overflow: hidden;
+  min-width: 60px;
+  flex: 1;
+
+  &::after {
+    content: "";
+    display: block;
+    height: 100%;
+    width: ${({ $pct }) => $pct}%;
+    background: var(--brand);
+    border-radius: 999px;
+    transition: width 0.4s ease;
+  }
+`;
+
+/* Search input */
+export const SearchInput = styled.input`
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border-medium);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 14px;
+  outline: none;
+  min-width: 220px;
+
+  &:focus { border-color: var(--brand); }
+  &::placeholder { color: var(--text-faint); }
+`;
+
+export const RoleBadge = styled.span`
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid;
+
+  ${({ $role }) =>
+    $role === "ADMIN"
+      ? `background: var(--status-paid-bg); color: var(--status-paid-text); border-color: var(--status-paid-border);`
+      : `background: var(--bg-muted); color: var(--text-muted); border-color: var(--border-default);`}
+`;
+
 export const HolidayType = styled.span`
   padding: 3px 10px;
   border-radius: 999px;
