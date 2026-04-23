@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { AuthProvider } from "../../contexts/AuthContext";
 import GoogleButton from "../../components/GoogleButton";
 import { lastLoginConfig } from "../mocks/react-oauth-google.js";
 import { server } from "../mocks/server";
@@ -12,10 +13,12 @@ const BASE = "http://localhost:3000";
 
 function renderButton(navigateFn = vi.fn()) {
     return render(
-        <MemoryRouter>
-            <GoogleButton navigate={navigateFn} />
-            <ToastContainer />
-        </MemoryRouter>
+        <AuthProvider>
+            <MemoryRouter>
+                <GoogleButton navigate={navigateFn} />
+                <ToastContainer />
+            </MemoryRouter>
+        </AuthProvider>
     );
 }
 

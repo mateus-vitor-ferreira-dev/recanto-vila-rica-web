@@ -1,9 +1,13 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { http, HttpResponse } from "msw";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import { afterEach, describe, expect, it } from "vitest";
 import Header from "../../components/Header";
+import { AuthProvider } from "../../contexts/AuthContext";
 import { ThemeProvider } from "../../contexts/ThemeContext";
+import { server } from "../mocks/server";
 
 function renderHeader(userData = null, path = "/home") {
     if (userData) {
@@ -14,19 +18,32 @@ function renderHeader(userData = null, path = "/home") {
 
     return render(
         <ThemeProvider>
-            <MemoryRouter initialEntries={[path]}>
-                <Routes>
-                    <Route path="*" element={<Header />} />
-                </Routes>
-                <div id="pages">
+            <AuthProvider>
+                <MemoryRouter initialEntries={[path]}>
                     <Routes>
-                        <Route path="/login" element={<div>Login Page</div>} />
+                        <Route path="*" element={<Header />} />
                     </Routes>
-                </div>
-            </MemoryRouter>
+                    <div id="pages">
+                        <Routes>
+                            <Route path="/login" element={<div>Login Page</div>} />
+                        </Routes>
+                    </div>
+                </MemoryRouter>
+                <ToastContainer />
+            </AuthProvider>
         </ThemeProvider>
     );
 }
+
+const UNVERIFIED_USER = {
+    token: "fake-token",
+    user: { name: "Mateus", role: "USER", emailVerified: false },
+};
+
+const VERIFIED_USER = {
+    token: "fake-token",
+    user: { name: "Mateus", role: "USER", emailVerified: true },
+};
 
 describe("Header component", () => {
     afterEach(() => localStorage.clear());
@@ -94,5 +111,95 @@ describe("Header component", () => {
         const btn = screen.getByTitle(/mudar para tema claro/i);
         await user.click(btn);
         expect(document.documentElement.getAttribute("data-theme")).toBe("light");
+    });
+});
+
+describe("Header — unverified email banner", () => {
+    afterEach(() => localStorage.clear());
+
+    it("shows verification banner when emailVerified is false", () => {
+        renderHeader(UNVERIFIED_USER);
+        expect(screen.getByText(/verifique seu e-mail/i)).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: /reenviar e-mail/i })).toBeInTheDocument();
+    });
+
+    it("does not show verification banner when emailVerified is true", () => {
+        renderHeader(VERIFIED_USER);
+        expect(screen.queryByText(/verifique seu e-mail/i)).not.toBeInTheDocument();
+        expect(
+            screen.queryByRole("button", { name: /reenviar e-mail/i })
+        ).not.toBeInTheDocument();
+    });
+
+    it("shows success toast after resending verification email", async () => {
+        server.use(
+            http.post("http://localhost:3000/auth/resend-verification", () =>
+                HttpResponse.json({ success: true })
+            )
+        );
+        const user = userEvent.setup();
+        renderHeader(UNVERIFIED_USER);
+        await user.click(screen.getByRole("button", { name: /reenviar e-mail/i }));
+        await waitFor(() =>
+            expect(
+                screen.getByText(/e-mail de verificação reenviado/i)
+            ).toBeInTheDocument()
+        );
+    });
+
+    it("shows info toast when email is already verified (API responds accordingly)", async () => {
+        server.use(
+            http.post("http://localhost:3000/auth/resend-verification", () =>
+                HttpResponse.json(
+                    { success: false, message: "Email is already verified" },
+                    { status: 400 }
+                )
+            )
+        );
+        const user = userEvent.setup();
+        renderHeader(UNVERIFIED_USER);
+        await user.click(screen.getByRole("button", { name: /reenviar e-mail/i }));
+        await waitFor(() =>
+            expect(screen.getByText(/seu e-mail já está verificado/i)).toBeInTheDocument()
+        );
+    });
+
+    it("shows generic error toast on unknown API failure", async () => {
+        server.use(
+            http.post("http://localhost:3000/auth/resend-verification", () =>
+                HttpResponse.json(
+                    { success: false, message: "Internal server error" },
+                    { status: 500 }
+                )
+            )
+        );
+        const user = userEvent.setup();
+        renderHeader(UNVERIFIED_USER);
+        await user.click(screen.getByRole("button", { name: /reenviar e-mail/i }));
+        await waitFor(() =>
+            expect(screen.getByText(/erro ao reenviar/i)).toBeInTheDocument()
+        );
+    });
+
+    it("disables the resend button and shows loading text while request is in flight", async () => {
+        let resolveRequest;
+        server.use(
+            http.post("http://localhost:3000/auth/resend-verification", () =>
+                new Promise((resolve) => {
+                    resolveRequest = () =>
+                        resolve(HttpResponse.json({ success: true }));
+                })
+            )
+        );
+        const user = userEvent.setup();
+        renderHeader(UNVERIFIED_USER);
+        await user.click(screen.getByRole("button", { name: /reenviar e-mail/i }));
+        await waitFor(() =>
+            expect(
+                screen.getByRole("button", { name: /enviando\.\.\./i })
+            ).toBeInTheDocument()
+        );
+        expect(screen.getByRole("button", { name: /enviando\.\.\./i })).toBeDisabled();
+        resolveRequest();
     });
 });

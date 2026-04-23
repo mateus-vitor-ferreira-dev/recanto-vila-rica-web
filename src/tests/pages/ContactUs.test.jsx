@@ -50,7 +50,7 @@ describe("ContactUs page", () => {
         renderPage();
         expect(screen.getByText("Nossos canais")).toBeInTheDocument();
         expect(screen.getByText("WhatsApp")).toBeInTheDocument();
-        expect(screen.getByText("E-mail")).toBeInTheDocument();
+        expect(screen.getAllByText("E-mail").length).toBeGreaterThanOrEqual(1);
         expect(screen.getByText("Instagram")).toBeInTheDocument();
     });
 
