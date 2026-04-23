@@ -4,6 +4,20 @@ import Logo from "../../assets/logo-recanto.svg";
 import { animateStagger } from "../../utils/animations";
 import * as S from "./styles";
 
+/**
+ * Layout de duas colunas para as páginas de autenticação (Login e Cadastro).
+ *
+ * Coluna esquerda: branding + decorações. Coluna direita: formulário com GSAP stagger.
+ * Enquanto `introFinished` é `false`, o logo fica invisível para não conflitar
+ * com a `IntroAnimation` que está voando até sua posição.
+ *
+ * @component
+ * @param {object} props
+ * @param {string} props.title - Título principal do formulário
+ * @param {string} [props.subtitle] - Subtítulo exibido abaixo do título
+ * @param {React.ReactNode} props.children - Conteúdo do formulário
+ * @param {boolean} [props.introFinished=true] - Controla visibilidade do logo (aguarda IntroAnimation)
+ */
 export default function AuthLayout({
     title,
     subtitle,

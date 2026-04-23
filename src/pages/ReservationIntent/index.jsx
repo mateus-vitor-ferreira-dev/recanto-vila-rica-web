@@ -11,6 +11,21 @@ import { getErrorMessage } from "../../utils/getErrorMessage";
 import { animateFadeInUp, animateStagger } from "../../utils/animations";
 import * as S from "./styles";
 
+/**
+ * @module pages/ReservationIntent
+ * @description Formulário de criação de reserva para um espaço específico.
+ *
+ * Fluxo:
+ * 1. Usuário seleciona data de início no `AvailabilityCalendar`
+ * 2. Preenche plano, addons (kids/piscina), horários e número de convidados
+ * 3. "Calcular valor" chama `quoteReservation` para obter o preço sem criar a reserva
+ * 4. Aceita os termos e visualiza o contrato via `ContratoDownloadLink` (lazy)
+ * 5. "Confirmar reserva" chama `createReservation` e navega para `/checkout/:id`
+ *
+ * @see GET /venues/:id
+ * @see POST /reservations/quote
+ * @see POST /reservations
+ */
 const ContratoDownloadLink = lazy(() => import("../../components/ContratoRVR/DownloadLink"));
 
 const PLANS = [
@@ -284,6 +299,7 @@ export default function ReservationIntent() {
                 planCode,
                 startDate: startDate.toISOString(),
                 endDate: endDate.toISOString(),
+                termsAccepted: true,
                 ...(notes.trim() && { notes: notes.trim() }),
                 ...(kidsMonitorExtraHours > 0 && { kidsMonitorExtraHours }),
             };

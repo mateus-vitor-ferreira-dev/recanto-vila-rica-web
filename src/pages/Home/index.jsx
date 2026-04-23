@@ -39,6 +39,19 @@ const STATUS_MAP = {
     EXPIRED: { label: "Expirado", color: "gray" },
 };
 
+/**
+ * Dashboard inicial do usuário autenticado.
+ *
+ * Carrega em paralelo: perfil do usuário, lista de espaços, reservas recentes e
+ * grants de desconto disponíveis. Usa `Promise.allSettled` para exibir dados parciais
+ * mesmo que uma requisição falhe.
+ *
+ * @see GET /users/me
+ * @see GET /venues
+ * @see GET /reservations
+ * @see GET /promotions/my-grants
+ * @component
+ */
 export default function Home() {
     const navigate = useNavigate();
     const containerRef = useRef(null);

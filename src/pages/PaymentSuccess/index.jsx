@@ -5,6 +5,14 @@ import gsap from "gsap";
 import { FADE_UP } from "../../utils/animations";
 import * as S from "./styles";
 
+/**
+ * Página de confirmação de pagamento bem-sucedido (retorno do Stripe Checkout).
+ *
+ * Exibe ícone de sucesso com animação GSAP e botão para ir às reservas.
+ * Rota: `/payment/success`
+ *
+ * @component
+ */
 export default function PaymentSuccess() {
     const navigate = useNavigate();
     const cardRef = useRef(null);

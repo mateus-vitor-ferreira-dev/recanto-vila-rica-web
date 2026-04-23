@@ -1,7 +1,22 @@
+/**
+ * @module contexts/ThemeContext
+ * @description Contexto de tema (claro/escuro) para toda a aplicação.
+ *
+ * O tema ativo é persistido em `localStorage` (`recanto:theme`) e aplicado como
+ * atributo `data-theme` no `<html>`, permitindo que o CSS (CSS variables ou
+ * styled-components) reactive automaticamente.
+ */
 import { createContext, useContext, useEffect, useState } from "react";
 
 const ThemeContext = createContext();
 
+/**
+ * Provedor de tema. Envolva o app com este componente para disponibilizar `useTheme`.
+ *
+ * @component
+ * @param {object} props
+ * @param {React.ReactNode} props.children
+ */
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(
     () => localStorage.getItem("recanto:theme") || "light"
@@ -23,6 +38,11 @@ export function ThemeProvider({ children }) {
   );
 }
 
+/**
+ * Hook para acessar o tema atual e a função de toggle.
+ *
+ * @returns {{ theme: "light" | "dark", toggleTheme: () => void }}
+ */
 // eslint-disable-next-line react-refresh/only-export-components
 export function useTheme() {
   return useContext(ThemeContext);

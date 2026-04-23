@@ -220,24 +220,26 @@ export const LoadingCard = styled.div`
 export const ModalOverlay = styled.div`
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
   padding: 16px;
+  overflow-y: auto;
 `;
 
 export const ModalBox = styled.div`
   background: var(--bg-surface);
   border-radius: 20px;
   padding: 32px;
-  max-width: 420px;
+  max-width: 520px;
   width: 100%;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.22);
   display: flex;
   flex-direction: column;
   gap: 20px;
+  margin: auto;
 `;
 
 export const ModalTitle = styled.h2`
@@ -247,15 +249,112 @@ export const ModalTitle = styled.h2`
 `;
 
 export const ModalBody = styled.p`
-  font-size: 15px;
+  font-size: 14px;
   color: var(--text-muted);
   line-height: 1.6;
 `;
+
+/* ── Refund policy section ── */
+
+export const PolicySection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+export const PolicyTitle = styled.h3`
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+`;
+
+export const PolicyList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+`;
+
+export const PolicyTier = styled.li`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: ${({ $highlighted }) =>
+    $highlighted ? "var(--status-pending-bg)" : "var(--bg-page)"};
+  border: 1px solid ${({ $highlighted }) =>
+    $highlighted ? "var(--status-pending-border)" : "var(--border-default)"};
+  transition: background 0.15s ease;
+
+  span {
+    font-size: 13px;
+    color: var(--text-secondary);
+    flex: 1;
+  }
+
+  strong {
+    font-size: 13px;
+    font-weight: 700;
+    color: ${({ $highlighted }) =>
+      $highlighted ? "var(--status-pending-text)" : "var(--text-primary)"};
+    white-space: nowrap;
+  }
+`;
+
+/* ── Refund estimate card ── */
+
+export const RefundCard = styled.div`
+  background: ${({ $neutral }) => ($neutral ? "var(--bg-page)" : "var(--bg-page)")};
+  border: 1px solid ${({ $neutral }) =>
+    $neutral ? "var(--border-default)" : "var(--border-medium)"};
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+export const RefundCardTitle = styled.h3`
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-default);
+`;
+
+export const RefundRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  span {
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+
+  strong {
+    font-size: 14px;
+    font-weight: 700;
+    color: ${({ $accent }) => ($accent ? "var(--brand)" : "var(--text-primary)")};
+  }
+`;
+
+/* ── Modal actions ── */
 
 export const ModalActions = styled.div`
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+  padding-top: 4px;
 `;
 
 export const ModalCancelBtn = styled.button`
@@ -280,7 +379,7 @@ export const ModalConfirmBtn = styled.button`
   padding: 0 20px;
   border-radius: 12px;
   border: none;
-  background: var(--status-error-text);
+  background: #c0392b;
   color: #ffffff;
   font-size: 14px;
   font-weight: 700;

@@ -192,6 +192,19 @@ function getVisibleTarget() {
   return null;
 }
 
+/**
+ * Animação de intro com o logo do Recanto Vila Rica.
+ *
+ * Exibe o logo no centro da tela com efeito de revelação (fade + scale), depois o
+ * anima até o destino no Header (buscado via `[data-intro-target-desktop]` /
+ * `[data-intro-target-mobile]`). Ao terminar chama `onComplete`.
+ *
+ * Sequência de fases: `"revealing"` → `"travelling"` → `"done"`.
+ *
+ * @component
+ * @param {object} props
+ * @param {() => void} props.onComplete - Callback chamado quando a animação termina (~2,4 s)
+ */
 export function IntroAnimation({ onComplete }) {
   const [phase, setPhase] = useState("revealing");
   const [pulseActive, setPulseActive] = useState(false);

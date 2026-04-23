@@ -16,6 +16,18 @@ function EyeIcon({ visible }) {
     );
 }
 
+/**
+ * Campo de formulário com suporte a label, mensagem de erro, prefixo e toggle de senha.
+ *
+ * @component
+ * @param {object} props
+ * @param {string} [props.id] - ID do input (vincula ao `<label>`)
+ * @param {string} [props.label] - Texto do rótulo exibido acima do campo
+ * @param {string} [props.error] - Mensagem de erro exibida abaixo do campo
+ * @param {React.ReactNode} [props.prefix] - Conteúdo exibido antes do texto (ex.: ícone, símbolo)
+ * @param {boolean} [props.showPasswordToggle] - Exibe botão para mostrar/ocultar senha
+ * @param {...*} props - Demais atributos repassados ao `<input>` nativo
+ */
 export default function Input({
     id,
     label,

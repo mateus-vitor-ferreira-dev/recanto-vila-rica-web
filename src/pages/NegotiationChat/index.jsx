@@ -2,6 +2,20 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
+/**
+ * @module pages/NegotiationChat
+ * @description Chat de negociação entre usuário e administrador para condições especiais.
+ *
+ * Faz polling a cada 5 s para atualizar mensagens. O admin pode enviar propostas
+ * (preço + datas customizadas) e o usuário aceita ou recusa via botões inline.
+ * Admins veem controles extras: formulário de proposta, calendário e botão de fechar/rejeitar.
+ *
+ * @see GET /negotiations/:id
+ * @see POST /negotiations/:id/messages
+ * @see POST /negotiations/:id/proposal
+ * @see POST /negotiations/:id/proposal/respond
+ * @see PATCH /negotiations/:id/status
+ */
 import {
     getNegotiation,
     respondToProposal,
