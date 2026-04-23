@@ -4,9 +4,11 @@ import {
     Admin,
     Checkout,
     ContactUs,
+    ForgotPassword,
     Home,
     Login,
     NegotiationChat,
+    Promotions,
     Negotiations,
     PaymentCancel,
     PaymentSuccess,
@@ -14,12 +16,26 @@ import {
     Referrals,
     ReservationIntent,
     Reservations,
+    ResetPassword,
     SignUp,
     Venues,
 } from "../pages";
 import { AdminRoute } from "./AdminRoute";
 import { PrivateRoute } from "./PrivateRoute";
 
+/**
+ * Árvore de rotas da aplicação.
+ *
+ * Estrutura:
+ * - `/` → redireciona para `/cadastro`
+ * - `/cadastro` e `/login` — públicas (passam `introFinished` para controlar IntroAnimation)
+ * - Restante — protegidas por `PrivateRoute` + `MainLayout`
+ *   - `/admin` — protegida adicionalmente por `AdminRoute`
+ *
+ * @component
+ * @param {object} props
+ * @param {boolean} props.introFinished - Repassado para Login/SignUp para controlar visibilidade do logo
+ */
 export function AppRoutes({ introFinished }) {
     return (
         <Routes>
@@ -32,6 +48,8 @@ export function AppRoutes({ introFinished }) {
                 path="/login"
                 element={<Login introFinished={introFinished} />}
             />
+            <Route path="/esqueci-senha" element={<ForgotPassword />} />
+            <Route path="/redefinir-senha" element={<ResetPassword />} />
 
             <Route element={<PrivateRoute />}>
                 <Route element={<MainLayout />}>
@@ -43,6 +61,7 @@ export function AppRoutes({ introFinished }) {
                         element={<ReservationIntent />}
                     />
                     <Route path="/profile" element={<Profile />} />
+                    <Route path="/promocoes" element={<Promotions />} />
                     <Route path="/referrals" element={<Referrals />} />
                     <Route path="/contate-nos" element={<ContactUs />} />
                     <Route path="/negociacoes" element={<Negotiations />} />
