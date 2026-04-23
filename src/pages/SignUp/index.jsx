@@ -8,6 +8,17 @@ import api from "../../services/api";
 import { formatPhone } from "../../utils/formatPhone";
 import * as S from "./styles";
 
+/**
+ * Página de cadastro de novo usuário.
+ *
+ * Formata o telefone em tempo real com `formatPhone`. Após o cadastro bem-sucedido,
+ * persiste os dados no `localStorage` e redireciona para `/home`.
+ *
+ * @see POST /users
+ * @component
+ * @param {object} props
+ * @param {boolean} [props.introFinished=true] - Repassado para `AuthLayout` para controlar visibilidade do logo
+ */
 export default function SignUp({ introFinished = true }) {
     const navigate = useNavigate();
 

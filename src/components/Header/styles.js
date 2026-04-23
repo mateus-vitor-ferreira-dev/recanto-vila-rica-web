@@ -150,6 +150,37 @@ export const LogoutButton = styled.button`
   }
 `;
 
+export const VerificationBanner = styled.div`
+  width: 100%;
+  background: #fef9c3;
+  border-bottom: 1px solid #fde047;
+  color: #713f12;
+  font-size: 13px;
+  padding: 8px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+`;
+
+export const ResendButton = styled.button`
+  background: none;
+  border: none;
+  color: #713f12;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  padding: 0;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
+
 export const ThemeToggle = styled.button`
   width: 36px;
   height: 36px;

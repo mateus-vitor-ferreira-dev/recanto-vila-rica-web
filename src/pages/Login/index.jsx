@@ -1,14 +1,31 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import { AuthLayout, Button, GoogleButton, Input } from "../../components";
 
+import { useAuth } from "../../contexts/AuthContext";
 import api from "../../services/api";
 import * as S from "./styles";
 
+/**
+ * Página de login com e-mail/senha e autenticação via Google OAuth.
+ *
+ * @see POST /auth/login
+ * @component
+ * @param {object} props
+ * @param {boolean} [props.introFinished=true] - Repassado para `AuthLayout` para controlar visibilidade do logo
+ */
 export default function Login({ introFinished = true }) {
     const navigate = useNavigate();
+    const { login } = useAuth();
+    const [searchParams] = useSearchParams();
+
+    useEffect(() => {
+        if (searchParams.get("verified") === "true") {
+            toast.success("E-mail verificado com sucesso! Faça login.");
+        }
+    }, [searchParams]);
 
     const [form, setForm] = useState({
         email: "",
@@ -29,7 +46,7 @@ export default function Login({ introFinished = true }) {
         try {
             const { data } = await api.post("/auth/login", form);
 
-            localStorage.setItem("recanto:userData", JSON.stringify(data.data));
+            login(data.data);
 
             toast.success(data.message || "Login realizado com sucesso.");
             navigate("/home");
@@ -67,6 +84,8 @@ export default function Login({ introFinished = true }) {
                     onChange={handleChange}
                     showPasswordToggle
                 />
+
+                <S.ForgotLink to="/esqueci-senha">Esqueci minha senha</S.ForgotLink>
 
                 <Button type="submit">Entrar</Button>
 
