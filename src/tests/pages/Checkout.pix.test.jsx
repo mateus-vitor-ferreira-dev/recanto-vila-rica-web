@@ -55,7 +55,10 @@ describe("Checkout PIX flow", () => {
         );
     });
 
-    afterEach(() => vi.restoreAllMocks());
+    afterEach(() => {
+        vi.restoreAllMocks();
+        server.resetHandlers();
+    });
 
     it("switches to PIX method and shows Gerar QR Code button", async () => {
         renderPage();

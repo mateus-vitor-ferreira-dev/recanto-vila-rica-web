@@ -53,7 +53,7 @@ describe("Header component", () => {
         expect(screen.getByRole("link", { name: /início/i })).toBeInTheDocument();
         expect(screen.getByRole("link", { name: /espaços/i })).toBeInTheDocument();
         expect(screen.getByRole("link", { name: /reservas/i })).toBeInTheDocument();
-        expect(screen.getByRole("link", { name: /indicações/i })).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: /promoções/i })).toBeInTheDocument();
     });
 
     it("shows Admin link only for ADMIN role", () => {

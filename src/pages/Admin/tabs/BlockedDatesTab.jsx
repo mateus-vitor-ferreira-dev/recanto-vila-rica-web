@@ -73,7 +73,7 @@ export function BlockedDatesTab() {
         <S.Section>
             <S.SectionHeader>
                 <S.SectionTitle>Datas bloqueadas</S.SectionTitle>
-                <S.PrimaryButton onClick={openModal}>+ Bloquear período</S.PrimaryButton>
+                <S.PrimaryButton type="button" onClick={openModal}>+ Bloquear período</S.PrimaryButton>
             </S.SectionHeader>
 
             {isLoading ? (

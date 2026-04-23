@@ -115,6 +115,19 @@ export const promotionHandlers = [
     http.get(`${BASE_URL}/promotions/my-grants`, () =>
         HttpResponse.json({ success: true, data: [] })
     ),
+    http.get(`${BASE_URL}/promotions/active`, () =>
+        HttpResponse.json({ success: true, data: [] })
+    ),
+    http.get(`${BASE_URL}/promotions/status`, () =>
+        HttpResponse.json({
+            success: true,
+            data: [
+                { type: "REFERRAL_NEXT_BOOKING", status: "not_configured", campaign: null },
+                { type: "LOYALTY_ALWAYS_HERE",   status: "not_configured", campaign: null },
+                { type: "RAFFLE_VIP",            status: "not_configured", campaign: null },
+            ],
+        })
+    ),
 ];
 
 // ─── Referrals ───────────────────────────────────────────────────────────────

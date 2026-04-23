@@ -887,7 +887,7 @@ describe("Admin - Blocked Dates tab", () => {
 
     it("shows blocked dates list when data is loaded", async () => {
         server.use(
-            http.get(`${BASE}/admin/blocked-dates`, () =>
+            http.get(`${BASE}/blocked-dates`, () =>
                 HttpResponse.json({
                     success: true,
                     data: [
@@ -917,7 +917,7 @@ describe("Admin - Blocked Dates tab", () => {
 
     it("shows '—' for reason when reason is null", async () => {
         server.use(
-            http.get(`${BASE}/admin/blocked-dates`, () =>
+            http.get(`${BASE}/blocked-dates`, () =>
                 HttpResponse.json({
                     success: true,
                     data: [
@@ -947,7 +947,7 @@ describe("Admin - Blocked Dates tab", () => {
 
     it("shows venueId when venue object is null", async () => {
         server.use(
-            http.get(`${BASE}/admin/blocked-dates`, () =>
+            http.get(`${BASE}/blocked-dates`, () =>
                 HttpResponse.json({
                     success: true,
                     data: [
@@ -1016,7 +1016,7 @@ describe("Admin - Blocked Dates tab", () => {
 
     it("creates a blocked date successfully", async () => {
         server.use(
-            http.post(`${BASE}/admin/blocked-dates`, () =>
+            http.post(`${BASE}/blocked-dates`, () =>
                 HttpResponse.json({ success: true, data: { id: "bd-new" } }, { status: 201 })
             )
         );
@@ -1051,7 +1051,7 @@ describe("Admin - Blocked Dates tab", () => {
 
     it("deletes a blocked date", async () => {
         server.use(
-            http.get(`${BASE}/admin/blocked-dates`, () =>
+            http.get(`${BASE}/blocked-dates`, () =>
                 HttpResponse.json({
                     success: true,
                     data: [
@@ -1066,7 +1066,7 @@ describe("Admin - Blocked Dates tab", () => {
                     ],
                 })
             ),
-            http.delete(`${BASE}/admin/blocked-dates/bd-del`, () =>
+            http.delete(`${BASE}/blocked-dates/bd-del`, () =>
                 HttpResponse.json({ success: true, data: {} })
             )
         );
@@ -1085,7 +1085,7 @@ describe("Admin - Blocked Dates tab", () => {
 
     it("shows error toast when blocked dates fail to load", async () => {
         server.use(
-            http.get(`${BASE}/admin/blocked-dates`, () =>
+            http.get(`${BASE}/blocked-dates`, () =>
                 HttpResponse.json({ success: false }, { status: 500 })
             )
         );
@@ -1102,7 +1102,7 @@ describe("Admin - Blocked Dates tab", () => {
 
     it("shows error toast when creating blocked date fails", async () => {
         server.use(
-            http.post(`${BASE}/admin/blocked-dates`, () =>
+            http.post(`${BASE}/blocked-dates`, () =>
                 HttpResponse.json({ success: false }, { status: 500 })
             )
         );
@@ -1133,7 +1133,7 @@ describe("Admin - Blocked Dates tab", () => {
 
     it("shows error toast when deleting blocked date fails", async () => {
         server.use(
-            http.get(`${BASE}/admin/blocked-dates`, () =>
+            http.get(`${BASE}/blocked-dates`, () =>
                 HttpResponse.json({
                     success: true,
                     data: [
@@ -1148,7 +1148,7 @@ describe("Admin - Blocked Dates tab", () => {
                     ],
                 })
             ),
-            http.delete(`${BASE}/admin/blocked-dates/bd-err`, () =>
+            http.delete(`${BASE}/blocked-dates/bd-err`, () =>
                 HttpResponse.json({ success: false }, { status: 500 })
             )
         );

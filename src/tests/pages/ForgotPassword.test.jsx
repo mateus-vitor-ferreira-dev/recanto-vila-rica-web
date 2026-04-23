@@ -34,7 +34,7 @@ describe("ForgotPassword page", () => {
         renderPage();
         await user.click(screen.getByRole("button", { name: /enviar link de redefinição/i }));
         await waitFor(() =>
-            expect(screen.getByText(/informe seu e-mail/i)).toBeInTheDocument()
+            expect(screen.getByRole("alert")).toHaveTextContent(/informe seu e-mail/i)
         );
     });
 
