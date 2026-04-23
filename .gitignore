@@ -41,3 +41,6 @@ coverage
 *.ntvs*
 *.njsproj
 *.sln
+*storybook.log
+storybook-static
+storybook-static

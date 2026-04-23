@@ -1,0 +1,79 @@
+{/* src/docs/Overview.mdx */}
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Documentação/Visão Geral" />
+
+# Recanto Vila Rica — Design System
+
+Bem-vindo ao Storybook do **Recanto Vila Rica**, a plataforma de reservas de espaços para eventos.
+
+Este guia documenta os componentes de UI, seus estados e variantes interativas.
+
+---
+
+## Estrutura do projeto
+
+```
+src/
+├── components/       # Componentes reutilizáveis do design system
+│   ├── Button/
+│   ├── Input/
+│   ├── Header/
+│   ├── Footer/
+│   └── ...
+├── pages/            # Páginas da aplicação (rotas)
+├── hooks/            # Custom hooks (useReservations, useNegotiations)
+├── services/         # Camada de acesso à API (axios)
+├── contexts/         # AuthContext, ThemeContext
+└── utils/            # Funções utilitárias
+```
+
+---
+
+## Tokens de design
+
+O tema é aplicado via **CSS custom properties** no atributo `data-theme` do `<html>`.
+Use o seletor de tema **Claro / Escuro** na barra superior para visualizar os dois modos.
+
+### Cores principais
+
+| Token | Claro | Escuro |
+|---|---|---|
+| `--brand` | `#1f4f41` | `#34d399` |
+| `--bg-page` | `#f9fafb` | `#0f172a` |
+| `--bg-surface` | `#ffffff` | `#1e293b` |
+| `--text-primary` | `#111827` | `#f1f5f9` |
+| `--text-muted` | `#6b7280` | `#94a3b8` |
+
+### Status
+
+| Token | Uso |
+|---|---|
+| `--status-paid-*` | Reserva paga / ação concluída |
+| `--status-pending-*` | Aguardando pagamento / ação pendente |
+| `--status-error-*` | Erro / cancelamento |
+| `--status-info-*` | Informação / negociação qualificada |
+
+---
+
+## Fluxos principais
+
+### Autenticação
+`/cadastro` → `POST /users` → `/login` → `POST /auth/login` ou `POST /auth/google`
+
+### Reserva
+`/venues` → `/reservation-intent/:venueId` → `POST /reservations/quote` → `POST /reservations` → `/checkout/:id`
+
+### Pagamento
+Stripe: `POST /payments/checkout/:id` → redireciona para Stripe  
+PIX: `POST /payments/pix/:id` → exibe QR Code → polling `GET /payments/reservation/:id`
+
+---
+
+## API
+
+A documentação da API REST está disponível em **Swagger** enquanto o servidor estiver rodando:
+
+```
+http://localhost:3000/docs
+```
