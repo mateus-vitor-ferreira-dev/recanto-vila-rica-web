@@ -1,13 +1,19 @@
 import styled from "styled-components";
 
 export const Container = styled.div`
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 32px;
-  max-width: 640px;
+  max-width: 1100px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    max-width: 640px;
+  }
 `;
 
 export const Header = styled.section`
+  grid-column: 1 / -1;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -104,4 +110,80 @@ export const ContactArrow = styled.span`
   font-size: 18px;
   color: var(--text-muted);
   flex-shrink: 0;
+`;
+
+export const FormField = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+`;
+
+export const FormLabel = styled.label`
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+`;
+
+export const FormInput = styled.input`
+  height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.15s;
+
+  &:focus {
+    border-color: var(--brand);
+  }
+
+  &::placeholder {
+    color: var(--text-muted);
+  }
+`;
+
+export const FormTextarea = styled.textarea`
+  padding: 12px 14px;
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  font-size: 15px;
+  outline: none;
+  resize: vertical;
+  font-family: inherit;
+  transition: border-color 0.15s;
+  min-height: 120px;
+
+  &:focus {
+    border-color: var(--brand);
+  }
+
+  &::placeholder {
+    color: var(--text-muted);
+  }
+`;
+
+export const SubmitButton = styled.button`
+  height: 48px;
+  background: var(--brand);
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  margin-top: 4px;
+
+  &:hover:not(:disabled) {
+    opacity: 0.9;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 `;

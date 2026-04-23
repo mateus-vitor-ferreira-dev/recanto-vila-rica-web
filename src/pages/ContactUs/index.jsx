@@ -1,7 +1,21 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { useGSAP } from "@gsap/react";
 
+/**
+ * @module pages/ContactUs
+ * @description Página de contato com formulário e informações de acesso direto.
+ *
+ * Exibe links de WhatsApp e e-mail carregados de `GET /contact`, além de um
+ * formulário (nome, e-mail, telefone, assunto, mensagem) que envia a mensagem
+ * ao admin via `POST /contact/message` usando Resend com `replyTo` do remetente.
+ *
+ * @see GET /contact
+ * @see POST /contact/message
+ */
+import { submitContact } from "../../services/contact";
+import { getErrorMessage } from "../../utils/getErrorMessage";
 import { animateFadeInUp, animateStagger } from "../../utils/animations";
 import * as S from "./styles";
 
@@ -37,14 +51,39 @@ function ChatIcon() {
     );
 }
 
+const EMPTY_FORM = { name: "", email: "", phone: "", subject: "", message: "" };
+
 export default function ContactUs() {
     const navigate = useNavigate();
     const containerRef = useRef(null);
+    const [form, setForm] = useState(EMPTY_FORM);
+    const [isSending, setIsSending] = useState(false);
 
     useGSAP(() => {
         animateFadeInUp(containerRef.current.querySelector(".anim-header"));
         animateStagger(containerRef.current.querySelectorAll(".anim-card"), { delay: 0.1 });
     }, { scope: containerRef, dependencies: [] });
+
+    function field(key) {
+        return {
+            value: form[key],
+            onChange: (e) => setForm((f) => ({ ...f, [key]: e.target.value })),
+        };
+    }
+
+    async function handleSubmit(e) {
+        e.preventDefault();
+        try {
+            setIsSending(true);
+            await submitContact(form);
+            toast.success("Mensagem enviada com sucesso! Retornaremos em breve.");
+            setForm(EMPTY_FORM);
+        } catch (error) {
+            toast.error(getErrorMessage(error, "Erro ao enviar mensagem. Tente novamente."));
+        } finally {
+            setIsSending(false);
+        }
+    }
 
     return (
         <S.Container ref={containerRef}>
@@ -111,6 +150,39 @@ export default function ContactUs() {
                     </S.ContactInfo>
                     <S.ContactArrow>→</S.ContactArrow>
                 </S.ContactItem>
+            </S.Card>
+
+            <S.Card className="anim-card" as="form" onSubmit={handleSubmit}>
+                <S.CardTitle>Enviar mensagem</S.CardTitle>
+
+                <S.FormField>
+                    <S.FormLabel>Nome</S.FormLabel>
+                    <S.FormInput required placeholder="Seu nome completo" {...field("name")} />
+                </S.FormField>
+
+                <S.FormField>
+                    <S.FormLabel>E-mail</S.FormLabel>
+                    <S.FormInput required type="email" placeholder="seu@email.com" {...field("email")} />
+                </S.FormField>
+
+                <S.FormField>
+                    <S.FormLabel>Telefone (opcional)</S.FormLabel>
+                    <S.FormInput type="tel" placeholder="(35) 9 9999-9999" {...field("phone")} />
+                </S.FormField>
+
+                <S.FormField>
+                    <S.FormLabel>Assunto</S.FormLabel>
+                    <S.FormInput required placeholder="Ex: Dúvida sobre reserva" {...field("subject")} />
+                </S.FormField>
+
+                <S.FormField>
+                    <S.FormLabel>Mensagem</S.FormLabel>
+                    <S.FormTextarea required rows={5} placeholder="Escreva sua mensagem aqui..." {...field("message")} />
+                </S.FormField>
+
+                <S.SubmitButton type="submit" disabled={isSending}>
+                    {isSending ? "Enviando..." : "Enviar mensagem"}
+                </S.SubmitButton>
             </S.Card>
         </S.Container>
     );
