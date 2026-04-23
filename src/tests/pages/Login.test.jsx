@@ -4,19 +4,22 @@ import { http, HttpResponse } from "msw";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { afterEach, describe, expect, it } from "vitest";
+import { AuthProvider } from "../../contexts/AuthContext";
 import Login from "../../pages/Login";
 import { server } from "../mocks/server";
 
 function renderPage() {
     return render(
-        <MemoryRouter initialEntries={["/login"]}>
-            <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/home" element={<div>Home Page</div>} />
-                <Route path="/cadastro" element={<div>Cadastro Page</div>} />
-            </Routes>
-            <ToastContainer />
-        </MemoryRouter>
+        <AuthProvider>
+            <MemoryRouter initialEntries={["/login"]}>
+                <Routes>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/home" element={<div>Home Page</div>} />
+                    <Route path="/cadastro" element={<div>Cadastro Page</div>} />
+                </Routes>
+                <ToastContainer />
+            </MemoryRouter>
+        </AuthProvider>
     );
 }
 

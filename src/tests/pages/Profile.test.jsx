@@ -4,6 +4,7 @@ import { http, HttpResponse } from "msw";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { afterEach, describe, expect, it } from "vitest";
+import { AuthProvider } from "../../contexts/AuthContext";
 import Profile from "../../pages/Profile";
 import { server } from "../mocks/server";
 
@@ -11,13 +12,15 @@ const BASE = "http://localhost:3000";
 
 function renderPage() {
     return render(
-        <MemoryRouter initialEntries={["/profile"]}>
-            <Routes>
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/home" element={<div>Home Page</div>} />
-            </Routes>
-            <ToastContainer />
-        </MemoryRouter>
+        <AuthProvider>
+            <MemoryRouter initialEntries={["/profile"]}>
+                <Routes>
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/home" element={<div>Home Page</div>} />
+                </Routes>
+                <ToastContainer />
+            </MemoryRouter>
+        </AuthProvider>
     );
 }
 

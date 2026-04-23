@@ -1,7 +1,19 @@
+/**
+ * @module api
+ * @description Instância Axios configurada para o backend do Recanto Vila Rica.
+ *
+ * Comportamentos automáticos:
+ * - **Auth**: injeta o Bearer token de `localStorage["recanto:userData"]` em toda requisição.
+ * - **Retry**: requisições GET que falham com 5xx são reenviadas até 3×
+ *   com backoff linear (1 s, 2 s, 3 s). Não reenvía em ambiente de teste,
+ *   em endpoints `/auth/*`, nem em erros 429.
+ * - **Rate limit (429)**: rejeitado imediatamente sem retry para que o
+ *   componente exiba o toast de "muitas requisições" ao usuário.
+ */
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "http://localhost:3000",
+    baseURL: import.meta.env.VITE_API_URL || "http://localhost:3000",
 });
 
 api.interceptors.request.use((config) => {

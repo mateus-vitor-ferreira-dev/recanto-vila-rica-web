@@ -8,6 +8,15 @@ import { getErrorMessage } from "../../utils/getErrorMessage";
 import { animateFadeInUp, animateStagger } from "../../utils/animations";
 import * as S from "./styles";
 
+/**
+ * Página de listagem dos espaços disponíveis para reserva.
+ *
+ * Carrega todos os venues via `listVenues` e exibe cards com informações de
+ * capacidade e amenidades. Clicar em um card navega para `/reservation-intent/:venueId`.
+ *
+ * @see GET /venues
+ * @component
+ */
 export default function Venues() {
     const navigate = useNavigate();
     const containerRef = useRef(null);

@@ -10,6 +10,20 @@ import { PLAN_LABELS, formatDateFull, formatTime, formatCurrency, calcDuration }
 import { animateFadeInUp, animateStagger } from "../../utils/animations";
 import * as S from "./styles";
 
+/**
+ * Página de checkout para uma reserva pendente de pagamento.
+ *
+ * Carrega os detalhes da reserva pelo `reservationId` da URL e oferece duas opções:
+ * - **Stripe** (cartão): chama `createCheckoutSession` e redireciona para o Stripe Checkout
+ * - **PIX** (Mercado Pago): chama `createPixCharge`, exibe QR Code e faz polling do status
+ *   até PAID ou CANCELLED com `getPaymentStatus`
+ *
+ * @see GET /reservations/:id
+ * @see POST /payment/checkout-session
+ * @see POST /payment/pix
+ * @see GET /payment/status/:paymentId
+ * @component
+ */
 export default function Checkout() {
     const { reservationId } = useParams();
     const navigate = useNavigate();

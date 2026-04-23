@@ -1,5 +1,10 @@
+/**
+ * @module components/Footer
+ * @description Rodapé simples com copyright e tagline do Recanto Vila Rica.
+ */
 import * as S from "./styles";
 
+/** @component */
 export default function Footer() {
     return (
         <S.Container>

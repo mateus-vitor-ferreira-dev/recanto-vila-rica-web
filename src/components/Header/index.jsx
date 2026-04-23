@@ -1,8 +1,11 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { useGSAP } from "@gsap/react";
 import logo from "../../assets/logo-recanto.svg";
+import { useAuth } from "../../contexts/AuthContext";
 import { useTheme } from "../../contexts/ThemeContext";
+import { resendVerification } from "../../services/auth";
 import { animateFadeInUp } from "../../utils/animations";
 import * as S from "./styles";
 
@@ -38,34 +41,64 @@ function MoonIcon() {
     );
 }
 
+/**
+ * Barra de navegação principal da aplicação.
+ *
+ * Lê o perfil do usuário do `localStorage` (`recanto:userData`) para exibir
+ * iniciais no avatar e o link de Admin (visível apenas para `role === "ADMIN"`).
+ * Inclui botão de toggle de tema claro/escuro e botão de logout.
+ * Anima a entrada com GSAP (`animateFadeInUp` de cima para baixo).
+ *
+ * @component
+ */
 export default function Header() {
     const navigate = useNavigate();
     const location = useLocation();
     const { theme, toggleTheme } = useTheme();
+    const { user, logout: authLogout } = useAuth();
     const containerRef = useRef(null);
+    const [resending, setResending] = useState(false);
 
     useGSAP(() => {
         animateFadeInUp(containerRef.current, { y: -20, duration: 0.5 });
     }, { scope: containerRef, dependencies: [] });
 
-    let userData = {};
+    const userName = user?.name || "Usuário";
+    const userRole = user?.role;
+    const emailVerified = user?.emailVerified ?? true;
 
-    try {
-        userData = JSON.parse(localStorage.getItem("recanto:userData") || "{}");
-    } catch {
-        userData = {};
+    async function handleResendVerification() {
+        try {
+            setResending(true);
+            await resendVerification();
+            toast.success("E-mail de verificação reenviado. Verifique sua caixa de entrada.");
+        } catch (err) {
+            const msg = err?.response?.data?.message;
+            if (msg === "Email is already verified") {
+                toast.info("Seu e-mail já está verificado.");
+            } else {
+                toast.error("Erro ao reenviar. Tente novamente.");
+            }
+        } finally {
+            setResending(false);
+        }
     }
 
-    const userName = userData?.user?.name || userData?.name || "Usuário";
-    const userRole = userData?.user?.role || userData?.role;
-
     function handleLogout() {
-        localStorage.removeItem("recanto:userData");
+        authLogout();
         navigate("/login");
     }
 
     return (
         <S.Container ref={containerRef}>
+            {!emailVerified && (
+                <S.VerificationBanner>
+                    Verifique seu e-mail para ativar sua conta.
+                    <S.ResendButton onClick={handleResendVerification} disabled={resending}>
+                        {resending ? "Enviando..." : "Reenviar e-mail"}
+                    </S.ResendButton>
+                </S.VerificationBanner>
+            )}
             <S.Content>
                 <S.BrandWrapper to="/home">
                     <S.Logo src={logo} alt="Logo Recanto Vila Rica" />
@@ -90,11 +123,11 @@ export default function Header() {
                     </S.NavLink>
 
                     <S.NavLink
-                        $active={location.pathname === "/referrals"}
+                        $active={location.pathname === "/promocoes"}
                         as={Link}
-                        to="/referrals"
+                        to="/promocoes"
                     >
-                        Indicações
+                        Promoções
                     </S.NavLink>
 
                     <S.NavLink

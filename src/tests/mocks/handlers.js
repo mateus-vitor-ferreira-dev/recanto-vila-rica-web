@@ -115,6 +115,19 @@ export const promotionHandlers = [
     http.get(`${BASE_URL}/promotions/my-grants`, () =>
         HttpResponse.json({ success: true, data: [] })
     ),
+    http.get(`${BASE_URL}/promotions/active`, () =>
+        HttpResponse.json({ success: true, data: [] })
+    ),
+    http.get(`${BASE_URL}/promotions/status`, () =>
+        HttpResponse.json({
+            success: true,
+            data: [
+                { type: "REFERRAL_NEXT_BOOKING", status: "not_configured", campaign: null },
+                { type: "LOYALTY_ALWAYS_HERE",   status: "not_configured", campaign: null },
+                { type: "RAFFLE_VIP",            status: "not_configured", campaign: null },
+            ],
+        })
+    ),
 ];
 
 // ─── Referrals ───────────────────────────────────────────────────────────────
@@ -155,6 +168,22 @@ export const adminHandlers = [
         })
     ),
 
+    http.get(`${BASE_URL}/admin/reservations/revenue/monthly`, () =>
+        HttpResponse.json({
+            success: true,
+            data: {
+                year: new Date().getFullYear(),
+                months: Array.from({ length: 12 }, (_, i) => ({
+                    month: i + 1,
+                    revenue: 0,
+                    count: 0,
+                    stripe: 0,
+                    pix: 0,
+                })),
+            },
+        })
+    ),
+
     http.get(`${BASE_URL}/admin/reservations`, () =>
         HttpResponse.json({ success: true, data: [] })
     ),
@@ -164,6 +193,18 @@ export const adminHandlers = [
     ),
 
     http.get(`${BASE_URL}/admin/holidays`, () =>
+        HttpResponse.json({ success: true, data: [] })
+    ),
+
+    http.get(`${BASE_URL}/admin/users`, () =>
+        HttpResponse.json({ success: true, data: [] })
+    ),
+
+    http.get(`${BASE_URL}/admin/plans`, () =>
+        HttpResponse.json({ success: true, data: [] })
+    ),
+
+    http.get(`${BASE_URL}/admin/blocked-dates`, () =>
         HttpResponse.json({ success: true, data: [] })
     ),
 ];

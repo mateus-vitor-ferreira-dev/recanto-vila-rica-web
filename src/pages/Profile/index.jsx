@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { useGSAP } from "@gsap/react";
 
 import { Input } from "../../components";
+import { useAuth } from "../../contexts/AuthContext";
 import api from "../../services/api";
 import { getErrorMessage } from "../../utils/getErrorMessage";
 import { formatPhone } from "../../utils/formatPhone";
@@ -18,19 +19,36 @@ function getInitials(name) {
     return (first + last).toUpperCase();
 }
 
+/**
+ * Página de perfil do usuário autenticado.
+ *
+ * Permite editar nome, e-mail, telefone e data de nascimento.
+ * Também oferece seção de alteração de senha (campos separados com confirmação).
+ *
+ * @see GET /users/me
+ * @see PATCH /users/me
+ * @component
+ */
 export default function Profile() {
     const navigate = useNavigate();
+    const { updateUser } = useAuth();
     const containerRef = useRef(null);
 
     const [user, setUser] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
+    const [isChangingPassword, setIsChangingPassword] = useState(false);
 
     const [form, setForm] = useState({
         name: "",
         email: "",
         phone: "",
         birthDate: "",
+    });
+
+    const [passwordForm, setPasswordForm] = useState({
+        newPassword: "",
+        confirmPassword: "",
     });
 
     useEffect(() => {
@@ -103,15 +121,7 @@ export default function Profile() {
 
             const updated = data.data;
 
-            const stored = JSON.parse(localStorage.getItem("recanto:userData") || "{}");
-            if (stored?.user) {
-                stored.user.name = updated.name;
-                stored.user.email = updated.email;
-            } else {
-                stored.name = updated.name;
-                stored.email = updated.email;
-            }
-            localStorage.setItem("recanto:userData", JSON.stringify(stored));
+            updateUser({ name: updated.name, email: updated.email });
 
             setUser(updated);
             toast.success("Perfil atualizado com sucesso.");
@@ -119,6 +129,29 @@ export default function Profile() {
             toast.error(getErrorMessage(error, "Erro ao atualizar o perfil."));
         } finally {
             setIsSaving(false);
+        }
+    }
+
+    async function handlePasswordSubmit(e) {
+        e.preventDefault();
+
+        if (passwordForm.newPassword.length < 8) {
+            return toast.error("A senha deve ter ao menos 8 caracteres.");
+        }
+
+        if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+            return toast.error("As senhas não coincidem.");
+        }
+
+        try {
+            setIsChangingPassword(true);
+            await api.patch(`/users/${user.id}`, { password: passwordForm.newPassword });
+            toast.success("Senha alterada com sucesso.");
+            setPasswordForm({ newPassword: "", confirmPassword: "" });
+        } catch (error) {
+            toast.error(getErrorMessage(error, "Erro ao alterar a senha."));
+        } finally {
+            setIsChangingPassword(false);
         }
     }
 
@@ -157,55 +190,87 @@ export default function Profile() {
                     <S.RoleBadge>{user?.role === "ADMIN" ? "Administrador" : "Usuário"}</S.RoleBadge>
                 </S.IdentityCard>
 
-                <S.FormCard className="anim-card" onSubmit={handleSubmit}>
-                    <S.SectionTitle>Informações pessoais</S.SectionTitle>
+                <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+                    <S.FormCard className="anim-card" onSubmit={handleSubmit}>
+                        <S.SectionTitle>Informações pessoais</S.SectionTitle>
 
-                    <S.FieldGrid>
-                        <Input
-                            label="Nome completo"
-                            name="name"
-                            placeholder="Seu nome"
-                            value={form.name}
-                            onChange={handleChange}
-                        />
+                        <S.FieldGrid>
+                            <Input
+                                label="Nome completo"
+                                name="name"
+                                placeholder="Seu nome"
+                                value={form.name}
+                                onChange={handleChange}
+                            />
 
-                        <Input
-                            label="E-mail"
-                            name="email"
-                            type="email"
-                            placeholder="seu@email.com"
-                            value={form.email}
-                            onChange={handleChange}
-                        />
+                            <Input
+                                label="E-mail"
+                                name="email"
+                                type="email"
+                                placeholder="seu@email.com"
+                                value={form.email}
+                                onChange={handleChange}
+                            />
 
-                        <Input
-                            label="Telefone"
-                            name="phone"
-                            placeholder="(11) 99999-9999"
-                            inputMode="tel"
-                            value={form.phone}
-                            onChange={handleChange}
-                            prefix="🇧🇷"
-                        />
+                            <Input
+                                label="Telefone"
+                                name="phone"
+                                placeholder="(11) 99999-9999"
+                                inputMode="tel"
+                                value={form.phone}
+                                onChange={handleChange}
+                                prefix="🇧🇷"
+                            />
 
-                        <Input
-                            label="Data de nascimento"
-                            name="birthDate"
-                            type="date"
-                            value={form.birthDate}
-                            onChange={handleChange}
-                        />
-                    </S.FieldGrid>
+                            <Input
+                                label="Data de nascimento"
+                                name="birthDate"
+                                type="date"
+                                value={form.birthDate}
+                                onChange={handleChange}
+                            />
+                        </S.FieldGrid>
 
-                    <S.FormFooter>
-                        <S.CancelButton type="button" onClick={() => navigate("/home")}>
-                            Cancelar
-                        </S.CancelButton>
-                        <S.SaveButton type="submit" disabled={isSaving}>
-                            {isSaving ? "Salvando..." : "Salvar alterações"}
-                        </S.SaveButton>
-                    </S.FormFooter>
-                </S.FormCard>
+                        <S.FormFooter>
+                            <S.CancelButton type="button" onClick={() => navigate("/home")}>
+                                Cancelar
+                            </S.CancelButton>
+                            <S.SaveButton type="submit" disabled={isSaving}>
+                                {isSaving ? "Salvando..." : "Salvar alterações"}
+                            </S.SaveButton>
+                        </S.FormFooter>
+                    </S.FormCard>
+
+                    <S.FormCard className="anim-card" as="form" onSubmit={handlePasswordSubmit}>
+                        <S.SectionTitle>Alterar senha</S.SectionTitle>
+
+                        <S.FieldGrid>
+                            <Input
+                                label="Nova senha"
+                                name="newPassword"
+                                type="password"
+                                placeholder="Mín. 8 caracteres"
+                                value={passwordForm.newPassword}
+                                onChange={(e) => setPasswordForm((f) => ({ ...f, newPassword: e.target.value }))}
+                            />
+
+                            <Input
+                                label="Confirmar nova senha"
+                                name="confirmPassword"
+                                type="password"
+                                placeholder="Repita a nova senha"
+                                value={passwordForm.confirmPassword}
+                                onChange={(e) => setPasswordForm((f) => ({ ...f, confirmPassword: e.target.value }))}
+                            />
+                        </S.FieldGrid>
+
+                        <S.FormFooter>
+                            <S.SaveButton type="submit" disabled={isChangingPassword}>
+                                {isChangingPassword ? "Alterando..." : "Alterar senha"}
+                            </S.SaveButton>
+                        </S.FormFooter>
+                    </S.FormCard>
+                </div>
             </S.Layout>
         </S.Container>
     );

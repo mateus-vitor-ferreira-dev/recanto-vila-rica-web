@@ -22,6 +22,19 @@ function isDateInRange(dateStr, ranges) {
     });
 }
 
+/**
+ * Calendário interativo de disponibilidade para um espaço.
+ *
+ * Carrega as datas bloqueadas (admin) e ocupadas (reservas confirmadas) via API e as
+ * exibe com cores distintas. O usuário só consegue selecionar dias disponíveis.
+ *
+ * @component
+ * @param {object} props
+ * @param {string} props.venueId - ID do espaço (venue) cujos dados de disponibilidade serão carregados
+ * @param {string | null} props.selectedDate - Data selecionada no formato `YYYY-MM-DD`
+ * @param {(date: string) => void} props.onChange - Callback chamado ao selecionar um dia disponível
+ * @param {string} [props.minDate] - Data mínima selecionável em `YYYY-MM-DD`; padrão: hoje
+ */
 export default function AvailabilityCalendar({ venueId, selectedDate, onChange, minDate }) {
     const today = toLocalDateString(new Date());
     const effectiveMin = minDate || today;

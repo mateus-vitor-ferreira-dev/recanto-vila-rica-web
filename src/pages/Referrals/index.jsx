@@ -7,6 +7,17 @@ import { getErrorMessage } from "../../utils/getErrorMessage";
 import { animateFadeInUp, animateStagger } from "../../utils/animations";
 import * as S from "./styles";
 
+/**
+ * Página do programa de indicações.
+ *
+ * Exibe o histórico de indicações do usuário e permite indicar novos amigos por e-mail.
+ * Quando o indicado faz sua primeira reserva, o indicador recebe um desconto
+ * conforme a campanha de tipo `REFERRAL_NEXT_BOOKING` ativa.
+ *
+ * @see GET /referrals
+ * @see POST /referrals
+ * @component
+ */
 const STATUS_LABELS = {
     PENDING: "Aguardando",
     QUALIFIED: "Qualificado",

@@ -33,6 +33,14 @@ export const Input = styled.input`
         border-color: ${({ $error }) => ($error ? "var(--color-error)" : "var(--brand)")};
         box-shadow: 0 0 0 4px rgba(31, 79, 65, 0.12);
     }
+
+    &:-webkit-autofill,
+    &:-webkit-autofill:hover,
+    &:-webkit-autofill:focus {
+        -webkit-box-shadow: 0 0 0 1000px var(--bg-surface) inset;
+        -webkit-text-fill-color: var(--text-primary);
+        caret-color: var(--text-primary);
+    }
 `;
 
 export const InputWrapper = styled.div`
@@ -80,6 +88,14 @@ export const InnerInput = styled.input`
 
     &::placeholder {
         color: var(--text-faint);
+    }
+
+    &:-webkit-autofill,
+    &:-webkit-autofill:hover,
+    &:-webkit-autofill:focus {
+        -webkit-box-shadow: 0 0 0 1000px var(--bg-surface) inset;
+        -webkit-text-fill-color: var(--text-primary);
+        caret-color: var(--text-primary);
     }
 `;
 

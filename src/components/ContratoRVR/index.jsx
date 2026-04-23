@@ -195,6 +195,23 @@ function Bullet({ children }) {
     );
 }
 
+/**
+ * Documento PDF do contrato de locação do Recanto Vila Rica, gerado via `@react-pdf/renderer`.
+ *
+ * O texto das cláusulas 3ª–5ª varia automaticamente conforme a combinação de espaços opcionais
+ * (`comKids` / `comPiscina`). Use `ContratoDownloadLink` para disponibilizar o download.
+ *
+ * @component
+ * @param {object} props
+ * @param {string} props.locatario - Nome do locatário exibido no contrato
+ * @param {string} props.data - Data do evento formatada (ex.: `"19/04/2026"`)
+ * @param {string} props.horarioInicio - Horário de início (ex.: `"14:00"`)
+ * @param {string} props.horarioFim - Horário de término (ex.: `"22:00"`)
+ * @param {boolean} props.comKids - Inclui área kids no contrato
+ * @param {boolean} props.comPiscina - Inclui área da piscina no contrato
+ * @param {"PROMOCIONAL" | "ESSENCIAL" | "COMPLETA"} props.planCode - Código do plano contratado
+ * @param {number} [props.totalCents] - Valor total em centavos; usa o preço do plano se omitido
+ */
 export function ContratoRVR({ locatario, data, horarioInicio, horarioFim, comKids, comPiscina, planCode, totalCents }) {
     const plan = PLAN_INFO[planCode] ?? PLAN_INFO.ESSENCIAL;
     const preco = formatCurrency(totalCents ?? plan.priceCents);

@@ -6,6 +6,16 @@ const INITIAL_MESSAGE = {
     content: "Olá! Sou o assistente do Recanto Vila Rica. Como posso te ajudar? 😊",
 };
 
+/**
+ * Widget de chat flutuante com o assistente de IA do Recanto Vila Rica.
+ *
+ * Abre um painel de chat no canto da tela e se comunica com `POST /chat` via
+ * Server-Sent Events (SSE), fazendo streaming de tokens em tempo real. Mantém
+ * apenas as últimas 20 mensagens enviadas para evitar payload excessivo.
+ * O token JWT do usuário é incluído no header `Authorization` quando disponível.
+ *
+ * @component
+ */
 export default function ChatWidget() {
     const [open, setOpen] = useState(false);
     const [messages, setMessages] = useState([INITIAL_MESSAGE]);
@@ -37,7 +47,8 @@ export default function ChatWidget() {
             const userData = JSON.parse(localStorage.getItem("recanto:userData") || "{}");
             const token = userData?.token;
 
-            const response = await fetch("http://localhost:3000/chat", {
+            const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+            const response = await fetch(`${baseUrl}/chat`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

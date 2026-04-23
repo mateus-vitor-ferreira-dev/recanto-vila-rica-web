@@ -1,7 +1,15 @@
 /**
- * Formata uma string de telefone brasileiro enquanto o usuário digita.
- * Suporta celular (11 dígitos): (XX) XXXXX-XXXX
- * e fixo (10 dígitos):          (XX) XXXX-XXXX
+ * @module utils/formatPhone
+ * @description Formatação de telefone brasileiro para exibição e input mascarado.
+ */
+
+/**
+ * Formata um número de telefone brasileiro enquanto o usuário digita.
+ * Suporta celular (11 dígitos): `(XX) XXXXX-XXXX`
+ * e fixo (10 dígitos): `(XX) XXXX-XXXX`.
+ *
+ * @param {string | number | null | undefined} value - Valor bruto (dígitos ou formatado)
+ * @returns {string} Telefone formatado ou string vazia se vazio
  */
 export function formatPhone(value) {
     const digits = String(value ?? "").replace(/\D/g, "").slice(0, 11);

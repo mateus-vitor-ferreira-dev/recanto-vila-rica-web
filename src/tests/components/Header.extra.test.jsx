@@ -1,14 +1,17 @@
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import Header from "../../components/Header";
+import { AuthProvider } from "../../contexts/AuthContext";
 import { ThemeProvider } from "../../contexts/ThemeContext";
 
 function renderHeader() {
     return render(
         <ThemeProvider>
-            <MemoryRouter>
-                <Header />
-            </MemoryRouter>
+            <AuthProvider>
+                <MemoryRouter>
+                    <Header />
+                </MemoryRouter>
+            </AuthProvider>
         </ThemeProvider>
     );
 }

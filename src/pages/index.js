@@ -1,6 +1,7 @@
 export { default as Admin } from "./Admin";
 export { default as Checkout } from "./Checkout";
 export { default as ContactUs } from "./ContactUs";
+export { default as ForgotPassword } from "./ForgotPassword";
 export { default as Home } from "./Home";
 export { default as Login } from "./Login";
 export { default as NegotiationChat } from "./NegotiationChat";
@@ -8,8 +9,10 @@ export { default as Negotiations } from "./Negotiations";
 export { default as PaymentCancel } from "./PaymentCancel";
 export { default as PaymentSuccess } from "./PaymentSuccess";
 export { default as Profile } from "./Profile";
+export { default as Promotions } from "./Promotions";
 export { default as Referrals } from "./Referrals";
 export { default as ReservationIntent } from "./ReservationIntent";
 export { default as Reservations } from "./Reservations";
+export { default as ResetPassword } from "./ResetPassword";
 export { default as SignUp } from "./SignUp";
 export { default as Venues } from "./Venues";

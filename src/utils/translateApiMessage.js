@@ -1,3 +1,10 @@
+/**
+ * @module utils/translateApiMessage
+ * @description Mapa estático de mensagens de erro da API (inglês → português) e
+ * função de tradução. Utilizada por `getErrorMessage` antes de exibir erros ao usuário.
+ */
+
+/** @type {Record<string, string>} */
 const messageMap = {
     "Past dates are not allowed": "Não é permitido selecionar datas passadas.",
     "Venue not found": "Salão não encontrado.",
@@ -25,8 +32,20 @@ const messageMap = {
     "Blocked date not found": "Data bloqueada não encontrada.",
     "Kids area price is required": "O valor da área kids é obrigatório.",
     "Pool price is required": "O valor da piscina é obrigatório.",
+    "Invalid or expired password reset token": "Link de redefinição inválido ou expirado. Solicite um novo.",
+    "Too many contact messages, please try again later": "Muitas mensagens enviadas. Tente novamente mais tarde.",
+    "Too many authentication attempts, please try again later": "Muitas tentativas. Tente novamente em instantes.",
+    "Invalid or expired verification token": "Link de verificação inválido ou expirado. Solicite um novo.",
+    "Email is already verified": "Seu e-mail já está verificado.",
 };
 
+/**
+ * Traduz uma mensagem de erro da API para pt-BR quando existe entrada no mapa.
+ * Retorna a própria mensagem original quando não há tradução disponível.
+ *
+ * @param {string | null | undefined} message - Mensagem recebida da API
+ * @returns {string} Mensagem em pt-BR ou a original
+ */
 export function translateApiMessage(message) {
     if (!message) return "Ocorreu um erro inesperado.";
 

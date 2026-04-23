@@ -1,14 +1,26 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useGSAP } from "@gsap/react";
 
-import { cancelReservation, listReservations } from "../../services/reservation";
+import { cancelReservation } from "../../services/reservation";
+import { useReservations } from "../../hooks/useReservations";
 import { getErrorMessage } from "../../utils/getErrorMessage";
 import { PLAN_LABELS, formatDate, formatTime, formatCurrency, calcDuration } from "../../utils/reservationFormat";
 import { animateFadeInUp, animateStagger } from "../../utils/animations";
 import * as S from "./styles";
 
+/**
+ * Página que lista todas as reservas do usuário autenticado.
+ *
+ * Exibe status (PENDING/PAID/CANCELLED/EXPIRED/COMPLETED), datas, duração e valor.
+ * Reservas PENDING têm botão "Pagar" que navega para `/checkout/:reservationId`.
+ * Reservas PENDING ou PAID podem ser canceladas com confirmação inline.
+ *
+ * @see GET /reservations
+ * @see PATCH /reservations/:id/cancel
+ * @component
+ */
 const STATUS_MAP = {
     PENDING: { label: "Pendente", color: "amber" },
     PAID: { label: "Pago", color: "green" },
@@ -16,35 +28,40 @@ const STATUS_MAP = {
     EXPIRED: { label: "Expirado", color: "gray" },
 };
 
+const REFUND_TIERS = [
+    { label: "Mais de 180 dias antes do evento", percentage: 100 },
+    { label: "De 121 a 180 dias antes do evento", percentage: 70 },
+    { label: "De 61 a 120 dias antes do evento", percentage: 40 },
+    { label: "Até 60 dias antes do evento", percentage: 0 },
+];
+
+function getRefundPercentage(daysBeforeEvent) {
+    if (daysBeforeEvent > 180) return 100;
+    if (daysBeforeEvent >= 121) return 70;
+    if (daysBeforeEvent >= 61) return 40;
+    return 0;
+}
+
+function calcRefundEstimate(reservation) {
+    if (reservation.status !== "PAID") return null;
+
+    const totalPaid = Number(reservation.payment?.amount ?? reservation.totalPrice ?? 0);
+    const now = new Date();
+    const startDate = new Date(reservation.startDate);
+    const msPerDay = 1000 * 60 * 60 * 24;
+    const daysBeforeEvent = Math.max(0, Math.floor((startDate - now) / msPerDay));
+    const percentage = getRefundPercentage(daysBeforeEvent);
+    const refundAmount = Number((totalPaid * percentage / 100).toFixed(2));
+
+    return { daysBeforeEvent, percentage, refundAmount, totalPaid };
+}
+
 export default function Reservations() {
     const navigate = useNavigate();
     const containerRef = useRef(null);
-    const [reservations, setReservations] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const { reservations, isLoading, refresh } = useReservations();
     const [cancellingId, setCancellingId] = useState(null);
-    const [confirmCancelId, setConfirmCancelId] = useState(null);
-
-    useEffect(() => {
-        const controller = new AbortController();
-
-        async function load() {
-            try {
-                setIsLoading(true);
-                const data = await listReservations(controller.signal);
-                setReservations(data);
-            } catch (error) {
-                if (error.name !== "CanceledError" && error.name !== "AbortError") {
-                    toast.error(getErrorMessage(error, "Erro ao carregar reservas."));
-                }
-            } finally {
-                if (!controller.signal.aborted) setIsLoading(false);
-            }
-        }
-
-        load();
-
-        return () => controller.abort();
-    }, []);
+    const [confirmCancelReservation, setConfirmCancelReservation] = useState(null);
 
     useGSAP(() => {
         if (isLoading || !reservations.length) return;
@@ -55,14 +72,13 @@ export default function Reservations() {
     }, { scope: containerRef, dependencies: [isLoading, reservations.length] });
 
     async function handleCancelReservation() {
-        const id = confirmCancelId;
-        setConfirmCancelId(null);
+        const reservation = confirmCancelReservation;
+        setConfirmCancelReservation(null);
         try {
-            setCancellingId(id);
-            await cancelReservation(id);
+            setCancellingId(reservation.id);
+            await cancelReservation(reservation.id);
             toast.success("Reserva cancelada com sucesso.");
-            const data = await listReservations();
-            setReservations(data);
+            await refresh();
         } catch (error) {
             toast.error(getErrorMessage(error, "Erro ao cancelar reserva."));
         } finally {
@@ -93,17 +109,62 @@ export default function Reservations() {
         );
     }
 
+    const refundEstimate = confirmCancelReservation
+        ? calcRefundEstimate(confirmCancelReservation)
+        : null;
+
     return (
         <S.Container ref={containerRef}>
-            {confirmCancelId && (
+            {confirmCancelReservation && (
                 <S.ModalOverlay>
                     <S.ModalBox>
                         <S.ModalTitle>Cancelar reserva</S.ModalTitle>
-                        <S.ModalBody>
-                            Tem certeza que deseja cancelar esta reserva? Esta ação não pode ser desfeita.
-                        </S.ModalBody>
+
+                        <S.PolicySection>
+                            <S.PolicyTitle>Política de reembolso</S.PolicyTitle>
+                            <S.PolicyList>
+                                {REFUND_TIERS.map((tier) => (
+                                    <S.PolicyTier key={tier.percentage} $highlighted={refundEstimate?.percentage === tier.percentage}>
+                                        <span>{tier.label}</span>
+                                        <strong>
+                                            {tier.percentage === 0 ? "Sem reembolso" : `${tier.percentage}% de reembolso`}
+                                        </strong>
+                                    </S.PolicyTier>
+                                ))}
+                            </S.PolicyList>
+                        </S.PolicySection>
+
+                        {refundEstimate ? (
+                            <S.RefundCard>
+                                <S.RefundCardTitle>Seu reembolso estimado</S.RefundCardTitle>
+                                <S.RefundRow>
+                                    <span>Dias até o evento</span>
+                                    <strong>{refundEstimate.daysBeforeEvent} dia{refundEstimate.daysBeforeEvent !== 1 ? "s" : ""}</strong>
+                                </S.RefundRow>
+                                <S.RefundRow>
+                                    <span>Valor pago</span>
+                                    <strong>{formatCurrency(refundEstimate.totalPaid)}</strong>
+                                </S.RefundRow>
+                                <S.RefundRow $accent={refundEstimate.refundAmount > 0}>
+                                    <span>Valor do reembolso</span>
+                                    <strong>
+                                        {refundEstimate.refundAmount > 0
+                                            ? `${formatCurrency(refundEstimate.refundAmount)} (${refundEstimate.percentage}%)`
+                                            : "Sem reembolso"}
+                                    </strong>
+                                </S.RefundRow>
+                            </S.RefundCard>
+                        ) : (
+                            <S.RefundCard $neutral>
+                                <S.RefundCardTitle>Sem cobrança</S.RefundCardTitle>
+                                <S.ModalBody>
+                                    Esta reserva ainda não foi paga, portanto o cancelamento não gera nenhuma cobrança.
+                                </S.ModalBody>
+                            </S.RefundCard>
+                        )}
+
                         <S.ModalActions>
-                            <S.ModalCancelBtn onClick={() => setConfirmCancelId(null)}>
+                            <S.ModalCancelBtn onClick={() => setConfirmCancelReservation(null)}>
                                 Voltar
                             </S.ModalCancelBtn>
                             <S.ModalConfirmBtn
@@ -128,6 +189,7 @@ export default function Reservations() {
                 {reservations.map((reservation) => {
                     const status = STATUS_MAP[reservation.status] ?? { label: reservation.status, color: "gray" };
                     const duration = calcDuration(reservation.startDate, reservation.endDate);
+                    const canCancel = reservation.status === "PENDING" || reservation.status === "PAID";
 
                     return (
                         <S.Card className="anim-card" key={reservation.id}>
@@ -166,20 +228,20 @@ export default function Reservations() {
 
                             <S.CardFooter>
                                 {reservation.status === "PENDING" && (
-                                    <>
-                                        <S.PayButton
-                                            onClick={() => navigate(`/checkout/${reservation.id}`)}
-                                        >
-                                            Ir para pagamento
-                                        </S.PayButton>
+                                    <S.PayButton
+                                        onClick={() => navigate(`/checkout/${reservation.id}`)}
+                                    >
+                                        Ir para pagamento
+                                    </S.PayButton>
+                                )}
 
-                                        <S.CancelButton
-                                            onClick={() => setConfirmCancelId(reservation.id)}
-                                            disabled={cancellingId === reservation.id}
-                                        >
-                                            {cancellingId === reservation.id ? "Cancelando..." : "Cancelar reserva"}
-                                        </S.CancelButton>
-                                    </>
+                                {canCancel && (
+                                    <S.CancelButton
+                                        onClick={() => setConfirmCancelReservation(reservation)}
+                                        disabled={cancellingId === reservation.id}
+                                    >
+                                        {cancellingId === reservation.id ? "Cancelando..." : "Cancelar reserva"}
+                                    </S.CancelButton>
                                 )}
                             </S.CardFooter>
                         </S.Card>

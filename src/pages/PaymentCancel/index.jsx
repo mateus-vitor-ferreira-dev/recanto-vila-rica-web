@@ -5,6 +5,14 @@ import gsap from "gsap";
 import { FADE_UP } from "../../utils/animations";
 import * as S from "./styles";
 
+/**
+ * Página exibida quando o usuário cancela o pagamento no Stripe Checkout.
+ *
+ * Exibe ícone de cancelamento com animação GSAP e botão para tentar novamente.
+ * Rota: `/payment/cancel`
+ *
+ * @component
+ */
 export default function PaymentCancel() {
     const navigate = useNavigate();
     const cardRef = useRef(null);

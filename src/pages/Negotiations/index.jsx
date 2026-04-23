@@ -1,13 +1,24 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useGSAP } from "@gsap/react";
 
-import { createNegotiation, listNegotiations } from "../../services/negotiation";
+import { createNegotiation } from "../../services/negotiation";
+import { useNegotiations } from "../../hooks/useNegotiations";
 import { getErrorMessage } from "../../utils/getErrorMessage";
 import { animateFadeInUp, animateStagger } from "../../utils/animations";
 import * as S from "./styles";
 
+/**
+ * Página de listagem das negociações do usuário.
+ *
+ * Permite criar uma nova negociação (botão "Nova Negociação") e ver o histórico.
+ * Clicar em uma negociação navega para `/negociacoes/:id` (NegotiationChat).
+ *
+ * @see GET /negotiations
+ * @see POST /negotiations
+ * @component
+ */
 const STATUS_LABELS = {
     OPEN: "Aberta",
     PENDING_APPROVAL: "Proposta enviada",
@@ -27,30 +38,8 @@ function formatDate(date) {
 export default function Negotiations() {
     const navigate = useNavigate();
     const containerRef = useRef(null);
-    const [negotiations, setNegotiations] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const { negotiations, isLoading } = useNegotiations();
     const [isSending, setIsSending] = useState(false);
-
-    useEffect(() => {
-        const controller = new AbortController();
-
-        async function load() {
-            try {
-                setIsLoading(true);
-                const data = await listNegotiations(controller.signal);
-                setNegotiations(data ?? []);
-            } catch (error) {
-                if (error?.name === "CanceledError" || error?.name === "AbortError") return;
-                toast.error(getErrorMessage(error, "Erro ao carregar negociações."));
-            } finally {
-                if (!controller.signal.aborted) setIsLoading(false);
-            }
-        }
-
-        load();
-
-        return () => controller.abort();
-    }, []);
 
     useGSAP(() => {
         animateFadeInUp(containerRef.current.querySelector(".anim-header"));

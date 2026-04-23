@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 export const Form = styled.form`
@@ -25,6 +26,19 @@ export const Divider = styled.div`
     font-weight: 500;
     color: var(--text-faint);
     white-space: nowrap;
+  }
+`;
+
+export const ForgotLink = styled(Link)`
+  align-self: flex-end;
+  font-size: 12px;
+  color: var(--text-muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  margin-top: -6px;
+
+  &:hover {
+    color: var(--brand);
   }
 `;
 
