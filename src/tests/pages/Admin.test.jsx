@@ -1729,12 +1729,10 @@ describe("Admin - Users tab", () => {
             createdAt: "2026-01-01T00:00:00.000Z",
             _count: { reservations: 0 },
         }));
-        let callCount = 0;
         server.use(
-            http.get(`${BASE}/admin/users`, () => {
-                callCount++;
-                return HttpResponse.json({ success: true, data: manyUsers });
-            })
+            http.get(`${BASE}/admin/users`, () =>
+                HttpResponse.json({ success: true, data: manyUsers })
+            )
         );
         const user = userEvent.setup();
         renderPage();

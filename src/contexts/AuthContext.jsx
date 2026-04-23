@@ -4,7 +4,7 @@
  * e helpers para login, logout e atualização de perfil sem acesso direto ao
  * localStorage nas páginas consumidoras.
  */
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useState } from "react";
 
 const AuthContext = createContext(null);
 
@@ -65,10 +65,7 @@ export function AuthProvider({ children }) {
         setSession({ ...stored });
     }
 
-    const value = useMemo(
-        () => ({ user, token, isAuthenticated, login, logout, updateUser }),
-        [session], // eslint-disable-line react-hooks/exhaustive-deps
-    );
+    const value = { user, token, isAuthenticated, login, logout, updateUser };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
@@ -78,6 +75,7 @@ export function AuthProvider({ children }) {
  *
  * @returns {{ user: object|null, token: string|null, isAuthenticated: boolean, login: Function, logout: Function, updateUser: Function }}
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
     const ctx = useContext(AuthContext);
     if (!ctx) throw new Error("useAuth must be used within AuthProvider");
