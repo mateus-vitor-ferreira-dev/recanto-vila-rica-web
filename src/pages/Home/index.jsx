@@ -119,7 +119,7 @@ export default function Home() {
     const userName = dashboard.user?.name?.split(" ")[0] || "Usuário";
 
     useGSAP(() => {
-        if (isLoading) return;
+        if (isLoading || !containerRef.current) return;
         const el = containerRef.current;
         animateFadeInUp(el.querySelector(".anim-header"));
         animateStagger(el.querySelectorAll(".anim-stat-card"));
