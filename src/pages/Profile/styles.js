@@ -129,6 +129,57 @@ export const RoleBadge = styled.span`
   margin-top: 4px;
 `;
 
+/* ─── Verification banner ─── */
+
+export const VerificationBanner = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 20px;
+  border-radius: 14px;
+  background: var(--status-pending-bg, #fff7ed);
+  border: 1px solid var(--status-pending-border, #fed7aa);
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+`;
+
+export const VerificationText = styled.p`
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+
+  strong {
+    color: var(--text-primary);
+  }
+`;
+
+export const ResendButton = styled.button`
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border: 1px solid var(--status-pending-border, #fed7aa);
+  border-radius: 8px;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  white-space: nowrap;
+
+  &:hover:not(:disabled) {
+    background: var(--bg-page);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+`;
+
 /* ─── Edit form ─── */
 
 export const FormCard = styled.form`

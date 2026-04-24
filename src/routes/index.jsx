@@ -8,6 +8,7 @@ import {
     Home,
     Login,
     NegotiationChat,
+    NotFound,
     Promotions,
     Negotiations,
     PaymentCancel,
@@ -74,6 +75,7 @@ export function AppRoutes({ introFinished }) {
                     </Route>
                 </Route>
             </Route>
+            <Route path="*" element={<NotFound />} />
         </Routes>
     );
 }

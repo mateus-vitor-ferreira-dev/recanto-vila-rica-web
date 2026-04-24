@@ -102,9 +102,7 @@ export default function Checkout() {
                     navigate("/reservations");
                 }
             } catch (err) {
-                if (err?.name !== "CanceledError" && err?.name !== "AbortError") {
-                    console.error("PIX polling error", err);
-                }
+                if (err?.name === "CanceledError" || err?.name === "AbortError") return;
             }
         }, 7000);
 
