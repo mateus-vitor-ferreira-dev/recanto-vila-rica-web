@@ -94,6 +94,7 @@ export default function Referrals() {
     }
 
     useGSAP(() => {
+        if (!containerRef.current) return;
         animateFadeInUp(containerRef.current.querySelector(".anim-header"));
         animateStagger(containerRef.current.querySelectorAll(".anim-card"), { delay: 0.1 });
     }, { scope: containerRef, dependencies: [] });

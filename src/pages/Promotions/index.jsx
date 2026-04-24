@@ -96,7 +96,7 @@ export default function Promotions() {
     }, []);
 
     useGSAP(() => {
-        if (isLoading) return;
+        if (isLoading || !containerRef.current) return;
         animateFadeInUp(containerRef.current.querySelector(".anim-header"));
         animateStagger(containerRef.current.querySelectorAll(".anim-card"), { delay: 0.08 });
     }, { scope: containerRef, dependencies: [isLoading] });

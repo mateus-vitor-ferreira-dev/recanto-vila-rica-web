@@ -161,7 +161,7 @@ export default function Checkout() {
     }
 
     useGSAP(() => {
-        if (isLoading || !reservation) return;
+        if (isLoading || !reservation || !containerRef.current) return;
         const el = containerRef.current;
         animateFadeInUp(el.querySelector(".anim-header"));
         animateStagger(el.querySelectorAll(".anim-card"), { delay: 0.15 });

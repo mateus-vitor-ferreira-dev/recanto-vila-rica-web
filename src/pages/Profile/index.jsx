@@ -156,7 +156,7 @@ export default function Profile() {
     }
 
     useGSAP(() => {
-        if (isLoading) return;
+        if (isLoading || !containerRef.current) return;
         const el = containerRef.current;
         animateFadeInUp(el.querySelector(".anim-header"));
         animateStagger(el.querySelectorAll(".anim-card"), { delay: 0.15 });

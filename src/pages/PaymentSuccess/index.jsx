@@ -18,6 +18,7 @@ export default function PaymentSuccess() {
     const cardRef = useRef(null);
 
     useGSAP(() => {
+        if (!cardRef.current) return;
         const children = cardRef.current.children;
         gsap.from(children[0], { scale: 0.5, opacity: 0, duration: 0.6, ease: "back.out(1.7)" });
         gsap.from(Array.from(children).slice(1), { ...FADE_UP, stagger: 0.1, delay: 0.3 });
