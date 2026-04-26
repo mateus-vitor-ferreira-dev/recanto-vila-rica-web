@@ -8,6 +8,7 @@ import { CampaignsTab } from "./tabs/CampaignsTab";
 import { HolidaysTab } from "./tabs/HolidaysTab";
 import { BlockedDatesTab } from "./tabs/BlockedDatesTab";
 import { PlansTab } from "./tabs/PlansTab";
+import { VenueTab } from "./tabs/VenueTab";
 import * as S from "./styles";
 
 export default function Admin() {
@@ -41,6 +42,7 @@ export default function Admin() {
                 {activeTab === "holidays" && <HolidaysTab />}
                 {activeTab === "blockedDates" && <BlockedDatesTab />}
                 {activeTab === "plans" && <PlansTab />}
+                {activeTab === "venues" && <VenueTab />}
             </S.TabPanel>
         </S.Container>
     );
