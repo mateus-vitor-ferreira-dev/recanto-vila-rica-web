@@ -246,7 +246,7 @@ export default function Checkout() {
                     {isPendingPayment && pixStep === "select" && (
                         <>
                             <S.PaymentDescription>
-                                Escolha como deseja pagar. Cartão de crédito via Stripe ou PIX via Mercado Pago.
+                                Pague com segurança via cartão de crédito.
                             </S.PaymentDescription>
 
                             <S.SecurityBadges>
@@ -256,11 +256,7 @@ export default function Checkout() {
                                 </S.SecurityItem>
                                 <S.SecurityItem>
                                     <S.SecurityDot />
-                                    Aceita cartão de crédito e PIX
-                                </S.SecurityItem>
-                                <S.SecurityItem>
-                                    <S.SecurityDot />
-                                    PIX expira em 1 hora
+                                    Pagamento processado pelo Stripe
                                 </S.SecurityItem>
                             </S.SecurityBadges>
 
@@ -269,32 +265,9 @@ export default function Checkout() {
                                 <strong>{formatCurrency(reservation.totalPrice)}</strong>
                             </S.AmountSummary>
 
-                            <S.MethodSelector>
-                                <S.MethodButton
-                                    $active={paymentMethod === "stripe"}
-                                    onClick={() => setPaymentMethod("stripe")}
-                                >
-                                    Cartão de Crédito
-                                </S.MethodButton>
-                                <S.MethodButton
-                                    $active={paymentMethod === "pix"}
-                                    onClick={() => setPaymentMethod("pix")}
-                                >
-                                    PIX
-                                </S.MethodButton>
-                            </S.MethodSelector>
-
-                            {paymentMethod === "stripe" && (
-                                <S.PayButton onClick={handleProceedToPayment} disabled={isRedirecting}>
-                                    {isRedirecting ? "Redirecionando..." : "Pagar com Cartão"}
-                                </S.PayButton>
-                            )}
-
-                            {paymentMethod === "pix" && (
-                                <S.PayButton onClick={handlePixPayment} disabled={isRedirecting}>
-                                    {isRedirecting ? "Gerando QR Code..." : "Gerar QR Code PIX"}
-                                </S.PayButton>
-                            )}
+                            <S.PayButton onClick={handleProceedToPayment} disabled={isRedirecting}>
+                                {isRedirecting ? "Redirecionando..." : "Pagar com Cartão"}
+                            </S.PayButton>
                         </>
                     )}
 
