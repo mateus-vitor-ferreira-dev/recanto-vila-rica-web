@@ -33,6 +33,8 @@ export default function GoogleButton({ navigate }) {
                 size="large"
                 text="signin_with"
                 logo_alignment="left"
+                use_fedcm_for_prompt={false}
+                cancel_on_tap_outside={false}
             />
         </S.GoogleBtnWrapper>
     );
