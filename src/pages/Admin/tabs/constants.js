@@ -9,6 +9,7 @@ export const TABS = [
     { key: "holidays", label: "Feriados" },
     { key: "blockedDates", label: "Datas Bloqueadas" },
     { key: "plans", label: "Planos" },
+    { key: "venues", label: "Espaços" },
 ];
 
 export const REFUND_TIERS = [

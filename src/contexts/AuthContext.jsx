@@ -29,6 +29,15 @@ function normalizeUser(session) {
     };
 }
 
+function normalizeSession(data) {
+    // Supports both { user, token, refreshToken } and legacy { user, token }
+    return {
+        user: data.user ?? data,
+        token: data.token,
+        refreshToken: data.refreshToken ?? null,
+    };
+}
+
 /**
  * Provedor de autenticação — deve envolver toda a aplicação (abaixo de `ThemeProvider`).
  * Inicializa o estado a partir do `localStorage` na montagem.
@@ -44,11 +53,21 @@ export function AuthProvider({ children }) {
     const isAuthenticated = !!session;
 
     function login(data) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-        setSession(data);
+        const normalized = normalizeSession(data);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized));
+        setSession(normalized);
     }
 
     function logout() {
+        const stored = readStorage();
+        if (stored?.refreshToken) {
+            // Fire-and-forget: revoke on backend; local logout happens regardless
+            fetch(`${import.meta.env.VITE_API_URL || "http://localhost:3000"}/auth/logout`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ refreshToken: stored.refreshToken }),
+            }).catch(() => {});
+        }
         localStorage.removeItem(STORAGE_KEY);
         setSession(null);
     }
@@ -56,11 +75,7 @@ export function AuthProvider({ children }) {
     function updateUser(updated) {
         const stored = readStorage();
         if (!stored) return;
-        if (stored.user) {
-            stored.user = { ...stored.user, ...updated };
-        } else {
-            Object.assign(stored, updated);
-        }
+        stored.user = { ...(stored.user ?? stored), ...updated };
         localStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
         setSession({ ...stored });
     }

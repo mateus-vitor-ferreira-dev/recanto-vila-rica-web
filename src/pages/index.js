@@ -1,4 +1,5 @@
 export { default as Admin } from "./Admin";
+export { default as NotFound } from "./NotFound";
 export { default as Checkout } from "./Checkout";
 export { default as ContactUs } from "./ContactUs";
 export { default as ForgotPassword } from "./ForgotPassword";

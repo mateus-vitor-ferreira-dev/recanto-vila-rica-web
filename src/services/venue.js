@@ -28,3 +28,8 @@ export async function getVenue(venueId, signal) {
     const { data } = await api.get(`/venues/${venueId}`, { signal });
     return data.data;
 }
+
+export async function updateVenue(venueId, payload) {
+    const { data } = await api.patch(`/venues/${venueId}`, payload);
+    return data.data;
+}

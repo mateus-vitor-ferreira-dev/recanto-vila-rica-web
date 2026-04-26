@@ -6,8 +6,10 @@ import { useGSAP } from "@gsap/react";
 import { Input } from "../../components";
 import { useAuth } from "../../contexts/AuthContext";
 import api from "../../services/api";
+import { resendVerification } from "../../services/auth";
 import { getErrorMessage } from "../../utils/getErrorMessage";
 import { formatPhone } from "../../utils/formatPhone";
+import { validatePassword } from "../../utils/validatePassword";
 import { animateFadeInUp, animateStagger } from "../../utils/animations";
 import * as S from "./styles";
 
@@ -38,6 +40,7 @@ export default function Profile() {
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [isChangingPassword, setIsChangingPassword] = useState(false);
+    const [isSendingVerification, setIsSendingVerification] = useState(false);
 
     const [form, setForm] = useState({
         name: "",
@@ -47,6 +50,7 @@ export default function Profile() {
     });
 
     const [passwordForm, setPasswordForm] = useState({
+        currentPassword: "",
         newPassword: "",
         confirmPassword: "",
     });
@@ -135,8 +139,13 @@ export default function Profile() {
     async function handlePasswordSubmit(e) {
         e.preventDefault();
 
-        if (passwordForm.newPassword.length < 8) {
-            return toast.error("A senha deve ter ao menos 8 caracteres.");
+        if (!passwordForm.currentPassword) {
+            return toast.error("Informe a senha atual.");
+        }
+
+        const passwordError = validatePassword(passwordForm.newPassword);
+        if (passwordError) {
+            return toast.error(passwordError);
         }
 
         if (passwordForm.newPassword !== passwordForm.confirmPassword) {
@@ -145,13 +154,28 @@ export default function Profile() {
 
         try {
             setIsChangingPassword(true);
-            await api.patch(`/users/${user.id}`, { password: passwordForm.newPassword });
+            await api.patch(`/users/${user.id}`, {
+                currentPassword: passwordForm.currentPassword,
+                password: passwordForm.newPassword,
+            });
             toast.success("Senha alterada com sucesso.");
-            setPasswordForm({ newPassword: "", confirmPassword: "" });
+            setPasswordForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
         } catch (error) {
             toast.error(getErrorMessage(error, "Erro ao alterar a senha."));
         } finally {
             setIsChangingPassword(false);
+        }
+    }
+
+    async function handleResendVerification() {
+        try {
+            setIsSendingVerification(true);
+            await resendVerification();
+            toast.success("E-mail de verificação enviado. Verifique sua caixa de entrada.");
+        } catch (error) {
+            toast.error(getErrorMessage(error, "Erro ao reenviar o e-mail de verificação."));
+        } finally {
+            setIsSendingVerification(false);
         }
     }
 
@@ -181,6 +205,21 @@ export default function Profile() {
                     <S.PageSubtitle>Gerencie suas informações pessoais e de acesso.</S.PageSubtitle>
                 </S.HeaderLeft>
             </S.PageHeader>
+
+            {!user?.emailVerifiedAt && (
+                <S.VerificationBanner>
+                    <S.VerificationText>
+                        <strong>E-mail não verificado.</strong> Verifique sua caixa de entrada ou solicite um novo link.
+                    </S.VerificationText>
+                    <S.ResendButton
+                        type="button"
+                        onClick={handleResendVerification}
+                        disabled={isSendingVerification}
+                    >
+                        {isSendingVerification ? "Enviando..." : "Reenviar e-mail"}
+                    </S.ResendButton>
+                </S.VerificationBanner>
+            )}
 
             <S.Layout>
                 <S.IdentityCard className="anim-card">
@@ -246,21 +285,30 @@ export default function Profile() {
 
                         <S.FieldGrid>
                             <Input
+                                label="Senha atual"
+                                name="currentPassword"
+                                placeholder="Digite sua senha atual"
+                                value={passwordForm.currentPassword}
+                                onChange={(e) => setPasswordForm((f) => ({ ...f, currentPassword: e.target.value }))}
+                                showPasswordToggle
+                            />
+
+                            <Input
                                 label="Nova senha"
                                 name="newPassword"
-                                type="password"
                                 placeholder="Mín. 8 caracteres"
                                 value={passwordForm.newPassword}
                                 onChange={(e) => setPasswordForm((f) => ({ ...f, newPassword: e.target.value }))}
+                                showPasswordToggle
                             />
 
                             <Input
                                 label="Confirmar nova senha"
                                 name="confirmPassword"
-                                type="password"
                                 placeholder="Repita a nova senha"
                                 value={passwordForm.confirmPassword}
                                 onChange={(e) => setPasswordForm((f) => ({ ...f, confirmPassword: e.target.value }))}
+                                showPasswordToggle
                             />
                         </S.FieldGrid>
 

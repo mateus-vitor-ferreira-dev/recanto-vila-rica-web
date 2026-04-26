@@ -37,6 +37,8 @@ const messageMap = {
     "Too many authentication attempts, please try again later": "Muitas tentativas. Tente novamente em instantes.",
     "Invalid or expired verification token": "Link de verificação inválido ou expirado. Solicite um novo.",
     "Email is already verified": "Seu e-mail já está verificado.",
+    "Current password is required to change the password": "Informe a senha atual para alterá-la.",
+    "Current password is incorrect": "Senha atual incorreta.",
 };
 
 /**

@@ -6,6 +6,7 @@ import { AuthLayout, Button, GoogleButton, Input } from "../../components";
 
 import api from "../../services/api";
 import { formatPhone } from "../../utils/formatPhone";
+import { validatePassword } from "../../utils/validatePassword";
 import * as S from "./styles";
 
 /**
@@ -37,26 +38,6 @@ export default function SignUp({ introFinished = true }) {
                 : event.target.value;
 
         setForm({ ...form, [event.target.name]: value });
-    }
-
-    function validatePassword(password) {
-        if (password.length < 8) {
-            return "A senha deve ter pelo menos 8 caracteres.";
-        }
-
-        if (!/[A-Z]/.test(password)) {
-            return "A senha deve conter pelo menos 1 letra maiúscula.";
-        }
-
-        if (!/[0-9]/.test(password)) {
-            return "A senha deve conter pelo menos 1 número.";
-        }
-
-        if (!/[!@#$%^&*(),.?":{}|<>_\-\\[\]/+=;']/.test(password)) {
-            return "A senha deve conter pelo menos 1 caractere especial.";
-        }
-
-        return null;
     }
 
     async function handleSubmit(event) {
