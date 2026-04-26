@@ -24,7 +24,8 @@ export default function SignUp({ introFinished = true }) {
     const navigate = useNavigate();
 
     const [form, setForm] = useState({
-        name: "",
+        firstName: "",
+        lastName: "",
         email: "",
         phone: "",
         password: "",
@@ -43,8 +44,12 @@ export default function SignUp({ introFinished = true }) {
     async function handleSubmit(event) {
         event.preventDefault();
 
-        if (!form.name) {
+        if (!form.firstName.trim()) {
             return toast.error("Informe seu nome.");
+        }
+
+        if (!form.lastName.trim()) {
+            return toast.error("Informe seu sobrenome.");
         }
 
         if (!form.email) {
@@ -71,8 +76,11 @@ export default function SignUp({ introFinished = true }) {
 
         try {
             await api.post("/users", {
-                ...form,
+                name: `${form.firstName.trim()} ${form.lastName.trim()}`,
+                email: form.email,
                 phone: form.phone.replace(/\D/g, ""),
+                password: form.password,
+                birthDate: form.birthDate,
             });
 
             toast.success("Cadastro realizado com sucesso.");
@@ -94,13 +102,22 @@ export default function SignUp({ introFinished = true }) {
             introFinished={introFinished}
         >
             <S.Form onSubmit={handleSubmit}>
-                <Input
-                    label="Nome"
-                    name="name"
-                    placeholder="Digite seu nome"
-                    value={form.name}
-                    onChange={handleChange}
-                />
+                <S.NameRow>
+                    <Input
+                        label="Nome"
+                        name="firstName"
+                        placeholder="Seu nome"
+                        value={form.firstName}
+                        onChange={handleChange}
+                    />
+                    <Input
+                        label="Sobrenome"
+                        name="lastName"
+                        placeholder="Seu sobrenome"
+                        value={form.lastName}
+                        onChange={handleChange}
+                    />
+                </S.NameRow>
 
                 <Input
                     label="E-mail"
