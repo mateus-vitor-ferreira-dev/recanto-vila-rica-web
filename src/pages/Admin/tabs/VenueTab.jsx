@@ -8,19 +8,70 @@ const EMPTY_FORM = {
     name: "",
     description: "",
     capacity: "",
-    location: "",
+    rua: "",
+    numero: "",
+    bairro: "",
+    cidade: "",
+    estado: "",
+    cep: "",
     hasKidsArea: false,
     kidsAreaPricePerHour: "",
     hasPool: false,
     poolPricePerDay: "",
 };
 
+function parseLocation(location) {
+    if (!location) return { rua: "", numero: "", bairro: "", cidade: "", estado: "", cep: "" };
+    try {
+        const cepMatch = location.match(/(\d{5}-\d{3})\s*$/);
+        const cep = cepMatch ? cepMatch[1] : "";
+        const withoutCep = cep
+            ? location.slice(0, location.lastIndexOf(cep)).replace(/,\s*$/, "").trim()
+            : location;
+        const parts = withoutCep.split(",").map((s) => s.trim());
+        let rua = "", numero = "", bairro = "", cidade = "", estado = "";
+        if (parts[0]) rua = parts[0].trim();
+        if (parts[1]) {
+            const numBairro = parts[1].split(" - ");
+            if (numBairro.length >= 2) {
+                numero = numBairro[0].trim();
+                bairro = numBairro.slice(1).join(" - ").trim();
+            } else {
+                const val = parts[1].trim();
+                if (/^\d+/.test(val)) numero = val;
+                else bairro = val;
+            }
+        }
+        if (parts[2]) {
+            const cidadeEstado = parts[2].split(" - ");
+            cidade = cidadeEstado[0]?.trim() || "";
+            estado = cidadeEstado[1]?.trim() || "";
+        }
+        return { rua, numero, bairro, cidade, estado, cep };
+    } catch {
+        return { rua: location, numero: "", bairro: "", cidade: "", estado: "", cep: "" };
+    }
+}
+
+function buildLocation({ rua, numero, bairro, cidade, estado, cep }) {
+    const parts = [];
+    const ruaNumero = [rua, numero].filter(Boolean).join(", ");
+    if (ruaNumero || bairro) {
+        parts.push(bairro ? `${ruaNumero} - ${bairro}` : ruaNumero);
+    }
+    const cidadeEstado = [cidade, estado].filter(Boolean).join(" - ");
+    if (cidadeEstado) parts.push(cidadeEstado);
+    if (cep) parts.push(cep);
+    return parts.join(", ");
+}
+
 function venueToForm(v) {
+    const addr = parseLocation(v.location);
     return {
         name: v.name ?? "",
         description: v.description ?? "",
         capacity: v.capacity ?? "",
-        location: v.location ?? "",
+        ...addr,
         hasKidsArea: v.hasKidsArea ?? false,
         kidsAreaPricePerHour: v.kidsAreaPricePerHour ?? "",
         hasPool: v.hasPool ?? false,
@@ -48,7 +99,9 @@ export function VenueTab() {
         }
     }
 
-    useEffect(() => { load(); }, []);
+    useEffect(() => {
+        load();
+    }, []);
 
     function openEdit(venue) {
         setEditingVenue(venue);
@@ -67,19 +120,22 @@ export function VenueTab() {
         e.preventDefault();
         try {
             setIsSaving(true);
+            const location = buildLocation(form) || null;
             const payload = {
                 name: form.name,
                 description: form.description || null,
                 capacity: Number(form.capacity),
-                location: form.location || null,
+                location,
                 hasKidsArea: form.hasKidsArea,
-                kidsAreaPricePerHour: form.hasKidsArea && form.kidsAreaPricePerHour !== ""
-                    ? Number(form.kidsAreaPricePerHour)
-                    : null,
+                kidsAreaPricePerHour:
+                    form.hasKidsArea && form.kidsAreaPricePerHour !== ""
+                        ? Number(form.kidsAreaPricePerHour)
+                        : null,
                 hasPool: form.hasPool,
-                poolPricePerDay: form.hasPool && form.poolPricePerDay !== ""
-                    ? Number(form.poolPricePerDay)
-                    : null,
+                poolPricePerDay:
+                    form.hasPool && form.poolPricePerDay !== ""
+                        ? Number(form.poolPricePerDay)
+                        : null,
             };
             await updateVenue(editingVenue.id, payload);
             toast.success("Espaço atualizado com sucesso.");
@@ -91,6 +147,8 @@ export function VenueTab() {
             setIsSaving(false);
         }
     }
+
+    const locationPreview = buildLocation(form);
 
     return (
         <S.Section>
@@ -120,7 +178,9 @@ export function VenueTab() {
                         <tbody>
                             {venues.map((v) => (
                                 <S.Tr key={v.id}>
-                                    <S.Td><strong>{v.name}</strong></S.Td>
+                                    <S.Td>
+                                        <strong>{v.name}</strong>
+                                    </S.Td>
                                     <S.Td>{v.capacity} pessoas</S.Td>
                                     <S.Td>{v.location || "—"}</S.Td>
                                     <S.Td>{v.hasKidsArea ? "Sim" : "Não"}</S.Td>
@@ -144,10 +204,13 @@ export function VenueTab() {
                 <S.ModalOverlay onClick={() => setShowModal(false)}>
                     <S.ModalBox
                         onClick={(e) => e.stopPropagation()}
-                        style={{ maxWidth: 520, maxHeight: "90vh", overflowY: "auto" }}
+                        style={{ maxWidth: 540, maxHeight: "90vh", overflowY: "auto" }}
                     >
                         <S.ModalTitle>Editar espaço</S.ModalTitle>
-                        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                        <form
+                            onSubmit={handleSubmit}
+                            style={{ display: "flex", flexDirection: "column", gap: 14 }}
+                        >
                             <S.FormGroup>
                                 <label>Nome</label>
                                 <S.TextInput required {...field("name")} placeholder="Nome do espaço" />
@@ -158,22 +221,110 @@ export function VenueTab() {
                             </S.FormGroup>
                             <S.FormGroup>
                                 <label>Capacidade (pessoas)</label>
-                                <S.TextInput required type="number" min="1" {...field("capacity")} placeholder="Ex: 100" />
-                            </S.FormGroup>
-                            <S.FormGroup>
-                                <label>Localização</label>
                                 <S.TextInput
-                                    {...field("location")}
-                                    placeholder="Ex: Rua Bernardino Antônio Tomás, 21 - Jardim Vila Rica, Lavras - MG"
+                                    required
+                                    type="number"
+                                    min="1"
+                                    {...field("capacity")}
+                                    placeholder="Ex: 100"
                                 />
                             </S.FormGroup>
 
-                            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                                <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14, cursor: "pointer" }}>
+                            <div style={{ borderTop: "1px solid var(--border)", paddingTop: 12 }}>
+                                <p
+                                    style={{
+                                        fontSize: 13,
+                                        fontWeight: 600,
+                                        marginBottom: 10,
+                                        color: "var(--text-muted)",
+                                    }}
+                                >
+                                    ENDEREÇO
+                                </p>
+                                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                                    <S.FormGroup>
+                                        <label>Rua</label>
+                                        <S.TextInput
+                                            {...field("rua")}
+                                            placeholder="Ex: Rua Bernadino Antônio Tomás"
+                                        />
+                                    </S.FormGroup>
+                                    <div
+                                        style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}
+                                    >
+                                        <S.FormGroup>
+                                            <label>Número</label>
+                                            <S.TextInput {...field("numero")} placeholder="Ex: 21" />
+                                        </S.FormGroup>
+                                        <S.FormGroup>
+                                            <label>CEP</label>
+                                            <S.TextInput {...field("cep")} placeholder="Ex: 37203-775" />
+                                        </S.FormGroup>
+                                    </div>
+                                    <S.FormGroup>
+                                        <label>Bairro</label>
+                                        <S.TextInput {...field("bairro")} placeholder="Ex: Jardim Vila Rica" />
+                                    </S.FormGroup>
+                                    <div
+                                        style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 10 }}
+                                    >
+                                        <S.FormGroup>
+                                            <label>Cidade</label>
+                                            <S.TextInput {...field("cidade")} placeholder="Ex: Lavras" />
+                                        </S.FormGroup>
+                                        <S.FormGroup>
+                                            <label>Estado (UF)</label>
+                                            <S.TextInput
+                                                {...field("estado")}
+                                                placeholder="Ex: MG"
+                                                maxLength={2}
+                                            />
+                                        </S.FormGroup>
+                                    </div>
+                                    {locationPreview && (
+                                        <p
+                                            style={{
+                                                fontSize: 12,
+                                                color: "var(--text-muted)",
+                                                background: "var(--bg-muted)",
+                                                padding: "8px 10px",
+                                                borderRadius: 6,
+                                            }}
+                                        >
+                                            Endereço gerado:{" "}
+                                            <strong>{locationPreview}</strong>
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: 10,
+                                    borderTop: "1px solid var(--border)",
+                                    paddingTop: 12,
+                                }}
+                            >
+                                <p style={{ fontSize: 13, fontWeight: 600, color: "var(--text-muted)" }}>
+                                    COMODIDADES
+                                </p>
+                                <label
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 8,
+                                        fontSize: 14,
+                                        cursor: "pointer",
+                                    }}
+                                >
                                     <input
                                         type="checkbox"
                                         checked={form.hasKidsArea}
-                                        onChange={(e) => setForm((f) => ({ ...f, hasKidsArea: e.target.checked }))}
+                                        onChange={(e) =>
+                                            setForm((f) => ({ ...f, hasKidsArea: e.target.checked }))
+                                        }
                                     />
                                     Possui área kids
                                 </label>
@@ -190,12 +341,21 @@ export function VenueTab() {
                                         />
                                     </S.FormGroup>
                                 )}
-
-                                <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14, cursor: "pointer" }}>
+                                <label
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 8,
+                                        fontSize: 14,
+                                        cursor: "pointer",
+                                    }}
+                                >
                                     <input
                                         type="checkbox"
                                         checked={form.hasPool}
-                                        onChange={(e) => setForm((f) => ({ ...f, hasPool: e.target.checked }))}
+                                        onChange={(e) =>
+                                            setForm((f) => ({ ...f, hasPool: e.target.checked }))
+                                        }
                                     />
                                     Possui piscina
                                 </label>
@@ -215,7 +375,11 @@ export function VenueTab() {
                             </div>
 
                             <S.ModalActions>
-                                <S.SecondaryButton type="button" onClick={() => setShowModal(false)} disabled={isSaving}>
+                                <S.SecondaryButton
+                                    type="button"
+                                    onClick={() => setShowModal(false)}
+                                    disabled={isSaving}
+                                >
                                     Cancelar
                                 </S.SecondaryButton>
                                 <S.PrimaryButton type="submit" disabled={isSaving}>
