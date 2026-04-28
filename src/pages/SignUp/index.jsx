@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import { AuthLayout, Button, GoogleButton, Input } from "../../components";
+import { AuthLayout, Button, DatePickerInput, GoogleButton, Input } from "../../components";
 
 import api from "../../services/api";
 import { formatPhone } from "../../utils/formatPhone";
@@ -148,12 +148,12 @@ export default function SignUp({ introFinished = true }) {
                     showPasswordToggle
                 />
 
-                <Input
+                <DatePickerInput
                     label="Data de nascimento"
                     name="birthDate"
-                    type="date"
                     value={form.birthDate}
                     onChange={handleChange}
+                    maxDate={new Date().toISOString().split("T")[0]}
                 />
 
                 <Button type="submit">Criar conta</Button>

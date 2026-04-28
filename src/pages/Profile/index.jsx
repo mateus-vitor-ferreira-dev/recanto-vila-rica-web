@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useGSAP } from "@gsap/react";
 
-import { Input } from "../../components";
+import { DatePickerInput, Input } from "../../components";
 import { useAuth } from "../../contexts/AuthContext";
 import api from "../../services/api";
 import { resendVerification } from "../../services/auth";
@@ -261,12 +261,12 @@ export default function Profile() {
                                 prefix="🇧🇷"
                             />
 
-                            <Input
+                            <DatePickerInput
                                 label="Data de nascimento"
                                 name="birthDate"
-                                type="date"
                                 value={form.birthDate}
                                 onChange={handleChange}
+                                maxDate={new Date().toISOString().split("T")[0]}
                             />
                         </S.FieldGrid>
 

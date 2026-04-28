@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { cancelAdminReservation, listAdminReservations } from "../../../services/admin";
+import { DatePickerInput } from "../../../components";
 import { getErrorMessage } from "../../../utils/getErrorMessage";
 import {
     formatCurrency,
@@ -90,8 +91,16 @@ export function ReservationsTab() {
                         <option key={opt.value} value={opt.value}>{opt.label}</option>
                     ))}
                 </S.Select>
-                <S.DateInput type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} title="Data inicial" />
-                <S.DateInput type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} title="Data final" />
+                <DatePickerInput
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    placeholder="Data inicial"
+                />
+                <DatePickerInput
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    placeholder="Data final"
+                />
             </S.FiltersRow>
 
             {isLoading ? (
