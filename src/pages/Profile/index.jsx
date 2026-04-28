@@ -6,7 +6,7 @@ import { useGSAP } from "@gsap/react";
 import { DatePickerInput, Input } from "../../components";
 import { useAuth } from "../../contexts/AuthContext";
 import api from "../../services/api";
-import { resendVerification } from "../../services/auth";
+import { resendVerification, verifyCurrentPassword } from "../../services/auth";
 import { getErrorMessage } from "../../utils/getErrorMessage";
 import { formatPhone } from "../../utils/formatPhone";
 import { validatePassword } from "../../utils/validatePassword";
@@ -40,6 +40,8 @@ export default function Profile() {
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [isChangingPassword, setIsChangingPassword] = useState(false);
+    const [isVerifyingPassword, setIsVerifyingPassword] = useState(false);
+    const [passwordStep, setPasswordStep] = useState("verify");
     const [isSendingVerification, setIsSendingVerification] = useState(false);
 
     const [form, setForm] = useState({
@@ -54,6 +56,11 @@ export default function Profile() {
         newPassword: "",
         confirmPassword: "",
     });
+
+    function handlePasswordReset() {
+        setPasswordStep("verify");
+        setPasswordForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
+    }
 
     useEffect(() => {
         const controller = new AbortController();
@@ -136,12 +143,26 @@ export default function Profile() {
         }
     }
 
-    async function handlePasswordSubmit(e) {
+    async function handleVerifyPassword(e) {
         e.preventDefault();
 
         if (!passwordForm.currentPassword) {
             return toast.error("Informe a senha atual.");
         }
+
+        try {
+            setIsVerifyingPassword(true);
+            await verifyCurrentPassword(passwordForm.currentPassword);
+            setPasswordStep("change");
+        } catch (error) {
+            toast.error(getErrorMessage(error, "Senha atual incorreta."));
+        } finally {
+            setIsVerifyingPassword(false);
+        }
+    }
+
+    async function handlePasswordSubmit(e) {
+        e.preventDefault();
 
         const passwordError = validatePassword(passwordForm.newPassword);
         if (passwordError) {
@@ -159,7 +180,7 @@ export default function Profile() {
                 password: passwordForm.newPassword,
             });
             toast.success("Senha alterada com sucesso.");
-            setPasswordForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
+            handlePasswordReset();
         } catch (error) {
             toast.error(getErrorMessage(error, "Erro ao alterar a senha."));
         } finally {
@@ -280,44 +301,61 @@ export default function Profile() {
                         </S.FormFooter>
                     </S.FormCard>
 
-                    <S.FormCard className="anim-card" as="form" onSubmit={handlePasswordSubmit}>
-                        <S.SectionTitle>Alterar senha</S.SectionTitle>
+                    {passwordStep === "verify" ? (
+                        <S.FormCard className="anim-card" as="form" onSubmit={handleVerifyPassword}>
+                            <S.SectionTitle>Alterar senha</S.SectionTitle>
 
-                        <S.FieldGrid>
-                            <Input
-                                label="Senha atual"
-                                name="currentPassword"
-                                placeholder="Digite sua senha atual"
-                                value={passwordForm.currentPassword}
-                                onChange={(e) => setPasswordForm((f) => ({ ...f, currentPassword: e.target.value }))}
-                                showPasswordToggle
-                            />
+                            <S.FieldGrid>
+                                <Input
+                                    label="Senha atual"
+                                    name="currentPassword"
+                                    placeholder="Digite sua senha atual"
+                                    value={passwordForm.currentPassword}
+                                    onChange={(e) => setPasswordForm((f) => ({ ...f, currentPassword: e.target.value }))}
+                                    showPasswordToggle
+                                />
+                            </S.FieldGrid>
 
-                            <Input
-                                label="Nova senha"
-                                name="newPassword"
-                                placeholder="Mín. 8 caracteres"
-                                value={passwordForm.newPassword}
-                                onChange={(e) => setPasswordForm((f) => ({ ...f, newPassword: e.target.value }))}
-                                showPasswordToggle
-                            />
+                            <S.FormFooter>
+                                <S.SaveButton type="submit" disabled={isVerifyingPassword}>
+                                    {isVerifyingPassword ? "Verificando..." : "Continuar"}
+                                </S.SaveButton>
+                            </S.FormFooter>
+                        </S.FormCard>
+                    ) : (
+                        <S.FormCard className="anim-card" as="form" onSubmit={handlePasswordSubmit}>
+                            <S.SectionTitle>Nova senha</S.SectionTitle>
 
-                            <Input
-                                label="Confirmar nova senha"
-                                name="confirmPassword"
-                                placeholder="Repita a nova senha"
-                                value={passwordForm.confirmPassword}
-                                onChange={(e) => setPasswordForm((f) => ({ ...f, confirmPassword: e.target.value }))}
-                                showPasswordToggle
-                            />
-                        </S.FieldGrid>
+                            <S.FieldGrid>
+                                <Input
+                                    label="Nova senha"
+                                    name="newPassword"
+                                    placeholder="Mín. 8 caracteres"
+                                    value={passwordForm.newPassword}
+                                    onChange={(e) => setPasswordForm((f) => ({ ...f, newPassword: e.target.value }))}
+                                    showPasswordToggle
+                                />
 
-                        <S.FormFooter>
-                            <S.SaveButton type="submit" disabled={isChangingPassword}>
-                                {isChangingPassword ? "Alterando..." : "Alterar senha"}
-                            </S.SaveButton>
-                        </S.FormFooter>
-                    </S.FormCard>
+                                <Input
+                                    label="Confirmar nova senha"
+                                    name="confirmPassword"
+                                    placeholder="Repita a nova senha"
+                                    value={passwordForm.confirmPassword}
+                                    onChange={(e) => setPasswordForm((f) => ({ ...f, confirmPassword: e.target.value }))}
+                                    showPasswordToggle
+                                />
+                            </S.FieldGrid>
+
+                            <S.FormFooter>
+                                <S.CancelButton type="button" onClick={handlePasswordReset}>
+                                    Voltar
+                                </S.CancelButton>
+                                <S.SaveButton type="submit" disabled={isChangingPassword}>
+                                    {isChangingPassword ? "Alterando..." : "Alterar senha"}
+                                </S.SaveButton>
+                            </S.FormFooter>
+                        </S.FormCard>
+                    )}
                 </div>
             </S.Layout>
         </S.Container>
