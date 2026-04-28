@@ -178,7 +178,7 @@ describe("Profile page", () => {
             expect(screen.getByText(/perfil atualizado com sucesso/i)).toBeInTheDocument()
         );
         const stored = JSON.parse(localStorage.getItem("recanto:userData"));
-        expect(stored.name).toBe("Mateus Atualizado");
+        expect(stored.user?.name ?? stored.name).toBe("Mateus Atualizado");
     });
 
     it("shows '?' in avatar and handles null name/email in form", async () => {

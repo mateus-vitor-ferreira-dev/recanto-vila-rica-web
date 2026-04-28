@@ -7,7 +7,7 @@ import * as InputS from "../Input/styles";
 
 registerLocale("pt-BR", ptBR);
 
-const CustomInput = forwardRef(({ value, onClick, onChange, placeholder, $error }, ref) => (
+const CustomInput = forwardRef(({ value, onClick, onChange, placeholder, $error, name }, ref) => (
     <InputS.Input
         ref={ref}
         value={value}
@@ -15,6 +15,7 @@ const CustomInput = forwardRef(({ value, onClick, onChange, placeholder, $error 
         onChange={onChange}
         placeholder={placeholder}
         $error={$error}
+        name={name}
         readOnly
     />
 ));
@@ -48,7 +49,7 @@ export default function DatePickerInput({
                 dateFormat="dd/MM/yyyy"
                 locale="pt-BR"
                 placeholderText={placeholder}
-                customInput={<CustomInput $error={!!error} />}
+                customInput={<CustomInput $error={!!error} name={name} />}
                 minDate={parsedMin}
                 maxDate={parsedMax}
                 showYearDropdown

@@ -16,11 +16,14 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     globals: true,
+    css: false,
     setupFiles: ["./src/tests/setup.js"],
-    alias: {
-      "@react-oauth/google": path.resolve("./src/tests/mocks/react-oauth-google.js"),
-      "@react-pdf/renderer": path.resolve("./src/tests/mocks/react-pdf-renderer.jsx")
-    },
+    alias: [
+      { find: "@react-oauth/google", replacement: path.resolve("./src/tests/mocks/react-oauth-google.js") },
+      { find: "@react-pdf/renderer", replacement: path.resolve("./src/tests/mocks/react-pdf-renderer.jsx") },
+      { find: /^react-datepicker\/dist\/.*\.css$/, replacement: path.resolve("./src/tests/mocks/empty.js") },
+      { find: "react-datepicker", replacement: path.resolve("./src/tests/mocks/react-datepicker.jsx") },
+    ],
     coverage: {
       provider: "v8",
       reporter: ["text", "lcov"],
