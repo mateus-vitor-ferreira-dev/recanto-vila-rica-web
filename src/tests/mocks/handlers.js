@@ -33,6 +33,10 @@ export const userHandlers = [
             data: { id: "user-1", name: "Mateus Atualizado", email: "mateus@email.com", role: "USER" },
         })
     ),
+
+    http.post(`${BASE_URL}/users/me/verify-password`, () =>
+        HttpResponse.json({ success: true, data: null })
+    ),
 ];
 
 // ─── Venues ──────────────────────────────────────────────────────────────────

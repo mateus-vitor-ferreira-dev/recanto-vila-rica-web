@@ -283,4 +283,122 @@ describe("Profile page", () => {
         });
     });
 
+    // ─── Password change two-step flow ────────────────────────────────────────
+
+    it("shows only current password field in step 1", async () => {
+        renderPage();
+        await waitFor(() => screen.getByRole("button", { name: /continuar/i }));
+
+        expect(screen.getByRole("button", { name: /continuar/i })).toBeInTheDocument();
+        expect(screen.queryByPlaceholderText(/mín. 8 caracteres/i)).not.toBeInTheDocument();
+    });
+
+    it("shows error when verify-password returns 401", async () => {
+        server.use(
+            http.post(`${BASE}/users/me/verify-password`, () =>
+                HttpResponse.json({ success: false, message: "Senha atual incorreta." }, { status: 401 })
+            )
+        );
+        const user = userEvent.setup();
+        renderPage();
+        await waitFor(() => screen.getByRole("button", { name: /continuar/i }));
+
+        await user.type(screen.getByPlaceholderText(/sua senha atual/i), "ErradaSenha@1");
+        await user.click(screen.getByRole("button", { name: /continuar/i }));
+
+        await waitFor(() =>
+            expect(screen.getByText(/senha atual incorreta/i)).toBeInTheDocument()
+        );
+        expect(screen.queryByPlaceholderText(/mín. 8 caracteres/i)).not.toBeInTheDocument();
+    });
+
+    it("advances to step 2 when current password is verified", async () => {
+        const user = userEvent.setup();
+        renderPage();
+        await waitFor(() => screen.getByRole("button", { name: /continuar/i }));
+
+        await user.type(screen.getByPlaceholderText(/sua senha atual/i), "Certa@123");
+        await user.click(screen.getByRole("button", { name: /continuar/i }));
+
+        await waitFor(() =>
+            expect(screen.getByPlaceholderText(/mín. 8 caracteres/i)).toBeInTheDocument()
+        );
+        expect(screen.getByRole("button", { name: /alterar senha/i })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: /voltar/i })).toBeInTheDocument();
+    });
+
+    it("goes back to step 1 when 'Voltar' is clicked", async () => {
+        const user = userEvent.setup();
+        renderPage();
+        await waitFor(() => screen.getByRole("button", { name: /continuar/i }));
+
+        await user.type(screen.getByPlaceholderText(/sua senha atual/i), "Certa@123");
+        await user.click(screen.getByRole("button", { name: /continuar/i }));
+        await waitFor(() => screen.getByRole("button", { name: /voltar/i }));
+
+        await user.click(screen.getByRole("button", { name: /voltar/i }));
+
+        await waitFor(() =>
+            expect(screen.getByRole("button", { name: /continuar/i })).toBeInTheDocument()
+        );
+        expect(screen.queryByPlaceholderText(/mín. 8 caracteres/i)).not.toBeInTheDocument();
+    });
+
+    it("shows error when new passwords do not match", async () => {
+        const user = userEvent.setup();
+        renderPage();
+        await waitFor(() => screen.getByRole("button", { name: /continuar/i }));
+
+        await user.type(screen.getByPlaceholderText(/sua senha atual/i), "Certa@123");
+        await user.click(screen.getByRole("button", { name: /continuar/i }));
+        await waitFor(() => screen.getByPlaceholderText(/mín. 8 caracteres/i));
+
+        await user.type(screen.getByPlaceholderText(/mín. 8 caracteres/i), "NovaSenha@123");
+        await user.type(screen.getByPlaceholderText(/repita a nova senha/i), "DiferenteSenha@123");
+        await user.click(screen.getByRole("button", { name: /alterar senha/i }));
+
+        await waitFor(() =>
+            expect(screen.getByText(/senhas não coincidem/i)).toBeInTheDocument()
+        );
+    });
+
+    it("shows validation error for weak new password", async () => {
+        const user = userEvent.setup();
+        renderPage();
+        await waitFor(() => screen.getByRole("button", { name: /continuar/i }));
+
+        await user.type(screen.getByPlaceholderText(/sua senha atual/i), "Certa@123");
+        await user.click(screen.getByRole("button", { name: /continuar/i }));
+        await waitFor(() => screen.getByPlaceholderText(/mín. 8 caracteres/i));
+
+        await user.type(screen.getByPlaceholderText(/mín. 8 caracteres/i), "fraca");
+        await user.type(screen.getByPlaceholderText(/repita a nova senha/i), "fraca");
+        await user.click(screen.getByRole("button", { name: /alterar senha/i }));
+
+        await waitFor(() =>
+            expect(screen.getByRole("alert")).toBeInTheDocument()
+        );
+    });
+
+    it("shows success and resets to step 1 after password change", async () => {
+        const user = userEvent.setup();
+        renderPage();
+        await waitFor(() => screen.getByRole("button", { name: /continuar/i }));
+
+        await user.type(screen.getByPlaceholderText(/sua senha atual/i), "Certa@123");
+        await user.click(screen.getByRole("button", { name: /continuar/i }));
+        await waitFor(() => screen.getByPlaceholderText(/mín. 8 caracteres/i));
+
+        await user.type(screen.getByPlaceholderText(/mín. 8 caracteres/i), "NovaSenha@123");
+        await user.type(screen.getByPlaceholderText(/repita a nova senha/i), "NovaSenha@123");
+        await user.click(screen.getByRole("button", { name: /alterar senha/i }));
+
+        await waitFor(() =>
+            expect(screen.getByText(/senha alterada com sucesso/i)).toBeInTheDocument()
+        );
+        await waitFor(() =>
+            expect(screen.getByRole("button", { name: /continuar/i })).toBeInTheDocument()
+        );
+    });
+
 });
