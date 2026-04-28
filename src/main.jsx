@@ -1,3 +1,6 @@
+import { initSentry } from "./config/sentry";
+initSentry();
+
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import React from "react";
 import ReactDOM from "react-dom/client";
