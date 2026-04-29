@@ -8,6 +8,7 @@ import {
     syncMunicipalHolidays,
 } from "../../../services/admin";
 import { getErrorMessage } from "../../../utils/getErrorMessage";
+import { DatePickerInput } from "../../../components";
 import { formatDate, getMunicipalHolidaysSeed, HOLIDAY_TYPE_OPTIONS } from "./constants";
 import * as S from "../styles";
 
@@ -152,7 +153,10 @@ export function HolidaysTab() {
                             </S.FormGroup>
                             <S.FormGroup>
                                 <label>Data</label>
-                                <S.DateInput required type="date" value={form.date} onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))} style={{ height: 42, width: "100%", boxSizing: "border-box" }} />
+                                <DatePickerInput
+                                    value={form.date}
+                                    onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))}
+                                />
                             </S.FormGroup>
                             <S.FormGroup>
                                 <label>Tipo</label>

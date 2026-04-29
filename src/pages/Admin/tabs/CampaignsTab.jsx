@@ -6,6 +6,7 @@ import {
     listCampaigns,
     updateCampaign,
 } from "../../../services/admin";
+import { DatePickerInput } from "../../../components";
 import { getErrorMessage } from "../../../utils/getErrorMessage";
 import {
     buildWinnerMessage,
@@ -161,11 +162,18 @@ export function CampaignsTab() {
                             </S.FormGroup>
                             <S.FormGroup>
                                 <label>Início</label>
-                                <S.DateInput required type="date" value={form.startsAt} onChange={(e) => setForm((f) => ({ ...f, startsAt: e.target.value }))} style={{ height: 42, width: "100%", boxSizing: "border-box" }} />
+                                <DatePickerInput
+                                    value={form.startsAt}
+                                    onChange={(e) => setForm((f) => ({ ...f, startsAt: e.target.value }))}
+                                />
                             </S.FormGroup>
                             <S.FormGroup>
                                 <label>Encerramento</label>
-                                <S.DateInput required type="date" value={form.endsAt} onChange={(e) => setForm((f) => ({ ...f, endsAt: e.target.value }))} style={{ height: 42, width: "100%", boxSizing: "border-box" }} />
+                                <DatePickerInput
+                                    value={form.endsAt}
+                                    onChange={(e) => setForm((f) => ({ ...f, endsAt: e.target.value }))}
+                                    minDate={form.startsAt}
+                                />
                             </S.FormGroup>
                             <S.ModalActions>
                                 <S.SecondaryButton type="button" onClick={() => setShowCreateModal(false)} disabled={isSaving}>Cancelar</S.SecondaryButton>

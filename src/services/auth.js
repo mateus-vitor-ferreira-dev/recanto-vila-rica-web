@@ -41,3 +41,15 @@ export async function resendVerification() {
     const { data } = await api.post("/auth/resend-verification");
     return data;
 }
+
+/**
+ * Verifica se a senha atual do usuário autenticado está correta.
+ * Lança erro 401 se a senha estiver incorreta.
+ *
+ * @see POST /users/me/verify-password
+ * @param {string} currentPassword
+ * @returns {Promise<void>}
+ */
+export async function verifyCurrentPassword(currentPassword) {
+    await api.post("/users/me/verify-password", { currentPassword });
+}

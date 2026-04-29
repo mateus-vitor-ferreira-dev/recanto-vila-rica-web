@@ -4,7 +4,8 @@
  * e helpers para login, logout e atualização de perfil sem acesso direto ao
  * localStorage nas páginas consumidoras.
  */
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import { setUserContext } from "../config/sentry";
 
 const AuthContext = createContext(null);
 
@@ -51,6 +52,10 @@ export function AuthProvider({ children }) {
     const user = normalizeUser(session);
     const token = session?.token ?? null;
     const isAuthenticated = !!session;
+
+    useEffect(() => {
+        setUserContext(user);
+    }, [user?.id]);
 
     function login(data) {
         const normalized = normalizeSession(data);

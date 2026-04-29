@@ -1,6 +1,19 @@
 import "@testing-library/jest-dom";
 import { afterAll, afterEach, beforeAll, vi } from "vitest";
 import { server } from "./mocks/server";
+import { lastLoginConfig } from "./mocks/react-oauth-google.js";
+
+window.google = {
+    accounts: {
+        id: {
+            initialize: vi.fn(({ callback }) => {
+                lastLoginConfig.onSuccess = callback;
+                lastLoginConfig.onError = () => callback({ credential: null });
+            }),
+            renderButton: vi.fn(),
+        },
+    },
+};
 
 vi.mock("gsap", () => {
     const noop = () => ({ kill: () => {} });

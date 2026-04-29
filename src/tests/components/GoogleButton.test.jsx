@@ -27,13 +27,13 @@ describe("GoogleButton", () => {
 
     it("renders Google login button", () => {
         renderButton();
-        expect(screen.getByTestId("google-login-btn")).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: /entrar com google/i })).toBeInTheDocument();
     });
 
     it("calls onSuccess handler when button is clicked", async () => {
         const user = userEvent.setup();
         renderButton();
-        const btn = screen.getByTestId("google-login-btn");
+        const btn = screen.getByRole("button", { name: /entrar com google/i });
         await user.click(btn);
         expect(btn).toBeInTheDocument();
     });

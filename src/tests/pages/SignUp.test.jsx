@@ -24,14 +24,16 @@ function renderPage() {
 
 async function fillForm(user, overrides = {}) {
     const fields = {
-        name: "Mateus Ferreira",
+        firstName: "Mateus",
+        lastName: "Ferreira",
         email: "mateus@email.com",
         phone: "35999999999",
         password: "Senha@123",
         birthDate: "2000-01-01",
         ...overrides,
     };
-    if (fields.name) await user.type(screen.getByPlaceholderText(/digite seu nome/i), fields.name);
+    if (fields.firstName) await user.type(screen.getByPlaceholderText(/^seu nome$/i), fields.firstName);
+    if (fields.lastName) await user.type(screen.getByPlaceholderText(/seu sobrenome/i), fields.lastName);
     if (fields.email) await user.type(screen.getByPlaceholderText(/digite seu e-mail/i), fields.email);
     if (fields.phone) await user.type(document.querySelector('input[name="phone"]'), fields.phone);
     if (fields.password) await user.type(screen.getByPlaceholderText(/digite sua senha/i), fields.password);
@@ -44,7 +46,7 @@ async function fillForm(user, overrides = {}) {
 describe("SignUp page", () => {
     it("renders the signup form", () => {
         renderPage();
-        expect(screen.getByPlaceholderText(/digite seu nome/i)).toBeInTheDocument();
+        expect(screen.getByPlaceholderText(/^seu nome$/i)).toBeInTheDocument();
         expect(screen.getByRole("button", { name: /criar conta/i })).toBeInTheDocument();
     });
 
@@ -60,7 +62,8 @@ describe("SignUp page", () => {
     it("shows error when email is empty", async () => {
         const user = userEvent.setup();
         renderPage();
-        await user.type(screen.getByPlaceholderText(/digite seu nome/i), "Mateus");
+        await user.type(screen.getByPlaceholderText(/^seu nome$/i), "Mateus");
+        await user.type(screen.getByPlaceholderText(/seu sobrenome/i), "Ferreira");
         await user.click(screen.getByRole("button", { name: /criar conta/i }));
         await waitFor(() =>
             expect(screen.getByText(/informe seu e-mail/i)).toBeInTheDocument()
@@ -70,7 +73,8 @@ describe("SignUp page", () => {
     it("shows error when phone is empty", async () => {
         const user = userEvent.setup();
         renderPage();
-        await user.type(screen.getByPlaceholderText(/digite seu nome/i), "Mateus");
+        await user.type(screen.getByPlaceholderText(/^seu nome$/i), "Mateus");
+        await user.type(screen.getByPlaceholderText(/seu sobrenome/i), "Ferreira");
         await user.type(screen.getByPlaceholderText(/digite seu e-mail/i), "m@email.com");
         await user.click(screen.getByRole("button", { name: /criar conta/i }));
         await waitFor(() =>
@@ -81,7 +85,8 @@ describe("SignUp page", () => {
     it("shows error when password is empty", async () => {
         const user = userEvent.setup();
         renderPage();
-        await user.type(screen.getByPlaceholderText(/digite seu nome/i), "Mateus");
+        await user.type(screen.getByPlaceholderText(/^seu nome$/i), "Mateus");
+        await user.type(screen.getByPlaceholderText(/seu sobrenome/i), "Ferreira");
         await user.type(screen.getByPlaceholderText(/digite seu e-mail/i), "m@email.com");
         await user.type(document.querySelector('input[name="phone"]'), "35999999999");
         await user.click(screen.getByRole("button", { name: /criar conta/i }));
