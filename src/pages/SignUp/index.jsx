@@ -2,10 +2,9 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import { AuthLayout, Button, DatePickerInput, GoogleButton, Input } from "../../components";
+import { AuthLayout, Button, DatePickerInput, GoogleButton, Input, PhoneInput } from "../../components";
 
 import api from "../../services/api";
-import { formatPhone } from "../../utils/formatPhone";
 import { validatePassword } from "../../utils/validatePassword";
 import * as S from "./styles";
 
@@ -31,14 +30,10 @@ export default function SignUp({ introFinished = true }) {
         password: "",
         birthDate: "",
     });
+    const [dialCode, setDialCode] = useState("+55");
 
     function handleChange(event) {
-        const value =
-            event.target.name === "phone"
-                ? formatPhone(event.target.value)
-                : event.target.value;
-
-        setForm({ ...form, [event.target.name]: value });
+        setForm((prev) => ({ ...prev, [event.target.name]: event.target.value }));
     }
 
     async function handleSubmit(event) {
@@ -78,7 +73,7 @@ export default function SignUp({ introFinished = true }) {
             await api.post("/users", {
                 name: `${form.firstName.trim()} ${form.lastName.trim()}`,
                 email: form.email,
-                phone: form.phone.replace(/\D/g, ""),
+                phone: dialCode.replace("+", "") + form.phone.replace(/\D/g, ""),
                 password: form.password,
                 birthDate: form.birthDate,
             });
@@ -128,14 +123,12 @@ export default function SignUp({ introFinished = true }) {
                     onChange={handleChange}
                 />
 
-                <Input
+                <PhoneInput
                     label="Telefone"
                     name="phone"
-                    placeholder="(11) 99999-9999"
-                    inputMode="tel"
                     value={form.phone}
                     onChange={handleChange}
-                    prefix="🇧🇷"
+                    onDialCodeChange={setDialCode}
                 />
 
                 <Input
