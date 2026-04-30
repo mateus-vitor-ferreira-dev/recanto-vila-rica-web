@@ -55,6 +55,7 @@ export default defineConfig({
         "src/docs/**",
         "src/components/IntroAnimation/**",
         "src/components/ContratoRVR/**",
+        "src/components/PageLoader/**",
         "src/services/auth.js",
         "src/services/api.js",
         "src/components/index.js",
