@@ -32,7 +32,7 @@ export default function Checkout() {
     const [reservation, setReservation] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isRedirecting, setIsRedirecting] = useState(false);
-    const [paymentMethod, setPaymentMethod] = useState("stripe");
+    const [_paymentMethod, setPaymentMethod] = useState("stripe");
     const [pixData, setPixData] = useState(null);
     const [pixStep, setPixStep] = useState("select");
     const [isCopied, setIsCopied] = useState(false);
@@ -136,7 +136,7 @@ export default function Checkout() {
         }
     }
 
-    async function handlePixPayment() {
+    async function _handlePixPayment() {
         try {
             setIsRedirecting(true);
             const data = await createPixCharge(reservationId);
