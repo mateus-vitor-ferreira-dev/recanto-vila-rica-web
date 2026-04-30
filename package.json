@@ -19,8 +19,9 @@
     "@react-oauth/google": "^0.13.4",
     "@react-pdf/renderer": "^4.4.1",
     "@sentry/react": "^10.50.0",
-    "axios": "^1.14.0",
+    "axios": "^1.15.2",
     "date-fns": "^4.1.0",
+    "follow-redirects": "^1.16.0",
     "gsap": "^3.15.0",
     "react": "^19.2.4",
     "react-datepicker": "^9.1.0",
@@ -32,6 +33,7 @@
   "devDependencies": {
     "@chromatic-com/storybook": "^5.1.2",
     "@eslint/js": "^9.39.4",
+    "@sentry/vite-plugin": "^5.2.1",
     "@storybook/addon-a11y": "^10.3.5",
     "@storybook/addon-docs": "^10.3.5",
     "@storybook/addon-onboarding": "^10.3.5",

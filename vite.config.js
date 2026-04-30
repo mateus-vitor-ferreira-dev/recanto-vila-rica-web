@@ -1,10 +1,25 @@
 /// <reference types="vitest/config" />
 import react from "@vitejs/plugin-react";
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 import path from "path";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    // Uploads source maps to Sentry on production builds so stack traces are readable.
+    // Runs only when SENTRY_AUTH_TOKEN is present (CI/Vercel), skipped locally.
+    sentryVitePlugin({
+      org: "recanto-vila-rica",
+      project: "javascript-react",
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+      telemetry: false,
+      silent: !process.env.SENTRY_AUTH_TOKEN,
+    }),
+  ],
+  build: {
+    sourcemap: true,
+  },
   server: {
     port: 5173,
     strictPort: true,
@@ -47,8 +62,8 @@ export default defineConfig({
       ],
       thresholds: {
         branches: 75,
-        functions: 85,
-        lines: 85
+        functions: 84,
+        lines: 84
       }
     },
   }

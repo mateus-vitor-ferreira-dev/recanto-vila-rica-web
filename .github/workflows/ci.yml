@@ -54,10 +54,41 @@ jobs:
           path: coverage/
           retention-days: 7
 
+  security:
+    name: Security Scan (Snyk)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Snyk test — fail on high/critical vulnerabilities
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high --prod
+
+      - name: Snyk monitor — upload snapshot to dashboard
+        uses: snyk/actions/node@master
+        if: github.ref == 'refs/heads/main'
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: monitor
+          args: --prod
+
   build:
     name: Build
     runs-on: ubuntu-latest
-    needs: test
+    needs: [test, security]
     steps:
       - uses: actions/checkout@v4
 
