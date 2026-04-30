@@ -20,24 +20,24 @@ function renderRoutes(initialPath = "/") {
 describe("AppRoutes", () => {
     afterEach(() => localStorage.clear());
 
-    it("redirects '/' to '/cadastro'", () => {
+    it("redirects '/' to '/cadastro'", async () => {
         renderRoutes("/");
-        expect(screen.getByRole("button", { name: /criar conta/i })).toBeInTheDocument();
+        expect(await screen.findByRole("button", { name: /criar conta/i })).toBeInTheDocument();
     });
 
-    it("renders SignUp at /cadastro", () => {
+    it("renders SignUp at /cadastro", async () => {
         renderRoutes("/cadastro");
-        expect(screen.getByRole("button", { name: /criar conta/i })).toBeInTheDocument();
+        expect(await screen.findByRole("button", { name: /criar conta/i })).toBeInTheDocument();
     });
 
-    it("renders Login at /login", () => {
+    it("renders Login at /login", async () => {
         renderRoutes("/login");
-        expect(screen.getByRole("button", { name: /^entrar$/i })).toBeInTheDocument();
+        expect(await screen.findByRole("button", { name: /^entrar$/i })).toBeInTheDocument();
     });
 
-    it("redirects unauthenticated user to /login from /home", () => {
+    it("redirects unauthenticated user to /login from /home", async () => {
         renderRoutes("/home");
-        expect(screen.getByRole("button", { name: /^entrar$/i })).toBeInTheDocument();
+        expect(await screen.findByRole("button", { name: /^entrar$/i })).toBeInTheDocument();
     });
 
     it("renders Home for authenticated user at /home", async () => {
@@ -46,7 +46,7 @@ describe("AppRoutes", () => {
             JSON.stringify({ token: "t", user: { id: "u-1", role: "USER" } })
         );
         renderRoutes("/home");
-        expect(screen.getByText(/carregando seu painel/i)).toBeInTheDocument();
+        expect(await screen.findByText(/carregando seu painel/i)).toBeInTheDocument();
     });
 
     it("redirects non-admin from /admin to /home", async () => {
@@ -55,6 +55,6 @@ describe("AppRoutes", () => {
             JSON.stringify({ token: "t", user: { id: "u-1", role: "USER" } })
         );
         renderRoutes("/admin");
-        expect(screen.getByText(/carregando seu painel/i)).toBeInTheDocument();
+        expect(await screen.findByText(/carregando seu painel/i)).toBeInTheDocument();
     });
 });
