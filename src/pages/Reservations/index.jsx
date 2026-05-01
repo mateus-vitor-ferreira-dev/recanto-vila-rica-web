@@ -7,6 +7,7 @@ import { cancelReservation } from "../../services/reservation";
 import { useReservations } from "../../hooks/useReservations";
 import { getErrorMessage } from "../../utils/getErrorMessage";
 import { PLAN_LABELS, formatDate, formatTime, formatCurrency, calcDuration } from "../../utils/reservationFormat";
+import { STATUS_MAP, REFUND_TIERS, getRefundPercentage } from "../../constants/reservation";
 import { animateFadeInUp, animateStagger } from "../../utils/animations";
 import * as S from "./styles";
 
@@ -21,26 +22,6 @@ import * as S from "./styles";
  * @see PATCH /reservations/:id/cancel
  * @component
  */
-const STATUS_MAP = {
-    PENDING: { label: "Pendente", color: "amber" },
-    PAID: { label: "Pago", color: "green" },
-    CANCELLED: { label: "Cancelado", color: "red" },
-    EXPIRED: { label: "Expirado", color: "gray" },
-};
-
-const REFUND_TIERS = [
-    { label: "Mais de 180 dias antes do evento", percentage: 100 },
-    { label: "De 121 a 180 dias antes do evento", percentage: 70 },
-    { label: "De 61 a 120 dias antes do evento", percentage: 40 },
-    { label: "Até 60 dias antes do evento", percentage: 0 },
-];
-
-function getRefundPercentage(daysBeforeEvent) {
-    if (daysBeforeEvent > 180) return 100;
-    if (daysBeforeEvent >= 121) return 70;
-    if (daysBeforeEvent >= 61) return 40;
-    return 0;
-}
 
 function calcRefundEstimate(reservation) {
     if (reservation.status !== "PAID") return null;
