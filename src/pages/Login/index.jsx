@@ -27,10 +27,8 @@ export default function Login({ introFinished = true }) {
         }
     }, [searchParams]);
 
-    const [form, setForm] = useState({
-        email: "",
-        password: "",
-    });
+    const [form, setForm] = useState({ email: "", password: "" });
+    const [isLoading, setIsLoading] = useState(false);
 
     function handleChange(event) {
         setForm({ ...form, [event.target.name]: event.target.value });
@@ -44,6 +42,7 @@ export default function Login({ introFinished = true }) {
         }
 
         try {
+            setIsLoading(true);
             const { data } = await api.post("/auth/login", form);
 
             login(data.data);
@@ -57,6 +56,8 @@ export default function Login({ introFinished = true }) {
                 "Erro ao fazer login.";
 
             toast.error(message);
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -87,7 +88,9 @@ export default function Login({ introFinished = true }) {
 
                 <S.ForgotLink to="/esqueci-senha">Esqueci minha senha</S.ForgotLink>
 
-                <Button type="submit">Entrar</Button>
+                <Button type="submit" disabled={isLoading}>
+                    {isLoading ? "Entrando..." : "Entrar"}
+                </Button>
 
                 <S.Divider>
                     <span>ou continue com</span>

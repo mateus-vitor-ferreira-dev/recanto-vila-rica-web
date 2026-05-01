@@ -15,6 +15,7 @@ import { toast } from "react-toastify";
 
 import { AuthLayout, Button, Input } from "../../components";
 import { resetPassword } from "../../services/auth";
+import { validatePassword } from "../../utils/validatePassword";
 import * as S from "./styles";
 
 export default function ResetPassword({ introFinished = true }) {
@@ -23,21 +24,38 @@ export default function ResetPassword({ introFinished = true }) {
     const token = searchParams.get("token");
 
     const [form, setForm] = useState({ password: "", confirmPassword: "" });
+    const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
 
     function handleChange(e) {
-        setForm({ ...form, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setForm((prev) => ({ ...prev, [name]: value }));
+        if (errors[name]) setErrors((prev) => ({ ...prev, [name]: null }));
+
+        if (name === "password" && value) {
+            setErrors((prev) => ({ ...prev, password: validatePassword(value) }));
+        }
     }
 
     async function handleSubmit(e) {
         e.preventDefault();
 
-        if (!form.password || !form.confirmPassword) {
-            return toast.error("Preencha os dois campos.");
+        const next = {};
+        if (!form.password) {
+            next.password = "Informe a nova senha.";
+        } else {
+            const pwErr = validatePassword(form.password);
+            if (pwErr) next.password = pwErr;
+        }
+        if (!form.confirmPassword) {
+            next.confirmPassword = "Confirme a nova senha.";
+        } else if (form.password !== form.confirmPassword) {
+            next.confirmPassword = "As senhas não coincidem.";
         }
 
-        if (form.password !== form.confirmPassword) {
-            return toast.error("As senhas não coincidem.");
+        if (Object.keys(next).length > 0) {
+            setErrors(next);
+            return;
         }
 
         try {
@@ -89,6 +107,7 @@ export default function ResetPassword({ introFinished = true }) {
                     value={form.password}
                     onChange={handleChange}
                     showPasswordToggle
+                    error={errors.password}
                 />
 
                 <Input
@@ -98,6 +117,7 @@ export default function ResetPassword({ introFinished = true }) {
                     value={form.confirmPassword}
                     onChange={handleChange}
                     showPasswordToggle
+                    error={errors.confirmPassword}
                 />
 
                 <Button type="submit" disabled={loading}>

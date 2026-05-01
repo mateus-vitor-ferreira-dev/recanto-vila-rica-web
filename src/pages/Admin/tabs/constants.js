@@ -1,4 +1,5 @@
 // Constantes e helpers compartilhados entre as abas do painel admin
+export { REFUND_TIERS, getRefundPercentage } from "../../../constants/reservation";
 
 export const TABS = [
     { key: "dashboard", label: "Dashboard" },
@@ -12,19 +13,6 @@ export const TABS = [
     { key: "venues", label: "Espaços" },
 ];
 
-export const REFUND_TIERS = [
-    { minDays: 181, percentage: 100 },
-    { minDays: 121, percentage: 70 },
-    { minDays: 61, percentage: 40 },
-    { minDays: 0, percentage: 0 },
-];
-
-export function getRefundPercentage(daysBeforeEvent) {
-    for (const tier of REFUND_TIERS) {
-        if (daysBeforeEvent >= tier.minDays) return tier.percentage;
-    }
-    return 0;
-}
 
 export const STATUS_OPTIONS = [
     { value: "", label: "Todos os status" },

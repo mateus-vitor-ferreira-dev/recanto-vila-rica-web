@@ -8,6 +8,7 @@ import Input from "../../components/Input";
 import { createReservation, quoteReservation } from "../../services/reservation";
 import { getVenue } from "../../services/venue";
 import { getErrorMessage } from "../../utils/getErrorMessage";
+import { PLANS } from "../../constants/reservation";
 import { animateFadeInUp, animateStagger } from "../../utils/animations";
 import * as S from "./styles";
 
@@ -28,26 +29,6 @@ import * as S from "./styles";
  */
 const ContratoDownloadLink = lazy(() => import("../../components/ContratoRVR/DownloadLink"));
 
-const PLANS = [
-    {
-        code: "PROMOCIONAL",
-        label: "Promocional",
-        days: "Segunda a Quinta (não feriados)",
-        priceCents: 65000,
-    },
-    {
-        code: "ESSENCIAL",
-        label: "Essencial",
-        days: "Sexta a Domingo e feriados",
-        priceCents: 85000,
-    },
-    {
-        code: "COMPLETA",
-        label: "Completa",
-        days: "Sexta a Domingo e feriados",
-        priceCents: 100000,
-    },
-];
 
 const FIXED_HOLIDAYS = [
     "01-01",

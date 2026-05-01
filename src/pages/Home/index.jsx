@@ -7,6 +7,7 @@ import api from "../../services/api";
 import { listMyGrants } from "../../services/promotion";
 import { listReservations } from "../../services/reservation";
 import { listVenues } from "../../services/venue";
+import { STATUS_MAP } from "../../constants/reservation";
 import { animateFadeInUp, animateStagger } from "../../utils/animations";
 import * as S from "./styles";
 
@@ -32,12 +33,6 @@ function formatCurrency(value) {
     });
 }
 
-const STATUS_MAP = {
-    PENDING: { label: "Pendente", color: "amber" },
-    PAID: { label: "Pago", color: "green" },
-    CANCELLED: { label: "Cancelado", color: "red" },
-    EXPIRED: { label: "Expirado", color: "gray" },
-};
 
 /**
  * Dashboard inicial do usuário autenticado.
