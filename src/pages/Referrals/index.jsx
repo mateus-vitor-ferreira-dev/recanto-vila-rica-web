@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { useGSAP } from "@gsap/react";
 
 import { createReferral, listReferrals } from "../../services/referral";
 import { getErrorMessage } from "../../utils/getErrorMessage";
+import { useApiData } from "../../hooks/useApiData";
 import { animateFadeInUp, animateStagger } from "../../utils/animations";
 import * as S from "./styles";
 
@@ -32,44 +33,14 @@ function formatDate(date) {
 
 export default function Referrals() {
     const containerRef = useRef(null);
-    const [referrals, setReferrals] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
     const [email, setEmail] = useState("");
     const [isSending, setIsSending] = useState(false);
     const [noCampaign, setNoCampaign] = useState(false);
 
-    useEffect(() => {
-        const controller = new AbortController();
-
-        async function load() {
-            try {
-                setIsLoading(true);
-                const data = await listReferrals(controller.signal);
-                setReferrals(data ?? []);
-            } catch (error) {
-                if (error?.name === "CanceledError" || error?.name === "AbortError") return;
-                toast.error(getErrorMessage(error, "Erro ao carregar indicações."));
-            } finally {
-                if (!controller.signal.aborted) setIsLoading(false);
-            }
-        }
-
-        load();
-
-        return () => controller.abort();
-    }, []);
-
-    async function refreshReferrals() {
-        try {
-            setIsLoading(true);
-            const data = await listReferrals();
-            setReferrals(data ?? []);
-        } catch (error) {
-            toast.error(getErrorMessage(error, "Erro ao carregar indicações."));
-        } finally {
-            setIsLoading(false);
-        }
-    }
+    const { data: referrals, isLoading, refresh } = useApiData(listReferrals, {
+        initialData: [],
+        errorMessage: "Erro ao carregar indicações.",
+    });
 
     async function handleInvite(e) {
         e.preventDefault();
@@ -81,7 +52,7 @@ export default function Referrals() {
             await createReferral(email.trim());
             toast.success("Indicação enviada com sucesso!");
             setEmail("");
-            refreshReferrals();
+            refresh();
         } catch (error) {
             if (error.response?.data?.error?.code === "NO_ACTIVE_REFERRAL_CAMPAIGN") {
                 setNoCampaign(true);

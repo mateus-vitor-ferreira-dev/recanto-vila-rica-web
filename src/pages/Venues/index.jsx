@@ -1,10 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 import { useGSAP } from "@gsap/react";
 
 import { listVenues } from "../../services/venue";
-import { getErrorMessage } from "../../utils/getErrorMessage";
+import { useApiData } from "../../hooks/useApiData";
 import { animateFadeInUp, animateStagger } from "../../utils/animations";
 import * as S from "./styles";
 
@@ -21,29 +20,10 @@ export default function Venues() {
     const navigate = useNavigate();
     const containerRef = useRef(null);
 
-    const [venues, setVenues] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        const controller = new AbortController();
-
-        async function loadVenues() {
-            try {
-                setIsLoading(true);
-                const data = await listVenues(controller.signal);
-                setVenues(data);
-            } catch (error) {
-                if (error?.name === "CanceledError" || error?.name === "AbortError") return;
-                toast.error(getErrorMessage(error, "Erro ao carregar os espaços."));
-            } finally {
-                if (!controller.signal.aborted) setIsLoading(false);
-            }
-        }
-
-        loadVenues();
-
-        return () => controller.abort();
-    }, []);
+    const { data: venues, isLoading } = useApiData(listVenues, {
+        initialData: [],
+        errorMessage: "Erro ao carregar os espaços.",
+    });
 
     useGSAP(() => {
         if (isLoading || !containerRef.current) return;
