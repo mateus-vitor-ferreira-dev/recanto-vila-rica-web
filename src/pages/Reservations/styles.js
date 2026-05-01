@@ -429,3 +429,40 @@ export const EmptyState = styled.div`
     line-height: 1.6;
   }
 `;
+
+export const Pagination = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 32px;
+  padding-bottom: 8px;
+`;
+
+export const PageInfo = styled.span`
+  font-size: 14px;
+  color: var(--text-muted);
+  min-width: 100px;
+  text-align: center;
+`;
+
+export const PageButton = styled.button`
+  padding: 8px 20px;
+  border-radius: 8px;
+  border: 1px solid var(--border-medium);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+
+  &:hover:not(:disabled) {
+    background: var(--bg-muted);
+    border-color: var(--brand-primary);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+`;

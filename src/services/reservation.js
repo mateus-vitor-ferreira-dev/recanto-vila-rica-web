@@ -49,6 +49,19 @@ export async function listReservations(signal) {
 }
 
 /**
+ * Lista as reservas do usuário com suporte a paginação.
+ *
+ * @see GET /reservations
+ * @param {AbortSignal} [signal]
+ * @param {{ page?: number, limit?: number }} [params]
+ * @returns {Promise<{ data: Array, meta: { page: number, limit: number, total: number, totalPages: number } }>}
+ */
+export async function listReservationsPaginated(signal, { page = 1, limit = 10 } = {}) {
+    const { data } = await api.get("/reservations", { signal, params: { page, limit } });
+    return { data: data.data || [], meta: data.meta };
+}
+
+/**
  * Busca os detalhes completos de uma reserva específica.
  *
  * @see GET /reservations/:id

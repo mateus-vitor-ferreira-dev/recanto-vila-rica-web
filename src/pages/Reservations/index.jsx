@@ -3,8 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useGSAP } from "@gsap/react";
 
-import { cancelReservation } from "../../services/reservation";
-import { useReservations } from "../../hooks/useReservations";
+import { cancelReservation, listReservationsPaginated } from "../../services/reservation";
+import { usePagination } from "../../hooks/usePagination";
 import { getErrorMessage } from "../../utils/getErrorMessage";
 import { PLAN_LABELS, formatDate, formatTime, formatCurrency, calcDuration } from "../../utils/reservationFormat";
 import { STATUS_MAP, REFUND_TIERS, getRefundPercentage } from "../../constants/reservation";
@@ -12,13 +12,13 @@ import { animateFadeInUp, animateStagger } from "../../utils/animations";
 import * as S from "./styles";
 
 /**
- * Página que lista todas as reservas do usuário autenticado.
+ * Página que lista as reservas do usuário autenticado com paginação.
  *
- * Exibe status (PENDING/PAID/CANCELLED/EXPIRED/COMPLETED), datas, duração e valor.
+ * Exibe status (PENDING/PAID/CANCELLED/EXPIRED), datas, duração e valor.
  * Reservas PENDING têm botão "Pagar" que navega para `/checkout/:reservationId`.
  * Reservas PENDING ou PAID podem ser canceladas com confirmação inline.
  *
- * @see GET /reservations
+ * @see GET /reservations?page=&limit=
  * @see PATCH /reservations/:id/cancel
  * @component
  */
@@ -37,10 +37,17 @@ function calcRefundEstimate(reservation) {
     return { daysBeforeEvent, percentage, refundAmount, totalPaid };
 }
 
+const PAGE_SIZE = 10;
+
 export default function Reservations() {
     const navigate = useNavigate();
     const containerRef = useRef(null);
-    const { reservations, isLoading, refresh } = useReservations();
+
+    const { data: reservations, meta, isLoading, page, setPage, refresh } = usePagination(
+        listReservationsPaginated,
+        { limit: PAGE_SIZE, errorMessage: "Erro ao carregar reservas." }
+    );
+
     const [cancellingId, setCancellingId] = useState(null);
     const [confirmCancelReservation, setConfirmCancelReservation] = useState(null);
 
@@ -78,7 +85,7 @@ export default function Reservations() {
         );
     }
 
-    if (!reservations.length) {
+    if (!reservations.length && page === 1) {
         return (
             <S.Container>
                 <S.EmptyState>
@@ -163,6 +170,7 @@ export default function Reservations() {
                 <S.Title>Minhas reservas</S.Title>
                 <S.Description>
                     Acompanhe o status das suas reservas e gerencie seus eventos.
+                    {meta?.total != null && ` ${meta.total} reserva${meta.total !== 1 ? "s" : ""} no total.`}
                 </S.Description>
             </S.Header>
 
@@ -229,6 +237,28 @@ export default function Reservations() {
                     );
                 })}
             </S.List>
+
+            {meta && meta.totalPages > 1 && (
+                <S.Pagination>
+                    <S.PageButton
+                        onClick={() => setPage((p) => p - 1)}
+                        disabled={page <= 1 || isLoading}
+                    >
+                        ← Anterior
+                    </S.PageButton>
+
+                    <S.PageInfo>
+                        Página {page} de {meta.totalPages}
+                    </S.PageInfo>
+
+                    <S.PageButton
+                        onClick={() => setPage((p) => p + 1)}
+                        disabled={page >= meta.totalPages || isLoading}
+                    >
+                        Próxima →
+                    </S.PageButton>
+                </S.Pagination>
+            )}
         </S.Container>
     );
 }
