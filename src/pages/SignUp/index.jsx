@@ -30,46 +30,53 @@ export default function SignUp({ introFinished = true }) {
         password: "",
         birthDate: "",
     });
+    const [errors, setErrors] = useState({});
     const [dialCode, setDialCode] = useState("+55");
+    const [isLoading, setIsLoading] = useState(false);
+
+    function clearError(name) {
+        if (errors[name]) setErrors((prev) => ({ ...prev, [name]: null }));
+    }
 
     function handleChange(event) {
-        setForm((prev) => ({ ...prev, [event.target.name]: event.target.value }));
+        const { name, value } = event.target;
+        setForm((prev) => ({ ...prev, [name]: value }));
+        clearError(name);
+
+        if (name === "password" && value) {
+            setErrors((prev) => ({ ...prev, password: validatePassword(value) }));
+        }
+    }
+
+    function validate() {
+        const next = {};
+        if (!form.firstName.trim()) next.firstName = "Informe seu nome.";
+        if (!form.lastName.trim())  next.lastName  = "Informe seu sobrenome.";
+        if (!form.email)            next.email      = "Informe seu e-mail.";
+        if (!form.phone)            next.phone      = "Informe seu telefone.";
+        if (!form.birthDate)        next.birthDate  = "Informe sua data de nascimento.";
+
+        if (!form.password) {
+            next.password = "Informe sua senha.";
+        } else {
+            const pwErr = validatePassword(form.password);
+            if (pwErr) next.password = pwErr;
+        }
+
+        return next;
     }
 
     async function handleSubmit(event) {
         event.preventDefault();
 
-        if (!form.firstName.trim()) {
-            return toast.error("Informe seu nome.");
-        }
-
-        if (!form.lastName.trim()) {
-            return toast.error("Informe seu sobrenome.");
-        }
-
-        if (!form.email) {
-            return toast.error("Informe seu e-mail.");
-        }
-
-        if (!form.phone) {
-            return toast.error("Informe seu telefone.");
-        }
-
-        if (!form.password) {
-            return toast.error("Informe sua senha.");
-        }
-
-        if (!form.birthDate) {
-            return toast.error("Informe sua data de nascimento.");
-        }
-
-        const passwordError = validatePassword(form.password);
-
-        if (passwordError) {
-            return toast.error(passwordError);
+        const validationErrors = validate();
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
+            return;
         }
 
         try {
+            setIsLoading(true);
             await api.post("/users", {
                 name: `${form.firstName.trim()} ${form.lastName.trim()}`,
                 email: form.email,
@@ -87,6 +94,8 @@ export default function SignUp({ introFinished = true }) {
                 "Erro ao cadastrar usuário.";
 
             toast.error(message);
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -104,6 +113,7 @@ export default function SignUp({ introFinished = true }) {
                         placeholder="Seu nome"
                         value={form.firstName}
                         onChange={handleChange}
+                        error={errors.firstName}
                     />
                     <Input
                         label="Sobrenome"
@@ -111,6 +121,7 @@ export default function SignUp({ introFinished = true }) {
                         placeholder="Seu sobrenome"
                         value={form.lastName}
                         onChange={handleChange}
+                        error={errors.lastName}
                     />
                 </S.NameRow>
 
@@ -121,6 +132,7 @@ export default function SignUp({ introFinished = true }) {
                     placeholder="Digite seu e-mail"
                     value={form.email}
                     onChange={handleChange}
+                    error={errors.email}
                 />
 
                 <PhoneInput
@@ -129,16 +141,18 @@ export default function SignUp({ introFinished = true }) {
                     value={form.phone}
                     onChange={handleChange}
                     onDialCodeChange={setDialCode}
+                    error={errors.phone}
                 />
 
                 <Input
                     label="Senha"
                     name="password"
                     type="password"
-                    placeholder="Digite sua senha"
+                    placeholder="Mín. 8 caracteres, maiúscula, número e especial"
                     value={form.password}
                     onChange={handleChange}
                     showPasswordToggle
+                    error={errors.password}
                 />
 
                 <DatePickerInput
@@ -147,9 +161,12 @@ export default function SignUp({ introFinished = true }) {
                     value={form.birthDate}
                     onChange={handleChange}
                     maxDate={new Date().toISOString().split("T")[0]}
+                    error={errors.birthDate}
                 />
 
-                <Button type="submit">Criar conta</Button>
+                <Button type="submit" disabled={isLoading}>
+                    {isLoading ? "Criando conta..." : "Criar conta"}
+                </Button>
 
                 <S.Divider>
                     <span>ou continue com</span>

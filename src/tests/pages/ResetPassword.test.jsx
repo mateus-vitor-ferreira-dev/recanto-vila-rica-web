@@ -40,22 +40,22 @@ describe("ResetPassword page", () => {
         ).not.toBeInTheDocument();
     });
 
-    it("shows error toast when both fields are empty", async () => {
+    it("shows error when both fields are empty", async () => {
         const user = userEvent.setup();
         renderPage();
         await user.click(screen.getByRole("button", { name: /redefinir senha/i }));
         await waitFor(() =>
-            expect(screen.getByText(/preencha os dois campos/i)).toBeInTheDocument()
+            expect(screen.getByText(/informe a nova senha/i)).toBeInTheDocument()
         );
     });
 
-    it("shows error toast when only password is filled", async () => {
+    it("shows error when only password is filled", async () => {
         const user = userEvent.setup();
         renderPage();
         await user.type(screen.getByPlaceholderText(/mín\. 8 caracteres/i), "Senha@123");
         await user.click(screen.getByRole("button", { name: /redefinir senha/i }));
         await waitFor(() =>
-            expect(screen.getByText(/preencha os dois campos/i)).toBeInTheDocument()
+            expect(screen.getByText(/confirme a nova senha/i)).toBeInTheDocument()
         );
     });
 

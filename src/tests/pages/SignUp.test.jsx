@@ -36,7 +36,7 @@ async function fillForm(user, overrides = {}) {
     if (fields.lastName) await user.type(screen.getByPlaceholderText(/seu sobrenome/i), fields.lastName);
     if (fields.email) await user.type(screen.getByPlaceholderText(/digite seu e-mail/i), fields.email);
     if (fields.phone) await user.type(document.querySelector('input[name="phone"]'), fields.phone);
-    if (fields.password) await user.type(screen.getByPlaceholderText(/digite sua senha/i), fields.password);
+    if (fields.password) await user.type(screen.getByPlaceholderText(/mín\. 8 caracteres/i), fields.password);
     if (fields.birthDate) {
         const dateInput = document.querySelector('input[name="birthDate"]');
         fireEvent.change(dateInput, { target: { value: fields.birthDate } });
@@ -163,7 +163,7 @@ describe("SignUp page", () => {
     it("toggles password visibility when eye button is clicked", async () => {
         const user = userEvent.setup();
         renderPage();
-        const passwordInput = screen.getByPlaceholderText(/digite sua senha/i);
+        const passwordInput = screen.getByPlaceholderText(/mín\. 8 caracteres/i);
         expect(passwordInput).toHaveAttribute("type", "password");
 
         await user.click(screen.getByRole("button", { name: /mostrar senha/i }));
