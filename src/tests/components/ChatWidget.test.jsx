@@ -48,7 +48,7 @@ describe("ChatWidget", () => {
         const user = userEvent.setup();
         renderWidget();
         await user.click(screen.getByRole("button", { name: /abrir chat/i }));
-        await user.click(screen.getByRole("button", { name: /abrir chat/i }));
+        await user.click(screen.getByRole("button", { name: /fechar chat/i }));
         expect(screen.queryByText(/assistente recanto vila rica/i)).not.toBeInTheDocument();
     });
 

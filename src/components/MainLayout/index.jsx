@@ -1,6 +1,9 @@
+import { Suspense, lazy } from "react";
 import { Outlet } from "react-router-dom";
-import { ChatWidget, Footer, Header } from "..";
+import { Footer, Header } from "..";
 import * as S from "./styles";
+
+const ChatWidget = lazy(() => import("../ChatWidget"));
 
 /**
  * Shell principal da aplicação autenticada.
@@ -18,7 +21,9 @@ export default function MainLayout() {
                 <Outlet />
             </S.Main>
             <Footer />
-            <ChatWidget />
+            <Suspense fallback={null}>
+                <ChatWidget />
+            </Suspense>
         </S.Container>
     );
 }

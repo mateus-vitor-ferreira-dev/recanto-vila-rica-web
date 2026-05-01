@@ -104,9 +104,13 @@ export default function Reservations() {
     return (
         <S.Container ref={containerRef}>
             {confirmCancelReservation && (
-                <S.ModalOverlay>
-                    <S.ModalBox>
-                        <S.ModalTitle>Cancelar reserva</S.ModalTitle>
+                <S.ModalOverlay role="presentation">
+                    <S.ModalBox
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="modal-cancel-title"
+                    >
+                        <S.ModalTitle id="modal-cancel-title">Cancelar reserva</S.ModalTitle>
 
                         <S.PolicySection>
                             <S.PolicyTitle>Política de reembolso</S.PolicyTitle>

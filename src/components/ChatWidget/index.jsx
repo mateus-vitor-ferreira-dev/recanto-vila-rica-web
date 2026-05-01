@@ -120,15 +120,25 @@ export default function ChatWidget() {
 
     return (
         <>
-            <S.Fab onClick={() => setOpen((o) => !o)} aria-label="Abrir chat">
+            <S.Fab
+                onClick={() => setOpen((o) => !o)}
+                aria-label={open ? "Fechar chat" : "Abrir chat"}
+                aria-expanded={open}
+                aria-controls="chat-widget-window"
+            >
                 {open ? "✕" : "💬"}
             </S.Fab>
 
             {open && (
-                <S.Window>
+                <S.Window
+                    id="chat-widget-window"
+                    role="dialog"
+                    aria-modal="false"
+                    aria-label="Chat — Assistente Recanto Vila Rica"
+                >
                     <S.Header>Assistente Recanto Vila Rica</S.Header>
 
-                    <S.Messages>
+                    <S.Messages aria-live="polite" aria-atomic="false">
                         {messages.map((msg, i) => (
                             <S.Bubble key={i} $role={msg.role}>
                                 {msg.content ||
@@ -147,10 +157,12 @@ export default function ChatWidget() {
                             placeholder="Digite sua dúvida..."
                             disabled={loading}
                             maxLength={2000}
+                            aria-label="Mensagem para o assistente"
                         />
                         <S.SendBtn
                             onClick={sendMessage}
                             disabled={loading || !input.trim()}
+                            aria-label="Enviar mensagem"
                         >
                             Enviar
                         </S.SendBtn>

@@ -42,6 +42,12 @@ export default function Input({
         ? (passwordVisible ? "text" : "password")
         : props.type;
 
+    const errorId = id ? `${id}-error` : error ? `${props.name}-error` : undefined;
+    const a11yProps = {
+        "aria-invalid": error ? true : undefined,
+        "aria-describedby": error && errorId ? errorId : undefined,
+    };
+
     return (
         <S.Container>
             {label && <S.Label htmlFor={id}>{label}</S.Label>}
@@ -50,11 +56,11 @@ export default function Input({
                 <S.InputWrapper $error={!!error}>
                     <S.Prefix>{prefix}</S.Prefix>
                     <S.Divider />
-                    <S.InnerInput id={id} {...props} />
+                    <S.InnerInput id={id} {...a11yProps} {...props} />
                 </S.InputWrapper>
             ) : showPasswordToggle ? (
                 <S.InputWrapper $error={!!error}>
-                    <S.InnerInput id={id} {...props} type={resolvedType} />
+                    <S.InnerInput id={id} {...a11yProps} {...props} type={resolvedType} />
                     <S.ToggleButton
                         type="button"
                         onClick={() => setPasswordVisible((v) => !v)}
@@ -64,10 +70,10 @@ export default function Input({
                     </S.ToggleButton>
                 </S.InputWrapper>
             ) : (
-                <S.Input id={id} {...props} $error={!!error} />
+                <S.Input id={id} {...a11yProps} {...props} $error={!!error} />
             )}
 
-            {error && <S.Error>{error}</S.Error>}
+            {error && <S.Error id={errorId} role="alert">{error}</S.Error>}
         </S.Container>
     );
 }
